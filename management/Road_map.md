@@ -1,11 +1,11 @@
 # Road Map — Project Synapse Healthcare Vertical
 
-**Status:** Consolidated 2026-07-19 from `Active_File.md` rows 1-18.
-**Ownership model:** per `.agent_os/collaboration_model_V2.0.md` (V2.7) Rule 13 —
+**Status:** Updated 2026-07-19 (evening) from `Active_File.md` rows 1-19.
+**Ownership model:** per `.agent_os/collaboration_model_V2.0.md` (V2.8) Rule 13 —
 Lead AI (Claude) allocates, owning agent delivers end-to-end incl. tests
 (Rule 14), Lead AI reviews before `🟢 DONE`.
 
-## Completed (rows 1-17, all 🟢 DONE except 12 and 16)
+## Completed (rows 1-19, all 🟢 DONE)
 
 | # | Item | Owner | Sequential/Parallel |
 |---|---|---|---|
@@ -14,49 +14,68 @@ Lead AI (Claude) allocates, owning agent delivers end-to-end incl. tests
 | 7 | `docs/DOMAIN_PACK_CONTRACT.md` | Claude | After pattern proven 5x |
 | 8 | Anonymous-dataset probe (deliberate no-build) | Claude | Independent, could run parallel to 4-6 |
 | 9 | Sense board healthcare walkthrough + `query.py` fix | Claude | After row 6 (needs full chain data) |
-| 10 | Banking second domain (contract generalization test) | Claude | Independent of healthcare rows, ran after row 9 |
+| 10 | Banking second domain (contract generalization test) | Claude | Independent of healthcare rows |
 | 11, 13 | HL7v2 parser + Codex review + fixes | Claude → Codex → Claude | Sequential (build, then review, then fix) |
-| 14 | H1-H16 architecture-fit review | Claude → Codex (reassigned from Gemini) | **Still open** — see below |
+| 12 | Banking Sense board walkthrough (Codex) + `api.py` principal fix (Claude) | Claude → Codex → Claude | Found a real 403 bug, fixed generically |
+| 14 | H1-H16 architecture-fit review (Codex) + `temporal.py` fix (Claude) | Claude → Codex → Claude | Codex's strongest review this session — found the deepest bug (temporal supersession) |
 | 15 | FHIR parser (lesson from 13 applied proactively) | Claude | Independent, after 13 |
-| 16 | Git repo-scope/remote issue | Codex → Claude (escalated to Vikas) | **Blocked on Vikas** |
-| 17 | Collaboration-model V2.7 process fixes + Codex confirmation | Claude → Codex | Sequential, gating for future row-append discipline |
+| 16 | Git repo-scope/remote issue → own repository created | Codex → Claude → Vikas → Claude | Escalated, decided, executed |
+| 17 | Collaboration-model V2.7 process fixes + Codex confirmation | Claude → Codex | Sequential, gating for row-append discipline |
+| 18 | `management/master_plan.md`/`Features.md`/`Road_map.md` written | Claude | Autonomous pickup, self-paced loop |
+| 19 | V2.8 (15-min self-loop rule) notification to Codex | Claude → Codex | Open — awaiting Codex's reply on its own scheduling capability |
 
 ## Currently open
 
 | Row | Owner | What's needed |
 |---|---|---|
-| 12 | Codex | Banking Sense board walkthrough — mirrors row 9's method for the banking pack (row 10). Not yet started as of this document. |
-| 14 | Codex | H1-H16 register review — does the domain-pack work still map onto the original production-hole register, or has it drifted / exposed an ungoverned gap? Not yet started. |
-| 16 | **Vikas** | Git repository scope decision — does Project Synapse get its own repo, or does the parent `.git` at `Documents/Claude/Projects` get rescoped/removed? Nothing else proceeds on git sync (Rule 18) until this resolves. |
+| 19 | Codex | Reply on whether it has a self-scheduling mechanism equivalent to Claude's `/loop`, or confirm it's per-invocation only — keeps the Execution Mode declaration honest. |
 
-## Sequential vs. parallel guidance for what's open
+Nothing else is open. Every product-track row (1-18) is closed as of this update.
 
-- **Row 12 and row 14 can run in parallel** — both assigned to Codex, independent
-  of each other (one is hands-on-keyboard verification, the other is a reading/
-  register-mapping review). No shared file conflict expected.
-- **Row 16 blocks nothing currently in flight** — it only blocks future `git pull`/
-  `commit`/`push` under Rule 18. Product work (rows 12, 14, and any future pack
-  work) can continue without it.
+## The pattern that emerged this round (rows 9, 12, 14)
 
-## Natural next candidates after 12/14/16 close (not yet assigned, for discussion)
+Three separate bugs, found independently in three different core modules
+(`query.py`, `api.py`, `temporal.py`), turned out to be the **same root cause**: a
+hardcoded "known domains/predicates" list quietly baked into code that's supposed to
+be domain-blind. Each was found by testing a new domain against existing code, not
+by design review. Worth an explicit audit pass over remaining core modules
+(`orchestrator.py`, `store.py`, `control_plane.py`, `budget.py`, `resolution.py`)
+for the same pattern before a fourth instance is found by accident rather than by
+design.
 
-1. **A real conflict-detection proof for a second interoperability format** — row
-   15's FHIR work proved extraction + cross-format identity convergence, but
-   (unlike HL7's healthy-vs-front-desk pattern from row 4) never tested FHIR
-   against a deliberately conflicting second source. Would close that gap
-   symmetrically.
-2. **PID-3 / FHIR identifier namespacing** — the stated-but-unfixed limitation
-   from rows 13 and 15 (bare identifier, no assigning-authority scope). Real
-   fix, not urgent, deferred twice for the same reason (risks the proven
+## Natural next candidates (not yet assigned, for discussion)
+
+1. **Audit remaining core modules for the hardcoded-whitelist pattern** (see above)
+   — proactive, cheap, directly motivated by 3 real bugs found this session.
+2. **A real conflict-detection proof for FHIR** — row 15 proved extraction +
+   cross-format identity convergence, but never tested FHIR against a deliberately
+   conflicting second source the way row 4 did for the HL7/CSV pair.
+3. **PID-3 / FHIR identifier namespacing** — the stated-but-unfixed limitation from
+   rows 13/14/15 (bare identifier, no assigning-authority scope). Independently
+   reaffirmed by Codex's row-14 review as the main remaining architectural gap.
+   Real fix, not urgent, deferred repeatedly for the same reason (risks the proven
    cross-format convergence without a driving need yet).
-3. **A third domain** — would mostly re-confirm what banking (row 10) already
-   proved about `docs/DOMAIN_PACK_CONTRACT.md`'s generality; lower marginal
-   value than 1 or 2 unless a specific new domain becomes a real requirement.
+4. **Observation-vs-analyte instance modeling** (Codex, row 14) — distinct
+   observation instances per order/specimen/time, not just per patient+test.
+5. **A third domain** — would mostly re-confirm what banking (row 10) already
+   proved; lower marginal value than 1-4 unless a specific new domain becomes a
+   real requirement.
 
-## Process notes carried forward (V2.7)
+## Process notes carried forward (V2.8)
 
 - Row-ID assignment requires a fresh read under `lock.txt` — two collisions
-  happened before this was enforced (rows 12, 14 each assigned twice).
-- Every agent's Execution Mode is now declared in the collaboration model's
-  Variables Block — both Claude and Codex are turn-based/per-session, not
-  persistent background watchers; expect next-turn pickup, not real-time.
+  happened before this was enforced (rows 12, 14 each assigned twice, both since
+  resolved by renumbering).
+- Every agent's Execution Mode is declared in the collaboration model's Variables
+  Block. Claude and Codex are both turn-based/per-session, not persistent
+  background watchers.
+- V2.8 (Rule 12) sets a ~15-minute self-loop as the ideal cadence for both Lead AI
+  and contributors during active work, using whatever self-scheduling mechanism
+  each agent actually has (Claude: `/loop`). Row 19 is Codex's open confirmation
+  of whether it has an equivalent.
+
+## Repository
+
+`https://github.com/vikasiec/Project_Synapse.git`, branch `main`, initial commit
+`2b1e9aa` (row 16). Own dedicated repo, decoupled from the parent folder's
+`Financial-Planner-2.0` remote/scope issue that started that row.

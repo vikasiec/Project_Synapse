@@ -45,6 +45,17 @@ designed against a real collision risk in the actual data, not hypothetically:
    blocking, used by every cross-entity link (`Appointment→Patient`,
    `Treatment→Appointment`, `Billing→Patient/Treatment`, `Account→AccountHolder`,
    `Transaction→Account`, HL7/FHIR `LabResult→Patient`).
+3. **`SemanticStore.known_acl_domains()`** (row 12) — derives the demo/UI viewer
+   principal's domain access from whatever ACL domain tags are actually landed in
+   the store, instead of a hardcoded domain-name list. Fixed a real 403 on the
+   banking pack's ASK path through the actual UI request shape.
+4. **`TemporalService.apply_for_entity` generalized** (row 14) — previously gated by
+   a hardcoded `OPERATIONAL_PREDICATES` infra/revenue whitelist that silently
+   excluded every healthcare/banking predicate from temporal supersession. Now
+   applies to any predicate; safety comes from the existing `(predicate,
+   source_system)` grouping, not a predicate allowlist. Fixed a real false-conflict
+   bug: the same patient's repeated lab result over time looked like an open
+   disagreement instead of an updated value.
 
 ## New interoperability formats (real invention, not pack repetition)
 
@@ -62,17 +73,27 @@ one store (row 15).
 
 - Cross-format/cross-source entity resolution safety (`strict_identity`, rows 4, 13).
 - `query.py` answer-narration domain-blindness (row 9).
+- `api.py` demo-principal domain-tag hardcoding (row 12).
+- `temporal.py` supersession predicate hardcoding (row 14).
+
+**Pattern to watch:** three of these four bugs (rows 9, 12, 14) are the same root
+cause — a hardcoded "known domains/predicates" list quietly baked into code meant to
+be domain-blind — found independently in three different core modules. Worth an
+explicit audit pass over remaining core modules for the same pattern before it's
+found a fourth time by accident.
 
 ## Sense board (`synapse/api.py`, `synapse/static/index.html`) — verified, not changed
 
-Zero code changes required across every domain tested (checkout, healthcare,
-banking) — the 5 panels (RAW / MEANING / CONFLICTS / ASK / EMIT) proved genuinely
-domain-blind by demonstration (row 9), not just by inspection.
+Zero code changes required to the UI/HTML across every domain tested (checkout,
+healthcare, banking) — the 5 panels (RAW / MEANING / CONFLICTS / ASK / EMIT) proved
+genuinely domain-blind by demonstration (rows 9, 12), not just by inspection. (The
+API's principal-derivation *logic* did need a fix, row 12 — the UI/panel contract
+itself never changed.)
 
 ## Test coverage added this arc
 
 `tests/test_patient_extract.py`, `test_doctor_appointment_extract.py`,
 `test_treatment_billing_extract.py`, `test_banking_extract.py`, `test_hl7v2.py`,
 `test_hl7_extract.py`, `test_fhir.py`, `test_fhir_extract.py`,
-`test_query_generic_narration.py` — full suite at 150/150 as of row 15 (row 17's
-process fixes required no code/test changes).
+`test_query_generic_narration.py`, `test_principal_from_body.py` (row 12),
+`test_temporal_generic.py` (row 14) — full suite at 158/158 as of row 14's fix.

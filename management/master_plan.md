@@ -60,27 +60,57 @@ the resulting contract.
    different patients' results merge into one entity, fabricating a false conflict
    between unrelated people. Fix: patient-scoped identity key, same `strict_identity`
    mechanism as bug 1.
+4. **Row 12 (Codex)** — `api.py`'s `_principal_from_body` hardcoded
+   `domain:sre/revenue/identity` for the demo `l1`/`l2` presets; the banking pack's
+   ASK path returned 403 through the actual UI request shape because `domain:banking`
+   was never in that list. Same class of bug as #2. Fix: `SemanticStore.known_acl_domains()`
+   derives the preset from whatever ACL domain tags are actually landed, not a
+   hardcoded list.
+5. **Row 14 (Codex H1-H16 review, verified by Claude)** — `temporal.py`'s
+   `OPERATIONAL_PREDICATES` was a **third** instance of the same pattern: a hardcoded
+   infra/revenue predicate whitelist meant temporal supersession silently never
+   applied to `"result"` or any other healthcare/banking predicate, so the same
+   patient's repeated lab result over time looked like a false open conflict. Fix:
+   removed the whitelist — supersession now applies to every predicate, safety comes
+   from the existing `(predicate, source_system)` grouping, not from a predicate
+   allowlist. Also fixed HL7/FHIR extraction to supersede every `LabResult` entity
+   created, not just the patient.
 
 Each fix is a generic core/ontology mechanism, never a domain-specific hack —
-directly satisfying the row-3 constraint.
+directly satisfying the row-3 constraint. Bugs 2, 4, and 5 are the same underlying
+pattern (a hardcoded "known domains/predicates" list quietly baked into code that's
+supposed to be domain-blind) found three separate times in three different core
+modules (`query.py`, `api.py`, `temporal.py`) — worth treating as a systemic class
+of risk, not three unrelated bugs, when auditing any other core module later.
 
 ## 6. What's deliberately not done, and why (stated, not hidden)
 
-- **PID-3 / FHIR identifier assigning-authority namespacing** (rows 13, 15) — a bare
-  patient ID could theoretically collide across different facilities. Not fixed:
+- **PID-3 / FHIR identifier assigning-authority namespacing** (rows 13, 14, 15) — a
+  bare patient ID could theoretically collide across different facilities. Not fixed:
   doing so would require re-namespacing identity consistently across every connector,
   risking the already-proven cross-format convergence, for a multi-facility scenario
-  this POC's data doesn't exercise. Stated as a POC limitation.
+  this POC's data doesn't exercise. Stated as a POC limitation, independently
+  reaffirmed by Codex's row-14 H1-H16 review as the main remaining architectural gap.
+- **Observation-vs-analyte instance modeling** (row 14) — `LabResult` identity is
+  patient+test scoped (fixed, row 13) and now correctly supersedes over time (fixed,
+  row 14), but doesn't yet model a distinct observation instance per order/specimen.
+  Flagged by Codex as an H8 semantic-model granularity gap; not built this arc.
 - **Anonymous observational datasets** (row 8) — no entity to resolve, deliberately
   not built.
 - **Real-time/continuous ingestion, real $ FinOps, multi-tenant ACLs, GraphRAG/
   Data-Juicer package swaps** — held per the original Grok visual-sense plan
   (`docs/Grok_Plan19Jul.txt`), not revisited this arc.
 
-## 7. Where a decision from Vikas is genuinely required
+## 7. Repository
 
-**Row 16**: the git repository root is `Documents/Claude/Projects` (the whole parent
-folder), not `Project_Synapse` — sibling unrelated projects sit inside this repo's
-working tree by accident, and `origin` points to an unrelated repo
-(`Financial-Planner-2.0.git`). Needs a decision: does Project Synapse get its own
-repo, or does the parent `.git` get rescoped/removed? Not an agent-level call.
+Project Synapse now has its own dedicated repository, decoupled from the parent
+folder's unrelated `.git`/`Financial-Planner-2.0` remote (row 16):
+`https://github.com/vikasiec/Project_Synapse.git`, `main` branch, initial commit
+`2b1e9aa`.
+
+## 9. Open decisions
+
+None currently blocking. Row 16 (git repo scope) was resolved 2026-07-19 — see §7.
+The parent folder's `Financial-Planner-2.0` repo/remote issue itself was left
+untouched throughout, as instructed; Project Synapse's own history starts clean
+from its own root.

@@ -38,6 +38,7 @@ from synapse.scenarios.billing_customer import BillingCustomerScenario
 from synapse.scenarios.checkout_incident import CheckoutIncidentScenario
 from synapse.security import Principal
 from synapse.session import SynapseSession, open_session
+from synapse.store import SemanticStore
 
 _PIN_RE = re.compile(r"^/v1/conflicts/([^/]+)/pin$")
 STATIC_DIR = Path(__file__).resolve().parent / "static"
@@ -75,26 +76,34 @@ def _read_json(handler: BaseHTTPRequestHandler) -> dict[str, Any]:
     return json.loads(raw.decode("utf-8"))
 
 
-def _principal_from_body(body: dict[str, Any]) -> Principal:
+_FALLBACK_DEMO_DOMAINS = ["domain:sre", "domain:revenue", "domain:identity"]
+
+
+def _principal_from_body(
+    body: dict[str, Any], store: Optional[SemanticStore] = None
+) -> Principal:
+    """
+    l1/l2 are demo/UI convenience presets, not real per-user ACL profiles --
+    they've always meant "broad viewer access to everything currently known
+    to this store". When `store` is provided, the domain tags are derived
+    from what's actually landed (`store.known_acl_domains()`) instead of a
+    hardcoded list, so a new pack's data (e.g. domain:banking) is visible to
+    the default UI viewer the moment it lands, not just the three original
+    scenario domains (Active_File.md row 12, Codex review). Falls back to
+    the original static list when no store is available (e.g. unit tests
+    constructing a Principal directly).
+    """
+    domains = sorted(store.known_acl_domains()) if store is not None else []
+    if not domains:
+        domains = list(_FALLBACK_DEMO_DOMAINS)
+
     principal = body.get("principal", "l2")
     if principal == "l1":
-        # Domain-agnostic l1: only clearance l1 + try common domains
-        return Principal.from_tags(
-            "user-l1",
-            ["domain:sre", "domain:revenue", "domain:identity", "clearance:l1"],
-        )
+        return Principal.from_tags("user-l1", domains + ["clearance:l1"])
     if principal == "l2":
         return Principal.from_tags(
             "user-l2",
-            [
-                "domain:sre",
-                "domain:revenue",
-                "domain:identity",
-                "clearance:l2",
-                "channel:incidents",
-                "channel:support",
-                "channel:itsm",
-            ],
+            domains + ["clearance:l2", "channel:incidents", "channel:support", "channel:itsm"],
         )
     if isinstance(principal, dict):
         return Principal.from_tags(
@@ -105,15 +114,7 @@ def _principal_from_body(body: dict[str, Any]) -> Principal:
         return Principal.from_tags("api-user", [t.strip() for t in principal.split(",")])
     return Principal.from_tags(
         "user-l2",
-        [
-            "domain:sre",
-            "domain:revenue",
-            "domain:identity",
-            "clearance:l2",
-            "channel:incidents",
-            "channel:support",
-            "channel:itsm",
-        ],
+        domains + ["clearance:l2", "channel:incidents", "channel:support", "channel:itsm"],
     )
 
 
@@ -517,7 +518,7 @@ def make_handler(session: SynapseSession):
                 if not entity:
                     return _json_response(self, 400, {"error": "entity required"})
                 result = session.query.ask(
-                    _principal_from_body(body),
+                    _principal_from_body(body, session.store),
                     entity_name=entity,
                     intent=body.get("intent", "entity_lookup"),
                     as_of=body.get("as_of"),
@@ -551,7 +552,7 @@ def make_handler(session: SynapseSession):
                 if not question:
                     return _json_response(self, 400, {"error": "question required"})
                 ans = session.orchestrator.ask(
-                    _principal_from_body(body),
+                    _principal_from_body(body, session.store),
                     question,
                     intent=body.get("intent"),
                     entity_name=body.get("entity") or body.get("entity_name"),

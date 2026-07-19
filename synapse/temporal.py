@@ -14,18 +14,6 @@ from synapse.control_plane import parse_iso_z
 from synapse.models import Fact
 from synapse.store import SemanticStore
 
-# Predicates where latest same-source value is operational state
-OPERATIONAL_PREDICATES = frozenset(
-    {
-        "current_version",
-        "runtime_state",
-        "deploy_status",
-        "annual_revenue",
-        "arr",
-        "account_status",
-    }
-)
-
 
 @dataclass
 class SupersessionResult:
@@ -37,11 +25,18 @@ class TemporalService:
         self.store = store
 
     def apply_for_entity(self, entity_id: str) -> SupersessionResult:
-        facts = [
-            f
-            for f in self.store.facts.values()
-            if f.subject_entity_id == entity_id and f.predicate in OPERATIONAL_PREDICATES
-        ]
+        # Applies to every predicate, not a hardcoded infra/revenue-domain
+        # whitelist (Active_File.md row 14, Codex review) -- a hardcoded
+        # OPERATIONAL_PREDICATES set here meant temporal supersession never
+        # applied to any healthcare/banking predicate (e.g. "result"),
+        # letting the same patient's repeated lab result over time look
+        # like an open cross-source conflict instead of a legitimate
+        # updated value. The (predicate, source_system) grouping below is
+        # what makes this safe: only the SAME source reporting the SAME
+        # predicate again gets superseded -- two DIFFERENT sources
+        # disagreeing on a predicate still correctly stay separate as an
+        # open conflict, regardless of which predicate it is.
+        facts = [f for f in self.store.facts.values() if f.subject_entity_id == entity_id]
         # Group by (predicate, source_system)
         groups: dict[tuple[str, str], list[Fact]] = {}
         for f in facts:

@@ -871,6 +871,7 @@ class RuleExtractor:
         if gender:
             all_facts.append(self._fact(patient, "gender", gender, 0.9, raw, episode))
 
+        result_entity_ids: set[str] = set()
         for obx in msg.get("OBX"):
             test_code = obx.value(3, 1)
             test_name = obx.value(3, 2) or test_code
@@ -895,6 +896,7 @@ class RuleExtractor:
                 trust_score=0.8,
                 domain="clinical_lab",
             )
+            result_entity_ids.add(result.entity_id)
 
             value = obx.value(5)
             if value:
@@ -932,6 +934,12 @@ class RuleExtractor:
         for f in all_facts:
             self.store.put_fact(f)
         self.temporal.apply_for_entity(patient.entity_id)
+        # Codex H1-H16 review (row 14): repeated observations for the same
+        # patient+analyte over time must supersede, not sit side-by-side
+        # looking like an open conflict -- apply_for_entity must run per
+        # LabResult entity too, not just the patient.
+        for rid in result_entity_ids:
+            self.temporal.apply_for_entity(rid)
         return ExtractionResult(entity=patient, facts=all_facts)
 
     def _extract_fhir_bundle(
@@ -986,6 +994,7 @@ class RuleExtractor:
         if gender:
             all_facts.append(self._fact(patient, "gender", gender, 0.9, raw, episode))
 
+        result_entity_ids: set[str] = set()
         for obs in resources:
             if obs.get("resourceType") != "Observation":
                 continue
@@ -1011,6 +1020,7 @@ class RuleExtractor:
                 trust_score=0.8,
                 domain="clinical_lab",
             )
+            result_entity_ids.add(result.entity_id)
 
             qty = obs.get("valueQuantity") or {}
             value = qty.get("value")
@@ -1050,6 +1060,8 @@ class RuleExtractor:
         for f in all_facts:
             self.store.put_fact(f)
         self.temporal.apply_for_entity(patient.entity_id)
+        for rid in result_entity_ids:
+            self.temporal.apply_for_entity(rid)
         return ExtractionResult(entity=patient, facts=all_facts)
 
     def _extract_service(

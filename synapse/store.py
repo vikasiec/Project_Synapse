@@ -105,3 +105,21 @@ class SemanticStore:
             for c in self.conflicts.values()
             if c.subject_entity_id == entity_id and c.status.value == "open"
         ]
+
+    def known_acl_domains(self) -> set[str]:
+        """
+        Every "domain:X" ACL tag actually present on landed raw objects.
+        Generic, data-driven -- lets a demo/default viewer preset grant
+        access to whatever domains actually exist in this store without a
+        hardcoded domain-name list (Active_File.md row 12, Codex review:
+        api.py's l1/l2 principal presets hardcoded domain:sre/revenue/
+        identity, so a new pack's data -- e.g. domain:banking -- was
+        invisible to the default UI viewer even though nothing else about
+        it was domain-specific).
+        """
+        domains: set[str] = set()
+        for raw in self.raw_objects.values():
+            for tag in raw.acl_tags:
+                if tag.startswith("domain:"):
+                    domains.add(tag)
+        return domains
