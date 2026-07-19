@@ -1,0 +1,34 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://synapse.local/schemas/Episode.schema.json",
+  "title": "Episode",
+  "description": "Prepared unit derived from one or more raw objects for schema-on-read extraction.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "episode_id",
+    "raw_object_ids",
+    "domain",
+    "prep_pipeline_version",
+    "acl_tags",
+    "payload_text"
+  ],
+  "properties": {
+    "episode_id": { "type": "string", "format": "uuid" },
+    "raw_object_ids": {
+      "type": "array",
+      "items": { "type": "string", "format": "uuid" },
+      "minItems": 1
+    },
+    "domain": { "type": "string", "minLength": 1 },
+    "prep_pipeline_version": { "type": "string" },
+    "acl_tags": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "payload_text": { "type": "string" },
+    "time_span_start": { "type": ["string", "null"], "format": "date-time" },
+    "time_span_end": { "type": ["string", "null"], "format": "date-time" },
+    "quality_signals": { "type": "object" }
+  }
+}

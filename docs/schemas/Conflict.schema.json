@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://synapse.local/schemas/Conflict.schema.json",
+  "title": "Conflict",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "conflict_id",
+    "subject_entity_id",
+    "predicate",
+    "competing_fact_ids",
+    "status"
+  ],
+  "properties": {
+    "conflict_id": { "type": "string", "format": "uuid" },
+    "subject_entity_id": { "type": "string", "format": "uuid" },
+    "predicate": { "type": "string" },
+    "competing_fact_ids": {
+      "type": "array",
+      "items": { "type": "string", "format": "uuid" },
+      "minItems": 2
+    },
+    "status": {
+      "type": "string",
+      "enum": ["open", "resolved", "accepted_plural"]
+    },
+    "resolution": {
+      "type": ["object", "null"],
+      "additionalProperties": false,
+      "properties": {
+        "method": {
+          "type": "string",
+          "enum": [
+            "human_pin",
+            "authority_prefer",
+            "accepted_plural",
+            "temporal_supersession",
+            "reopen"
+          ]
+        },
+        "chosen_fact_id": { "type": ["string", "null"], "format": "uuid" },
+        "adjudicator": { "type": ["string", "null"] },
+        "reason": { "type": ["string", "null"] }
+      }
+    }
+  }
+}

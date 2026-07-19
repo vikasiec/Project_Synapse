@@ -1,0 +1,16 @@
+transaction_id,account_id,transaction_date,amount,transaction_type,description,balance_after
+T001,A001,2023-01-05,1500.00,Deposit,Payroll,4500.00
+T002,A001,2023-01-08,-89.50,Withdrawal,Groceries,4410.50
+T003,A002,2023-01-10,300.00,Deposit,Transfer in,8300.00
+T004,A003,2023-01-11,-1200.00,Withdrawal,Rent,2100.00
+T005,A004,2023-01-12,2000.00,Deposit,Payroll,5200.00
+T006,A005,2023-01-15,-45.00,Withdrawal,Utilities,9955.00
+T007,A006,2023-01-16,50.00,Deposit,Interest,1050.00
+T008,A007,2023-01-18,-220.00,Withdrawal,Card purchase,3780.00
+T009,A008,2023-01-19,600.00,Deposit,Bonus,6600.00
+T010,A009,2023-01-20,-75.25,Withdrawal,Subscription,2924.75
+T011,A001,2023-02-05,1500.00,Deposit,Payroll,5910.50
+T012,A002,2023-02-07,-500.00,Withdrawal,Transfer out,7800.00
+T013,A004,2023-02-09,-310.00,Withdrawal,Card purchase,4890.00
+T014,A010,2023-02-10,1000.00,Deposit,Initial deposit,1000.00
+T015,A007,2023-02-12,250.00,Deposit,Refund,4030.00

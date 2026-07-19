@@ -1,0 +1,34 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://synapse.local/schemas/RawObject.schema.json",
+  "title": "RawObject",
+  "description": "Immutable landing-zone record (system of record for bytes).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "object_id",
+    "source_system",
+    "content_hash",
+    "ingested_at",
+    "bytes_ref",
+    "acl_tags",
+    "raw_payload"
+  ],
+  "properties": {
+    "object_id": { "type": "string", "format": "uuid" },
+    "source_system": { "type": "string", "minLength": 1 },
+    "content_hash": { "type": "string", "minLength": 32 },
+    "ingested_at": { "type": "string", "format": "date-time" },
+    "bytes_ref": { "type": "string" },
+    "acl_tags": {
+      "type": "array",
+      "items": { "type": "string" },
+      "minItems": 1
+    },
+    "raw_payload": { "type": "string" },
+    "source_uri": { "type": ["string", "null"] },
+    "media_type": { "type": "string", "default": "text/plain" },
+    "sensitivity": { "type": "string", "default": "internal" },
+    "retention_class": { "type": "string", "default": "standard" }
+  }
+}

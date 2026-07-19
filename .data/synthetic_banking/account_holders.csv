@@ -1,0 +1,9 @@
+holder_id,first_name,last_name,date_of_birth,national_id,email,phone,address,registration_date
+H001,John,Smith,1978-03-14,NID-55012,john.smith1@mail.com,5550101,12 River Rd,2019-01-10
+H002,Maria,Garcia,1985-11-02,NID-55013,maria.garcia@mail.com,5550102,45 Lake Ave,2019-02-14
+H003,John,Smith,1990-07-22,NID-55014,john.smith2@mail.com,5550103,78 Hill St,2020-05-19
+H004,Wei,Chen,1982-09-08,NID-55015,wei.chen@mail.com,5550104,9 Park Blvd,2018-11-30
+H005,Amara,Okafor,1975-01-27,NID-55016,amara.okafor@mail.com,5550105,33 Cedar Ln,2021-03-08
+H006,Priya,Patel,1993-06-15,NID-55017,priya.patel@mail.com,5550106,61 Birch Way,2020-09-01
+H007,Liam,O'Brien,1988-12-05,NID-55018,liam.obrien@mail.com,5550107,22 Elm Ct,2019-07-22
+H008,Sofia,Rossi,1980-04-19,NID-55019,sofia.rossi@mail.com,5550108,14 Oak Dr,2022-01-05

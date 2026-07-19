@@ -1,0 +1,29 @@
+{
+  "resourceType": "Bundle",
+  "type": "message",
+  "entry": [
+    {
+      "resource": {
+        "resourceType": "Patient",
+        "id": "p903",
+        "identifier": [{"system": "urn:oid:HIS", "value": "P903"}],
+        "name": [{"family": "Dubois", "given": ["Claire"]}],
+        "birthDate": "1988-02-11",
+        "gender": "female"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Observation",
+        "id": "obs-p903-glu",
+        "status": "final",
+        "code": {"coding": [{"system": "http://loinc.org", "code": "2345-7", "display": "Glucose"}]},
+        "subject": {"reference": "Patient/p903"},
+        "effectiveDateTime": "2023-08-12T09:00:00Z",
+        "valueQuantity": {"value": 98, "unit": "mg/dL"},
+        "referenceRange": [{"low": {"value": 70}, "high": {"value": 110}}],
+        "interpretation": [{"coding": [{"code": "N", "display": "Normal"}]}]
+      }
+    }
+  ]
+}

@@ -1,0 +1,6 @@
+"""python -m synapse [command]"""
+
+from synapse.cli import main
+
+if __name__ == "__main__":
+    main()

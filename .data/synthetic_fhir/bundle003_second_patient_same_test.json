@@ -1,0 +1,29 @@
+{
+  "resourceType": "Bundle",
+  "type": "message",
+  "entry": [
+    {
+      "resource": {
+        "resourceType": "Patient",
+        "id": "p904",
+        "identifier": [{"system": "urn:oid:HIS", "value": "P904"}],
+        "name": [{"family": "Andersen", "given": ["Lars"]}],
+        "birthDate": "1972-10-30",
+        "gender": "male"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Observation",
+        "id": "obs-p904-plt",
+        "status": "final",
+        "code": {"coding": [{"system": "http://loinc.org", "code": "777-3", "display": "Platelet Count"}]},
+        "subject": {"reference": "Patient/p904"},
+        "effectiveDateTime": "2023-09-02T11:00:00Z",
+        "valueQuantity": {"value": 132, "unit": "10*3/uL"},
+        "referenceRange": [{"low": {"value": 150}, "high": {"value": 400}}],
+        "interpretation": [{"coding": [{"code": "L", "display": "Low"}]}]
+      }
+    }
+  ]
+}

@@ -1,0 +1,43 @@
+# --- secrets (local machine only) ---
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+secrets/
+**/credentials*.json
+**/service-account*.json
+
+# --- python ---
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+dist/
+build/
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+
+# --- local data ---
+# NOTE: must ignore .data/* (contents), not .data/ (the directory itself) --
+# git will not descend into an ignored directory to apply negation rules
+# below, so a bare ".data/" here would silently defeat the fixture
+# exceptions that follow.
+.data/*
+*.db
+*.log
+
+# --- hand-authored test fixtures (tracked despite the blanket .data/* rule
+# above) — real downloads (kaggle_raw/), generated DBs, and runtime scratch
+# dirs (inbox/, materialized*/) stay excluded ---
+!.data/synthetic_hl7/
+!.data/synthetic_fhir/
+!.data/synthetic_banking/
+
+# --- tooling ---
+build_master_pdf.py
+
+# --- collaboration model concurrency lock (Rule 17) — transient, never tracked ---
+lock.txt

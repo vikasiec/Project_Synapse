@@ -1,0 +1,41 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "project-synapse"
+version = "0.17.0"
+description = "Org-wide zero-ETL semantic data core — local Phase-1 foundation"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "Project Synapse" }]
+keywords = ["semantic-data", "schema-on-read", "knowledge-graph", "zero-etl"]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Topic :: Database",
+  "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+dependencies = []
+
+[project.optional-dependencies]
+# Blueprint engines (install separately if dependency conflicts arise on Windows)
+engines = [
+  "graphiti-core",
+  "graphrag>=2.7,<3",
+  "pageindex",
+  "py-data-juicer",
+]
+dev = []
+
+[project.scripts]
+synapse = "synapse.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["synapse*"]
+
+[tool.setuptools.package-data]
+synapse = ["static/*"]

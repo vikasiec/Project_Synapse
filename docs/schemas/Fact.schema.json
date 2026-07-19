@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://synapse.local/schemas/Fact.schema.json",
+  "title": "Fact",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "fact_id",
+    "subject_entity_id",
+    "predicate",
+    "object",
+    "confidence",
+    "evidence_refs",
+    "source_system",
+    "acl_tags",
+    "valid_from"
+  ],
+  "properties": {
+    "fact_id": { "type": "string", "format": "uuid" },
+    "subject_entity_id": { "type": "string", "format": "uuid" },
+    "predicate": { "type": "string", "minLength": 1 },
+    "object": {},
+    "confidence": { "type": "number", "minimum": 0, "maximum": 1 },
+    "evidence_refs": {
+      "type": "array",
+      "items": { "type": "string" },
+      "minItems": 1
+    },
+    "source_system": { "type": "string" },
+    "acl_tags": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "valid_from": { "type": "string", "format": "date-time" },
+    "valid_to": { "type": ["string", "null"], "format": "date-time" },
+    "extractor_version": { "type": "string" }
+  }
+}

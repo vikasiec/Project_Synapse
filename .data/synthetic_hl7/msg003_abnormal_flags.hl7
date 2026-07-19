@@ -1,0 +1,5 @@
+MSH|^~\&|LIS|CityLab|HIS|GeneralHospital|20230811091500||ORU^R01|MSG00003|P|2.5.1
+PID|1||P902^^^HIS^MR||Kim^Soo-jin||19670521|F|||8 Cedar Ct^^^^^^||5559876543
+OBR|1|ORD9003|LAB9003|LIPID^Lipid Panel^L|||20230811090000
+OBX|1|NM|LDL^LDL Cholesterol^L||165|mg/dL|0-99|H|||F
+OBX|2|NM|HDL^HDL Cholesterol^L||38|mg/dL|40-999|L|||F

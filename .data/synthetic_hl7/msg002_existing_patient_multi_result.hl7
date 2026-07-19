@@ -1,0 +1,6 @@
+MSH|^~\&|LIS|CityLab|HIS|GeneralHospital|20230810083000||ORU^R01|MSG00002|P|2.5.1
+PID|1||P001^^^HIS^MR||Williams^David||19550604|F|||789 Pine Rd^^^^^^||6939585183
+OBR|1|ORD9002|LAB9002|CBC^Complete Blood Count^L|||20230810080000
+OBX|1|NM|HGB^Hemoglobin^L||14.2|g/dL|13.5-17.5|N|||F
+OBX|2|NM|WBC^White Blood Cell Count^L||11.8|10*3/uL|4.5-11.0|H|||F
+OBX|3|NM|PLT^Platelet Count^L||250|10*3/uL|150-400|N|||F

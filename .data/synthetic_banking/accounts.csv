@@ -1,0 +1,11 @@
+account_id,holder_id,account_type,branch,opened_date,status
+A001,H001,Checking,Downtown,2019-01-10,Active
+A002,H001,Savings,Downtown,2020-06-01,Active
+A003,H002,Checking,Riverside,2019-02-14,Active
+A004,H003,Checking,Uptown,2020-05-19,Active
+A005,H004,Savings,Downtown,2018-11-30,Active
+A006,H005,Checking,Riverside,2021-03-08,Dormant
+A007,H006,Checking,Uptown,2020-09-01,Active
+A008,H007,Savings,Downtown,2019-07-22,Active
+A009,H008,Checking,Riverside,2022-01-05,Active
+A010,H002,Savings,Riverside,2021-08-19,Active

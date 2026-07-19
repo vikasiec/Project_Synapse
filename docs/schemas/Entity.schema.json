@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://synapse.local/schemas/Entity.schema.json",
+  "title": "Entity",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["entity_id", "entity_type", "status"],
+  "properties": {
+    "entity_id": { "type": "string", "format": "uuid" },
+    "entity_type": { "type": "string", "minLength": 1 },
+    "status": {
+      "type": "string",
+      "enum": ["active", "merged", "deprecated"]
+    },
+    "canonical_name": { "type": ["string", "null"] },
+    "aliases": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "external_ids": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["system", "id"],
+        "properties": {
+          "system": { "type": "string" },
+          "id": { "type": "string" }
+        }
+      }
+    },
+    "trust_score": { "type": "number", "minimum": 0, "maximum": 1 },
+    "acl_tags": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "merged_into": { "type": ["string", "null"], "format": "uuid" },
+    "ontology_type": { "type": ["string", "null"], "description": "Governed L0/L1 type name (H8)" },
+    "ontology_layer": { "type": ["string", "null"], "enum": ["L0", "L1", "L2", null] }
+  }
+}

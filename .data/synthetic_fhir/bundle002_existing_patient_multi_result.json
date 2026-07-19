@@ -1,0 +1,42 @@
+{
+  "resourceType": "Bundle",
+  "type": "message",
+  "entry": [
+    {
+      "resource": {
+        "resourceType": "Patient",
+        "id": "p001",
+        "identifier": [{"system": "urn:oid:HIS", "value": "P001"}],
+        "name": [{"family": "Williams", "given": ["David"]}],
+        "birthDate": "1955-06-04",
+        "gender": "male"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Observation",
+        "id": "obs-p001-plt",
+        "status": "final",
+        "code": {"coding": [{"system": "http://loinc.org", "code": "777-3", "display": "Platelet Count"}]},
+        "subject": {"reference": "Patient/p001"},
+        "effectiveDateTime": "2023-09-01T10:00:00Z",
+        "valueQuantity": {"value": 245, "unit": "10*3/uL"},
+        "referenceRange": [{"low": {"value": 150}, "high": {"value": 400}}],
+        "interpretation": [{"coding": [{"code": "N", "display": "Normal"}]}]
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Observation",
+        "id": "obs-p001-crea",
+        "status": "final",
+        "code": {"coding": [{"system": "http://loinc.org", "code": "2160-0", "display": "Creatinine"}]},
+        "subject": {"reference": "Patient/p001"},
+        "effectiveDateTime": "2023-09-01T10:00:00Z",
+        "valueQuantity": {"value": 1.4, "unit": "mg/dL"},
+        "referenceRange": [{"low": {"value": 0.6}, "high": {"value": 1.2}}],
+        "interpretation": [{"coding": [{"code": "H", "display": "High"}]}]
+      }
+    }
+  ]
+}

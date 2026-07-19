@@ -1,0 +1,1583 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Project Synapse</title>
+  <style>
+    :root {
+      --bg: #f0f4f8;
+      --navy: #0f2744;
+      --blue: #1d6fd8;
+      --blue-dark: #1557b0;
+      --green: #0f766e;
+      --green-dark: #0d9488;
+      --text: #0f172a;
+      --muted: #64748b;
+      --card: #ffffff;
+      --border: #dbe3ee;
+      --ok: #15803d;
+      --bad: #b91c1c;
+      --warn: #b45309;
+      --soft: #f8fafc;
+      --shadow: 0 4px 20px rgba(15, 39, 68, 0.08);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      min-height: 100vh;
+    }
+    header {
+      background: linear-gradient(135deg, #0f2744 0%, #1a3a5c 100%);
+      color: #fff;
+      padding: 1.25rem 1.5rem 1.5rem;
+    }
+    header .wrap { max-width: 720px; margin: 0 auto; }
+    header h1 { margin: 0; font-size: 1.4rem; font-weight: 700; }
+    header p { margin: 0.4rem 0 0; opacity: 0.9; font-size: 0.95rem; }
+    .status-bar {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+      margin-top: 0.85rem;
+      flex-wrap: wrap;
+    }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.3rem 0.7rem;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      background: rgba(255,255,255,0.15);
+    }
+    .pill.ok { background: #dcfce7; color: #166534; }
+    .pill.bad { background: #fee2e2; color: #991b1b; }
+    .pill.neutral { background: #e2e8f0; color: #334155; }
+
+    main {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 1.25rem 1rem 3rem;
+    }
+
+    /* Progress */
+    .progress {
+      display: flex;
+      gap: 0.35rem;
+      margin-bottom: 1.25rem;
+      background: var(--card);
+      border-radius: 12px;
+      padding: 0.75rem;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+    }
+    .progress-step {
+      flex: 1;
+      text-align: center;
+      padding: 0.5rem 0.25rem;
+      border-radius: 8px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--muted);
+      cursor: pointer;
+      border: 2px solid transparent;
+      background: transparent;
+      font-family: inherit;
+      transition: 0.15s ease;
+      user-select: none;
+    }
+    .progress-step:hover { background: var(--soft); }
+    .progress-step .num {
+      display: block;
+      width: 1.75rem;
+      height: 1.75rem;
+      line-height: 1.75rem;
+      margin: 0 auto 0.25rem;
+      border-radius: 50%;
+      background: #e2e8f0;
+      color: #475569;
+      font-size: 0.85rem;
+    }
+    .progress-step.active {
+      color: var(--blue);
+      background: #eff6ff;
+      border-color: #bfdbfe;
+    }
+    .progress-step.active .num { background: var(--blue); color: #fff; }
+    .progress-step.done { color: var(--ok); }
+    .progress-step.done .num { background: #bbf7d0; color: var(--ok); }
+
+    /* Panels */
+    .panel {
+      display: none;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1.35rem 1.25rem 1.5rem;
+      box-shadow: var(--shadow);
+      animation: fadeIn 0.2s ease;
+    }
+    .panel.active { display: block; }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: none; }
+    }
+    .panel h2 {
+      margin: 0 0 0.35rem;
+      font-size: 1.25rem;
+      color: var(--navy);
+    }
+    .panel .lead {
+      margin: 0 0 1.1rem;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    /* Big actions */
+    .big-btn {
+      display: block;
+      width: 100%;
+      padding: 1rem 1.15rem;
+      margin: 0.5rem 0;
+      border: none;
+      border-radius: 12px;
+      font-size: 1.05rem;
+      font-weight: 700;
+      font-family: inherit;
+      cursor: pointer;
+      text-align: left;
+      transition: transform 0.1s, box-shadow 0.15s, background 0.15s;
+      box-shadow: 0 2px 8px rgba(29, 111, 216, 0.2);
+      position: relative;
+      z-index: 1;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .big-btn:hover { transform: translateY(-1px); }
+    .big-btn:active { transform: translateY(0); }
+    .big-btn:disabled {
+      opacity: 0.55;
+      cursor: wait;
+      transform: none;
+    }
+    .big-btn .sub {
+      display: block;
+      font-size: 0.82rem;
+      font-weight: 500;
+      opacity: 0.9;
+      margin-top: 0.2rem;
+    }
+    .big-btn.primary {
+      background: linear-gradient(180deg, #2580f0, var(--blue));
+      color: #fff;
+    }
+    .big-btn.primary:hover { background: linear-gradient(180deg, var(--blue), var(--blue-dark)); }
+    .big-btn.success {
+      background: linear-gradient(180deg, #14b8a6, var(--green));
+      color: #fff;
+      box-shadow: 0 2px 8px rgba(15, 118, 110, 0.25);
+    }
+    .big-btn.success:hover { background: linear-gradient(180deg, var(--green-dark), var(--green)); }
+    .big-btn.ghost {
+      background: #fff;
+      color: var(--navy);
+      border: 2px solid var(--border);
+      box-shadow: none;
+      font-weight: 600;
+    }
+    .big-btn.ghost:hover { border-color: #94a3b8; background: var(--soft); }
+
+    .choice-grid {
+      display: grid;
+      gap: 0.5rem;
+    }
+
+    /* Result cards */
+    .result {
+      margin-top: 1rem;
+      padding: 1rem;
+      border-radius: 12px;
+      background: #f0fdf4;
+      border: 1px solid #86efac;
+    }
+    .result.warn {
+      background: #fffbeb;
+      border-color: #fcd34d;
+    }
+    .result.err {
+      background: #fef2f2;
+      border-color: #fca5a5;
+    }
+    .result h3 {
+      margin: 0 0 0.4rem;
+      font-size: 0.95rem;
+      color: var(--ok);
+    }
+    .result.warn h3 { color: var(--warn); }
+    .result.err h3 { color: var(--bad); }
+    .result p {
+      margin: 0.35rem 0;
+      font-size: 0.95rem;
+      white-space: pre-wrap;
+    }
+    .result .chips { margin-top: 0.6rem; }
+    .chip {
+      display: inline-block;
+      padding: 0.2rem 0.5rem;
+      margin: 0.15rem 0.2rem 0.15rem 0;
+      border-radius: 6px;
+      background: #e2e8f0;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: #334155;
+    }
+
+    .nav-row {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 1.25rem;
+      flex-wrap: wrap;
+    }
+    .nav-row .big-btn { flex: 1; min-width: 140px; text-align: center; margin: 0; }
+
+    .stats-mini {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0.4rem;
+      margin: 0.75rem 0 0;
+    }
+    .stats-mini div {
+      background: var(--soft);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.5rem 0.25rem;
+      text-align: center;
+    }
+    .stats-mini b { display: block; font-size: 1.15rem; color: var(--navy); }
+    .stats-mini span { font-size: 0.68rem; color: var(--muted); }
+
+    .conflict-card {
+      background: #fff;
+      border: 1px solid #fcd34d;
+      border-radius: 10px;
+      padding: 0.85rem;
+      margin: 0.5rem 0;
+    }
+    .conflict-card strong { color: var(--warn); }
+    .source-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 0.5rem;
+      padding: 0.45rem 0.5rem;
+      margin: 0.3rem 0;
+      background: var(--soft);
+      border-radius: 8px;
+      font-size: 0.88rem;
+      border: 2px solid transparent;
+      cursor: pointer;
+      width: 100%;
+      text-align: left;
+      font-family: inherit;
+    }
+    .source-row:hover { border-color: #93c5fd; }
+    .source-row.selected { border-color: var(--blue); background: #eff6ff; }
+    .source-row .src { color: var(--muted); font-size: 0.8rem; }
+
+    .loading {
+      display: none;
+      text-align: center;
+      padding: 0.75rem;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+    .loading.show { display: block; }
+    .spinner {
+      display: inline-block;
+      width: 1rem;
+      height: 1rem;
+      border: 2px solid #cbd5e1;
+      border-top-color: var(--blue);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      vertical-align: -2px;
+      margin-right: 0.4rem;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .toast {
+      position: fixed;
+      bottom: 1.25rem;
+      left: 50%;
+      transform: translateX(-50%) translateY(120%);
+      background: var(--navy);
+      color: #fff;
+      padding: 0.75rem 1.25rem;
+      border-radius: 999px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      z-index: 100;
+      transition: transform 0.25s ease;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+      max-width: 90%;
+      text-align: center;
+    }
+    .toast.show { transform: translateX(-50%) translateY(0); }
+
+    .footer-note {
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.8rem;
+      margin-top: 1.5rem;
+    }
+    input[type="text"] {
+      width: 100%;
+      padding: 0.75rem 0.9rem;
+      border: 2px solid var(--border);
+      border-radius: 10px;
+      font: inherit;
+      font-size: 1rem;
+      margin: 0.35rem 0 0.75rem;
+    }
+    input[type="text"]:focus {
+      outline: none;
+      border-color: var(--blue);
+    }
+    label.field {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--muted);
+    }
+
+    /* Sense board */
+    .mode-toggle {
+      background: rgba(255,255,255,0.15);
+      color: #fff;
+      border: 1px solid rgba(255,255,255,0.35);
+      border-radius: 999px;
+      padding: 0.3rem 0.8rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    .mode-toggle:hover { background: rgba(255,255,255,0.28); }
+    .status-strip {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 0.4rem;
+      margin-bottom: 1rem;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 0.6rem;
+      box-shadow: var(--shadow);
+    }
+    .status-strip div {
+      text-align: center;
+      padding: 0.4rem 0.2rem;
+      border-radius: 8px;
+      background: var(--soft);
+    }
+    .status-strip b { display: block; font-size: 1.2rem; color: var(--navy); }
+    .status-strip span { font-size: 0.68rem; color: var(--muted); }
+    .status-strip div.warn-cell b { color: var(--warn); }
+
+    .sub-tabs {
+      display: flex;
+      gap: 0.4rem;
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+    }
+    .sub-tab {
+      padding: 0.5rem 0.9rem;
+      border-radius: 999px;
+      border: 2px solid var(--border);
+      background: #fff;
+      color: var(--navy);
+      font-weight: 600;
+      font-size: 0.85rem;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    .sub-tab.active { background: var(--blue); border-color: var(--blue); color: #fff; }
+
+    .sense-panel {
+      display: none;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1.1rem 1.1rem 1.35rem;
+      box-shadow: var(--shadow);
+    }
+    .sense-panel.active { display: block; }
+
+    .drop-zone {
+      background: var(--soft);
+      border: 1px dashed #94a3b8;
+      border-radius: 10px;
+      padding: 0.85rem;
+      margin-bottom: 1rem;
+    }
+    .drop-zone h4 { margin: 0 0 0.5rem; font-size: 0.88rem; color: var(--navy); }
+    .drop-row { display: flex; gap: 0.4rem; margin-bottom: 0.5rem; flex-wrap: wrap; }
+    .drop-row input[type="text"], .drop-row textarea {
+      flex: 1;
+      min-width: 180px;
+      padding: 0.5rem 0.6rem;
+      border: 2px solid var(--border);
+      border-radius: 8px;
+      font: inherit;
+      font-size: 0.85rem;
+      margin: 0;
+    }
+    .drop-row textarea { min-height: 2.2rem; resize: vertical; }
+    .drop-row button {
+      padding: 0.5rem 0.9rem;
+      border: none;
+      border-radius: 8px;
+      background: var(--blue);
+      color: #fff;
+      font-weight: 600;
+      font-size: 0.82rem;
+      cursor: pointer;
+      font-family: inherit;
+      white-space: nowrap;
+    }
+    .drop-row button:hover { background: var(--blue-dark); }
+
+    .sense-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+    .sense-table th, .sense-table td {
+      text-align: left;
+      padding: 0.5rem 0.6rem;
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+    }
+    .sense-table th { color: var(--muted); font-size: 0.72rem; text-transform: uppercase; }
+    .sense-table code { font-size: 0.78rem; color: var(--muted); }
+    .badge {
+      display: inline-block;
+      padding: 0.1rem 0.45rem;
+      border-radius: 6px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      background: #e2e8f0;
+      color: #334155;
+    }
+    .badge.rules { background: #dbeafe; color: #1d4ed8; }
+    .badge.residual { background: #ede9fe; color: #6d28d9; }
+
+    .honesty-banner {
+      background: #fffbeb;
+      border: 1px solid #fcd34d;
+      border-radius: 10px;
+      padding: 0.75rem 0.9rem;
+      font-size: 0.85rem;
+      color: #92400e;
+      margin-bottom: 0.85rem;
+    }
+
+    .entity-chip-row { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 0.85rem; }
+    .entity-chip {
+      padding: 0.35rem 0.7rem;
+      border-radius: 999px;
+      border: 2px solid var(--border);
+      background: #fff;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+      color: var(--navy);
+    }
+    .entity-chip.active { border-color: var(--blue); background: #eff6ff; color: var(--blue); }
+
+    .empty-note { color: var(--muted); font-size: 0.88rem; padding: 0.5rem 0; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap">
+      <h1>Project Synapse</h1>
+      <p>See how messy system data becomes a clear answer — and where systems still disagree.</p>
+      <div class="status-bar">
+        <span id="connPill" class="pill">Connecting…</span>
+        <span id="dataPill" class="pill neutral">No story loaded</span>
+        <button type="button" class="mode-toggle" id="btnModeToggle">Open Sense board →</button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+  <div id="wizardView">
+    <nav class="progress" aria-label="Workflow steps">
+      <button type="button" class="progress-step active" data-go="1" id="tab1">
+        <span class="num">1</span>Load
+      </button>
+      <button type="button" class="progress-step" data-go="2" id="tab2">
+        <span class="num">2</span>Ask
+      </button>
+      <button type="button" class="progress-step" data-go="3" id="tab3">
+        <span class="num">3</span>Conflicts
+      </button>
+      <button type="button" class="progress-step" data-go="4" id="tab4">
+        <span class="num">4</span>Decide
+      </button>
+    </nav>
+
+    <div id="loading" class="loading"><span class="spinner"></span><span id="loadingText">Working…</span></div>
+
+    <!-- STEP 1 -->
+    <section class="panel active" id="step1" data-step="1">
+      <h2>Step 1 — Load a story</h2>
+      <p class="lead">
+        Pick a sample incident. Synapse will land raw messages, extract entities &amp; facts,
+        and detect where sources disagree.
+      </p>
+
+      <div class="choice-grid">
+        <button type="button" class="big-btn primary" id="btnLoadCheckout">
+          Checkout outage (recommended)
+          <span class="sub">CI says v2.4.1 · Kubernetes says v2.4.0 crash-loop · Slack says manual pin</span>
+        </button>
+        <button type="button" class="big-btn ghost" id="btnLoadBilling">
+          Billing revenue conflict
+          <span class="sub">CRM vs Billing disagree on Acme Corp annual revenue</span>
+        </button>
+        <button type="button" class="big-btn ghost" id="btnLoadIdentity">
+          Identity / access conflict
+          <span class="sub">HR vs IdP disagree on Jane Doe’s account status</span>
+        </button>
+      </div>
+
+      <div id="step1Result" class="result" style="display:none"></div>
+
+      <div class="stats-mini" id="statsMini" style="display:none">
+        <div><b id="sRaw">0</b><span>Raw</span></div>
+        <div><b id="sEnt">0</b><span>Entities</span></div>
+        <div><b id="sFact">0</b><span>Facts</span></div>
+        <div><b id="sConf">0</b><span>Conflicts</span></div>
+      </div>
+
+      <div class="nav-row">
+        <button type="button" class="big-btn success" id="btnToStep2" disabled>
+          Continue to Ask →
+        </button>
+      </div>
+    </section>
+
+    <!-- STEP 2 -->
+    <section class="panel" id="step2" data-step="2">
+      <h2>Step 2 — Ask a question</h2>
+      <p class="lead">
+        Ask about the entity in plain language. You’ll get an answer that may still show uncertainty
+        when sources conflict.
+      </p>
+
+      <label class="field" for="entity">What are we talking about?</label>
+      <input type="text" id="entity" value="checkout-service" autocomplete="off" />
+
+      <label class="field" for="question">Your question</label>
+      <input type="text" id="question" value="What is going on with this service?" autocomplete="off" />
+
+      <button type="button" class="big-btn primary" id="btnAsk">
+        Get answer
+        <span class="sub">Uses entity lookup + conflict-aware synthesis</span>
+      </button>
+
+      <div id="step2Result" class="result" style="display:none"></div>
+
+      <div class="nav-row">
+        <button type="button" class="big-btn ghost" id="btnBack1">← Back</button>
+        <button type="button" class="big-btn success" id="btnToStep3" disabled>
+          See conflicts →
+        </button>
+      </div>
+    </section>
+
+    <!-- STEP 3 -->
+    <section class="panel" id="step3" data-step="3">
+      <h2>Step 3 — See disagreements</h2>
+      <p class="lead">
+        When two systems report different values, Synapse keeps both. Nothing is silently “fixed.”
+      </p>
+
+      <button type="button" class="big-btn primary" id="btnLoadConflicts">
+        Refresh conflict list
+        <span class="sub">Shows open scalar clashes for this store</span>
+      </button>
+
+      <div id="step3Result" class="result warn" style="display:none"></div>
+      <div id="conflictList"></div>
+
+      <div class="nav-row">
+        <button type="button" class="big-btn ghost" id="btnBack2">← Back</button>
+        <button type="button" class="big-btn success" id="btnToStep4" disabled>
+          Decide the truth →
+        </button>
+      </div>
+    </section>
+
+    <!-- STEP 4 -->
+    <section class="panel" id="step4" data-step="4">
+      <h2>Step 4 — Decide (human pin)</h2>
+      <p class="lead">
+        You are the expert. Pick which source should win for now. History is still kept.
+      </p>
+
+      <div id="pinPanel">
+        <p class="lead" id="pinHint">Load conflicts first (step 3), then pick a winning fact below.</p>
+        <div id="pinSources"></div>
+        <button type="button" class="big-btn primary" id="btnPin" disabled>
+          Confirm this is the truth
+          <span class="sub">Records a human pin with audit trail</span>
+        </button>
+      </div>
+
+      <div id="step4Result" class="result" style="display:none"></div>
+
+      <div class="nav-row">
+        <button type="button" class="big-btn ghost" id="btnBack3">← Back</button>
+        <button type="button" class="big-btn success" id="btnRestart">
+          Start over
+        </button>
+      </div>
+    </section>
+
+    <p class="footer-note">
+      Local demo console · data stays on this machine ·
+      <a href="/health" target="_blank" rel="noopener" style="color:var(--blue)">API health</a>
+    </p>
+  </div>
+
+  <div id="senseView" style="display:none">
+    <div class="status-strip" id="senseStrip">
+      <div><b id="stRaw">0</b><span>Raw</span></div>
+      <div><b id="stEp">0</b><span>Episodes</span></div>
+      <div><b id="stEnt">0</b><span>Entities</span></div>
+      <div><b id="stFact">0</b><span>Facts</span></div>
+      <div id="stConfCell"><b id="stConf">0</b><span>Open conflicts</span></div>
+    </div>
+
+    <div class="sub-tabs">
+      <button type="button" class="sub-tab active" data-sense="raw">RAW</button>
+      <button type="button" class="sub-tab" data-sense="meaning">MEANING</button>
+      <button type="button" class="sub-tab" data-sense="conflicts">CONFLICTS</button>
+      <button type="button" class="sub-tab" data-sense="ask">ASK</button>
+      <button type="button" class="sub-tab" data-sense="emit">EMIT</button>
+    </div>
+
+    <!-- RAW -->
+    <section class="sense-panel active" id="senseRaw">
+      <h2 style="margin-top:0">Whatever data comes in</h2>
+      <p class="lead">Drop a file path or paste JSON. It lands as-is — no schema required first.</p>
+
+      <div class="drop-zone">
+        <h4>Paste JSON</h4>
+        <div class="drop-row">
+          <textarea id="dropJsonText" placeholder='{"service": "checkout", "status": "unknown"}'></textarea>
+          <button type="button" id="btnDropJson">Land JSON</button>
+        </div>
+        <h4>CSV file path</h4>
+        <div class="drop-row">
+          <input type="text" id="dropCsvPath" placeholder=".data/inbox/my_sheet.csv" />
+          <button type="button" id="btnDropCsv">Land CSV</button>
+        </div>
+        <h4>JSONL file path</h4>
+        <div class="drop-row">
+          <input type="text" id="dropJsonlPath" placeholder=".data/inbox/events.jsonl" />
+          <button type="button" id="btnDropJsonl">Land JSONL</button>
+        </div>
+      </div>
+
+      <div id="dropResult" class="result" style="display:none"></div>
+
+      <button type="button" class="big-btn ghost" id="btnRefreshRaw" style="margin-bottom:0.75rem">Refresh raw list</button>
+      <div id="rawTableWrap"><p class="empty-note">No raw objects yet — seed a story or drop your own data.</p></div>
+    </section>
+
+    <!-- MEANING -->
+    <section class="sense-panel" id="senseMeaning">
+      <h2 style="margin-top:0">What was understood</h2>
+      <p class="lead">Entities and facts extracted so far. Empty is an honest state, not a failure.</p>
+      <button type="button" class="big-btn ghost" id="btnRefreshMeaning" style="margin-bottom:0.75rem">Refresh meaning</button>
+      <div id="meaningHonesty"></div>
+      <div class="entity-chip-row" id="entityChips"></div>
+      <div id="factsTableWrap"><p class="empty-note">No facts yet.</p></div>
+    </section>
+
+    <!-- CONFLICTS -->
+    <section class="sense-panel" id="senseConflicts">
+      <h2 style="margin-top:0">Where sources disagree</h2>
+      <p class="lead">Nothing is silently resolved. Pick a winner if you want to pin one.</p>
+      <button type="button" class="big-btn ghost" id="btnRefreshConflicts" style="margin-bottom:0.75rem">Refresh conflicts</button>
+      <div id="senseConflictList"><p class="empty-note">No conflicts loaded yet.</p></div>
+    </section>
+
+    <!-- ASK -->
+    <section class="sense-panel" id="senseAsk">
+      <h2 style="margin-top:0">Ask a question</h2>
+      <label class="field" for="senseEntity">Entity</label>
+      <input type="text" id="senseEntity" value="checkout-service" autocomplete="off" />
+      <label class="field" for="senseQuestion">Question</label>
+      <input type="text" id="senseQuestion" value="What is going on with this service?" autocomplete="off" />
+      <button type="button" class="big-btn primary" id="btnSenseAsk">Get answer</button>
+      <div id="senseAskResult" class="result" style="display:none"></div>
+    </section>
+
+    <!-- EMIT -->
+    <section class="sense-panel" id="senseEmit">
+      <h2 style="margin-top:0">Take a slice out</h2>
+      <p class="lead">Materialize the graph into a small table you can open in Excel (H16 escape hatch).</p>
+      <label class="field" for="emitView">View</label>
+      <select id="emitView" style="width:100%;padding:0.6rem;border:2px solid var(--border);border-radius:10px;margin:0.35rem 0 0.75rem;font:inherit">
+        <option value="entity_facts">entity_facts</option>
+        <option value="conflicts">conflicts</option>
+      </select>
+      <button type="button" class="big-btn success" id="btnMaterialize">Materialize</button>
+      <div id="emitResult" class="result" style="display:none"></div>
+      <div id="emitPreview"></div>
+    </section>
+
+    <p class="footer-note">
+      Sense board · local, single-store proof of the raw → meaning → conflict → answer → emit loop
+    </p>
+  </div>
+  </main>
+
+  <div id="toast" class="toast" role="status"></div>
+
+  <script>
+(function () {
+  "use strict";
+
+  var state = {
+    step: 1,
+    loaded: false,
+    entity: "checkout-service",
+    lastQuery: null,
+    conflicts: [],
+    activeConflict: null,
+    selectedFactId: null,
+    busy: false,
+  };
+
+  function $(id) { return document.getElementById(id); }
+
+  function toast(msg) {
+    var t = $("toast");
+    t.textContent = msg;
+    t.classList.add("show");
+    setTimeout(function () { t.classList.remove("show"); }, 2800);
+  }
+
+  function setBusy(on, text) {
+    state.busy = on;
+    var el = $("loading");
+    $("loadingText").textContent = text || "Working…";
+    el.classList.toggle("show", on);
+    document.querySelectorAll(".big-btn").forEach(function (b) {
+      if (b.id === "btnToStep2" || b.id === "btnToStep3" || b.id === "btnToStep4" || b.id === "btnPin") {
+        /* keep their own disabled rules */
+        if (on) b.disabled = true;
+      } else if (b.id !== "btnBack1" && b.id !== "btnBack2" && b.id !== "btnBack3") {
+        b.disabled = on;
+      }
+    });
+    /* re-apply step enables after busy ends */
+    if (!on) refreshNavEnabled();
+  }
+
+  function refreshNavEnabled() {
+    $("btnToStep2").disabled = !state.loaded;
+    $("btnToStep3").disabled = !state.lastQuery;
+    $("btnToStep4").disabled = !(state.conflicts && state.conflicts.length);
+    $("btnPin").disabled = !(state.activeConflict && state.selectedFactId);
+  }
+
+  function goStep(n) {
+    n = parseInt(n, 10);
+    if (n < 1 || n > 4) return;
+    if (n > 1 && !state.loaded) {
+      toast("Load a story in Step 1 first");
+      return;
+    }
+    if (n > 2 && !state.lastQuery && n !== 1) {
+      /* allow step 3 after load if they want, but encourage ask */
+    }
+    state.step = n;
+    document.querySelectorAll(".panel").forEach(function (p) {
+      p.classList.toggle("active", parseInt(p.getAttribute("data-step"), 10) === n);
+    });
+    document.querySelectorAll(".progress-step").forEach(function (t) {
+      var s = parseInt(t.getAttribute("data-go"), 10);
+      t.classList.toggle("active", s === n);
+      t.classList.toggle("done", s < n || (s === 1 && state.loaded) || (s === 2 && state.lastQuery) || (s === 3 && state.conflicts.length));
+    });
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  async function api(path, opts) {
+    opts = opts || {};
+    var res = await fetch(path, {
+      headers: Object.assign({ "Content-Type": "application/json" }, opts.headers || {}),
+      method: opts.method || "GET",
+      body: opts.body,
+    });
+    var text = await res.text();
+    var data;
+    try { data = JSON.parse(text); } catch (e) { data = { raw: text }; }
+    if (!res.ok) {
+      var err = new Error((data && data.error) || ("HTTP " + res.status));
+      err.data = data;
+      err.status = res.status;
+      throw err;
+    }
+    return data;
+  }
+
+  async function refreshStats() {
+    try {
+      var s = await api("/v1/stats");
+      $("sRaw").textContent = s.raw_objects || 0;
+      $("sEnt").textContent = s.entities || 0;
+      $("sFact").textContent = s.facts || 0;
+      $("sConf").textContent = s.conflicts || 0;
+      $("statsMini").style.display = "grid";
+      if ((s.entities || 0) > 0) {
+        $("dataPill").textContent = (s.entities || 0) + " entities · " + (s.facts || 0) + " facts";
+        $("dataPill").className = "pill ok";
+      }
+      return s;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  async function checkHealth() {
+    try {
+      var h = await api("/health");
+      $("connPill").textContent = "Connected · v" + (h.version || "?");
+      $("connPill").className = "pill ok";
+      return true;
+    } catch (e) {
+      $("connPill").textContent = "Server offline — run: python -m synapse serve";
+      $("connPill").className = "pill bad";
+      return false;
+    }
+  }
+
+  function showBox(id, kind, title, body, chips) {
+    var el = $(id);
+    el.style.display = "block";
+    el.className = "result" + (kind === "warn" ? " warn" : kind === "err" ? " err" : "");
+    var chipHtml = "";
+    if (chips && chips.length) {
+      chipHtml = '<div class="chips">' + chips.map(function (c) {
+        return '<span class="chip">' + escapeHtml(c) + "</span>";
+      }).join("") + "</div>";
+    }
+    el.innerHTML = "<h3>" + escapeHtml(title) + "</h3><p>" + escapeHtml(body) + "</p>" + chipHtml;
+  }
+
+  function escapeHtml(s) {
+    return String(s == null ? "" : s)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;");
+  }
+
+  function afterStoryReady(entity, blurb, s, title) {
+    state.loaded = true;
+    state.entity = entity;
+    state.lastQuery = null;
+    state.conflicts = [];
+    state.activeConflict = null;
+    state.selectedFactId = null;
+    $("entity").value = entity;
+    $("question").value =
+      entity === "Acme Corp"
+        ? "What is Acme Corp annual revenue?"
+        : entity === "Jane Doe"
+        ? "What is Jane Doe account status?"
+        : "What is going on with checkout-service?";
+    showBox(
+      "step1Result",
+      "",
+      title || "Story ready",
+      blurb + "\n\nNext: ask a question about “" + entity + "”.",
+      [
+        (s && s.entities) + " entities",
+        (s && s.facts) + " facts",
+        (s && s.raw_objects) + " raw dumps",
+      ]
+    );
+    refreshNavEnabled();
+    toast("Ready — continue to Ask");
+    setTimeout(function () { goStep(2); }, 500);
+  }
+
+  async function loadStory(scenario, entity, blurb) {
+    if (state.busy) return;
+    setBusy(true, "Loading story…");
+    try {
+      var res = await api("/v1/seed", {
+        method: "POST",
+        body: JSON.stringify({ scenario: scenario, skip_if_populated: false }),
+      });
+      var s = await refreshStats();
+      afterStoryReady(
+        entity,
+        blurb,
+        s || {
+          entities: res.entities,
+          facts: res.facts,
+          raw_objects: res.raw_objects,
+        },
+        "Story loaded"
+      );
+    } catch (e) {
+      // If seed failed but we already have data, let the user continue
+      var s2 = await refreshStats();
+      if (s2 && (s2.entities || 0) > 0) {
+        afterStoryReady(
+          entity,
+          "Could not re-seed (server glitch), but your store already has data — continuing with what is loaded.\n\n" +
+            blurb,
+          s2,
+          "Using existing data"
+        );
+        toast("Using data already in the store");
+      } else {
+        var msg =
+          (e.data && (e.data.message || e.data.error)) ||
+          e.message ||
+          String(e);
+        if (msg === "Failed to fetch" || /fetch|network|connection/i.test(msg)) {
+          msg =
+            "Server dropped the connection while loading.\n\n" +
+            "Fix: stop the old server (Ctrl+C) and run:\n" +
+            "python -m synapse serve --port 8787 --db .data/demo.db\n\n" +
+            "Then hard-refresh this page (Ctrl+F5) and try again.";
+        }
+        showBox("step1Result", "err", "Could not load story", msg);
+        toast("Load failed — restart server (see message)");
+      }
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function doAsk() {
+    if (state.busy) return;
+    if (!state.loaded) {
+      toast("Load a story first (Step 1)");
+      goStep(1);
+      return;
+    }
+    var entity = $("entity").value.trim();
+    var question = $("question").value.trim();
+    if (!entity) {
+      toast("Enter an entity name");
+      return;
+    }
+    setBusy(true, "Thinking…");
+    try {
+      // Prefer entity query for clear conflict ranking; also run ask for narrative
+      var q = await api("/v1/query", {
+        method: "POST",
+        body: JSON.stringify({ entity: entity, principal: "l2" }),
+      });
+      state.lastQuery = q;
+      state.entity = entity;
+
+      var statement = (q.claim && q.claim.statement) || q.denial_reason || "No answer.";
+      var conf = q.claim ? Math.round((q.claim.confidence || 0) * 100) : 0;
+      var nConf = (q.conflicts || []).length;
+      var kind = !q.allowed ? "err" : nConf ? "warn" : "";
+
+      var extra = "";
+      if (nConf) {
+        extra = "\n\n⚠ Sources disagree on " + nConf + " field(s). Continue to Step 3 to inspect.";
+      } else if (q.allowed) {
+        extra = "\n\nNo open conflicts in this answer. You can still check Step 3.";
+      }
+
+      showBox(
+        "step2Result",
+        kind,
+        q.allowed ? "Answer" : "Access denied",
+        statement + extra,
+        q.allowed
+          ? ["confidence ~" + conf + "%", "conflicts: " + nConf, entity]
+          : ["principal blocked"]
+      );
+
+      // Prefill pin from first conflict
+      if (q.conflicts && q.conflicts[0]) {
+        state.activeConflict = q.conflicts[0];
+        var ranked = q.conflicts[0].ranked_facts || [];
+        if (ranked[0]) state.selectedFactId = ranked[0].fact_id;
+      }
+
+      refreshNavEnabled();
+      toast(q.allowed ? "Answer ready" : "Denied for this user");
+    } catch (e) {
+      var d = e.data || {};
+      showBox(
+        "step2Result",
+        "err",
+        "Ask failed",
+        d.denial_reason || d.error || e.message || "Request failed. Seed a story first."
+      );
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function loadConflicts() {
+    if (state.busy) return;
+    setBusy(true, "Loading conflicts…");
+    try {
+      // Ensure detection ran
+      try {
+        await api("/v1/query", {
+          method: "POST",
+          body: JSON.stringify({
+            entity: $("entity").value.trim() || state.entity,
+            principal: "l2",
+          }),
+        });
+      } catch (e) { /* ignore */ }
+
+      var rows = await api("/v1/conflicts?open_only=true");
+      if (!rows || !rows.length) {
+        rows = await api("/v1/conflicts");
+      }
+      state.conflicts = rows || [];
+
+      var list = $("conflictList");
+      list.innerHTML = "";
+
+      if (!state.conflicts.length) {
+        showBox(
+          "step3Result",
+          "warn",
+          "No conflicts found",
+          "Try the Checkout outage story — it is designed to create a version conflict."
+        );
+        refreshNavEnabled();
+        return;
+      }
+
+      showBox(
+        "step3Result",
+        "warn",
+        state.conflicts.length + " disagreement(s) found",
+        "Each card is a field where sources report different values. Continue to decide which source wins."
+      );
+
+      state.conflicts.forEach(function (c, idx) {
+        var card = document.createElement("div");
+        card.className = "conflict-card";
+        card.innerHTML =
+          "<div><strong>" +
+          escapeHtml(c.predicate) +
+          "</strong> · " +
+          escapeHtml(c.status) +
+          "</div>" +
+          "<div style='font-size:0.8rem;color:#64748b;margin-top:0.25rem'>Sources disagree on this field · " +
+          (c.competing_fact_ids || []).length +
+          " competing facts</div>" +
+          "<button type='button' class='big-btn ghost pick-conflict' data-idx='" +
+          idx +
+          "' style='margin-top:0.5rem;font-size:0.95rem;padding:0.7rem'>Work on this conflict →</button>";
+        list.appendChild(card);
+      });
+
+      list.querySelectorAll(".pick-conflict").forEach(function (btn) {
+        btn.addEventListener("click", function () {
+          var i = parseInt(btn.getAttribute("data-idx"), 10);
+          pickConflict(state.conflicts[i]);
+        });
+      });
+
+      // Auto-select first for step 4
+      pickConflict(state.conflicts[0], true);
+      refreshNavEnabled();
+      toast("Conflicts loaded");
+    } catch (e) {
+      showBox("step3Result", "err", "Failed", e.message || String(e));
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function pickConflict(c, silent) {
+    if (!c) return;
+    state.activeConflict = c;
+    state.selectedFactId = null;
+
+    // Need ranked facts — re-query entity
+    setBusy(true, "Loading source rankings…");
+    try {
+      var q = await api("/v1/query", {
+        method: "POST",
+        body: JSON.stringify({
+          entity: $("entity").value.trim() || state.entity,
+          principal: "l2",
+        }),
+      });
+      state.lastQuery = q;
+      var view = (q.conflicts || []).find(function (v) {
+        return v.conflict && v.conflict.conflict_id === c.conflict_id;
+      }) || (q.conflicts || [])[0];
+
+      var ranked = (view && view.ranked_facts) || [];
+      var box = $("pinSources");
+      $("pinHint").textContent =
+        "Field: " +
+        (view && view.conflict ? view.conflict.predicate : c.predicate) +
+        " — tap the source you trust most, then confirm.";
+
+      if (!ranked.length) {
+        box.innerHTML = "<p class='lead'>No ranked facts returned. Try Checkout story + Query.</p>";
+      } else {
+        box.innerHTML = ranked
+          .map(function (r, i) {
+            var sel = i === 0 ? " selected" : "";
+            if (i === 0) state.selectedFactId = r.fact_id;
+            return (
+              '<button type="button" class="source-row' +
+              sel +
+              '" data-fid="' +
+              escapeHtml(r.fact_id) +
+              '">' +
+              "<span><strong>" +
+              escapeHtml(String(r.object)) +
+              '</strong><br><span class="src">' +
+              escapeHtml(r.source_system) +
+              " · weight " +
+              (r.validity_weight != null ? Number(r.validity_weight).toFixed(2) : "?") +
+              "</span></span>" +
+              "<span class='chip'>#" +
+              (i + 1) +
+              "</span></button>"
+            );
+          })
+          .join("");
+
+        box.querySelectorAll(".source-row").forEach(function (row) {
+          row.addEventListener("click", function () {
+            box.querySelectorAll(".source-row").forEach(function (x) {
+              x.classList.remove("selected");
+            });
+            row.classList.add("selected");
+            state.selectedFactId = row.getAttribute("data-fid");
+            refreshNavEnabled();
+          });
+        });
+      }
+
+      if (view && view.conflict) state.activeConflict = view.conflict;
+      refreshNavEnabled();
+      if (!silent) {
+        goStep(4);
+        toast("Pick a winning source");
+      }
+    } catch (e) {
+      toast("Could not rank sources");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function doPin() {
+    if (state.busy) return;
+    if (!state.activeConflict || !state.selectedFactId) {
+      toast("Select a source first");
+      return;
+    }
+    var cid = state.activeConflict.conflict_id || state.activeConflict.conflict_id;
+    if (state.activeConflict.conflict_id) cid = state.activeConflict.conflict_id;
+    // activeConflict may be nested
+    if (state.activeConflict.conflict) cid = state.activeConflict.conflict.conflict_id;
+
+    setBusy(true, "Saving decision…");
+    try {
+      await api("/v1/conflicts/" + encodeURIComponent(cid) + "/pin", {
+        method: "POST",
+        body: JSON.stringify({
+          chosen_fact_id: state.selectedFactId,
+          adjudicator: "ui-user",
+          reason: "Chosen in guided demo UI",
+        }),
+      });
+
+      // Re-query to show new answer
+      var q = await api("/v1/query", {
+        method: "POST",
+        body: JSON.stringify({
+          entity: $("entity").value.trim() || state.entity,
+          principal: "l2",
+        }),
+      });
+      var stmt = (q.claim && q.claim.statement) || "Pinned.";
+      showBox(
+        "step4Result",
+        "",
+        "Decision saved",
+        "You pinned a source as operational truth.\n\nUpdated answer:\n" + stmt,
+        ["human pin", "audit recorded"]
+      );
+      await refreshStats();
+      toast("Pinned — answer updated");
+    } catch (e) {
+      var msg = (e.data && (e.data.error || e.data.denial_reason)) || e.message;
+      showBox("step4Result", "err", "Pin failed", msg || "Check conflict/fact IDs");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  function restart() {
+    state.loaded = false;
+    state.lastQuery = null;
+    state.conflicts = [];
+    state.activeConflict = null;
+    state.selectedFactId = null;
+    ["step1Result", "step2Result", "step3Result", "step4Result"].forEach(function (id) {
+      $(id).style.display = "none";
+    });
+    $("conflictList").innerHTML = "";
+    $("pinSources").innerHTML = "";
+    $("dataPill").textContent = "No story loaded";
+    $("dataPill").className = "pill neutral";
+    refreshNavEnabled();
+    goStep(1);
+    toast("Ready for a new story");
+  }
+
+  // ---- Sense board ----
+
+  function renderTable(wrapId, rows, columns, renderRow) {
+    var wrap = $(wrapId);
+    if (!rows || !rows.length) {
+      wrap.innerHTML = '<p class="empty-note">Nothing here yet.</p>';
+      return;
+    }
+    var html = '<div style="overflow-x:auto"><table class="sense-table"><thead><tr>' +
+      columns.map(function (c) { return "<th>" + escapeHtml(c) + "</th>"; }).join("") +
+      "</tr></thead><tbody>";
+    rows.forEach(function (r) { html += renderRow(r); });
+    html += "</tbody></table></div>";
+    wrap.innerHTML = html;
+  }
+
+  async function refreshSenseSummary() {
+    try {
+      var s = await api("/v1/sense/summary");
+      $("stRaw").textContent = s.raw_objects;
+      $("stEp").textContent = s.episodes;
+      $("stEnt").textContent = s.entities;
+      $("stFact").textContent = s.facts;
+      $("stConf").textContent = s.conflicts_open;
+      $("stConfCell").className = s.conflicts_open ? "warn-cell" : "";
+      return s;
+    } catch (e) { return null; }
+  }
+
+  async function loadSenseRaw() {
+    setBusy(true, "Loading raw…");
+    try {
+      var res = await api("/v1/raw?limit=50");
+      renderTable("rawTableWrap", res.items, ["Source", "Preview", "Received", "ID"], function (r) {
+        return "<tr><td>" + escapeHtml(r.source) + "</td><td>" + escapeHtml(r.preview) +
+          "</td><td>" + escapeHtml(r.received_at) + "</td><td><code>" +
+          escapeHtml((r.object_id || "").slice(0, 8)) + "…</code></td></tr>";
+      });
+      await refreshSenseSummary();
+    } catch (e) {
+      toast("Could not load raw: " + (e.message || e));
+    } finally { setBusy(false); }
+  }
+
+  async function loadFactsFor(entityId) {
+    var res = await api("/v1/facts?entity_id=" + encodeURIComponent(entityId) + "&limit=100");
+    renderTable("factsTableWrap", res.items, ["Predicate", "Value", "Source", "Confidence", "Path"], function (f) {
+      var badgeClass = f.path === "rules" ? "rules" : (f.path === "residual" ? "residual" : "");
+      return "<tr><td>" + escapeHtml(f.predicate) + "</td><td>" + escapeHtml(String(f.value)) +
+        "</td><td>" + escapeHtml(f.source) + "</td><td>" + Math.round((f.confidence || 0) * 100) +
+        "%</td><td><span class='badge " + badgeClass + "'>" + escapeHtml(f.path) + "</span></td></tr>";
+    });
+  }
+
+  async function loadSenseMeaning() {
+    setBusy(true, "Loading meaning…");
+    try {
+      var summary = await refreshSenseSummary();
+      var entities = await api("/v1/entities");
+      var chipsWrap = $("entityChips");
+      chipsWrap.innerHTML = "";
+      var honesty = $("meaningHonesty");
+      honesty.innerHTML = "";
+      if (summary && summary.raw_objects > 0 && summary.facts === 0) {
+        honesty.innerHTML =
+          '<div class="honesty-banner">Landed; extract found no entity pattern yet — ' +
+          "data is safe in raw; meaning appears after extract rules/residual.</div>";
+      }
+      if (!entities.length) {
+        $("factsTableWrap").innerHTML = '<p class="empty-note">No entities yet.</p>';
+        return;
+      }
+      var selected = null;
+      entities.forEach(function (e, i) {
+        var chip = document.createElement("button");
+        chip.type = "button";
+        chip.className = "entity-chip" + (i === 0 ? " active" : "");
+        chip.textContent = e.canonical_name || (e.entity_id || "").slice(0, 8);
+        chip.addEventListener("click", function () {
+          chipsWrap.querySelectorAll(".entity-chip").forEach(function (c) { c.classList.remove("active"); });
+          chip.classList.add("active");
+          loadFactsFor(e.entity_id);
+        });
+        chipsWrap.appendChild(chip);
+        if (i === 0) selected = e.entity_id;
+      });
+      if (selected) await loadFactsFor(selected);
+    } catch (e) {
+      toast("Could not load meaning: " + (e.message || e));
+    } finally { setBusy(false); }
+  }
+
+  async function loadSenseConflicts() {
+    setBusy(true, "Loading conflicts…");
+    try {
+      var rows = await api("/v1/conflicts?open_only=true");
+      if (!rows || !rows.length) rows = await api("/v1/conflicts");
+      var list = $("senseConflictList");
+      if (!rows.length) {
+        list.innerHTML = '<p class="empty-note">No conflicts found — ask a question first, or try the checkout story.</p>';
+        await refreshSenseSummary();
+        return;
+      }
+      list.innerHTML = "";
+      rows.forEach(function (c) {
+        var card = document.createElement("div");
+        card.className = "conflict-card";
+        card.innerHTML =
+          "<div><strong>" + escapeHtml(c.predicate) + "</strong> · " + escapeHtml(c.status) + "</div>" +
+          "<div style='font-size:0.8rem;color:#64748b;margin-top:0.25rem'>" +
+          (c.competing_fact_ids || []).length + " competing facts</div>";
+        list.appendChild(card);
+      });
+      await refreshSenseSummary();
+    } catch (e) {
+      toast("Could not load conflicts: " + (e.message || e));
+    } finally { setBusy(false); }
+  }
+
+  async function doSenseAsk() {
+    var entity = $("senseEntity").value.trim();
+    if (!entity) { toast("Enter an entity name"); return; }
+    setBusy(true, "Thinking…");
+    try {
+      var q = await api("/v1/query", {
+        method: "POST",
+        body: JSON.stringify({ entity: entity, principal: "l2" }),
+      });
+      var statement = (q.claim && q.claim.statement) || q.denial_reason || "No answer.";
+      var conf = q.claim ? Math.round((q.claim.confidence || 0) * 100) : 0;
+      var nConf = (q.conflicts || []).length;
+      showBox(
+        "senseAskResult",
+        !q.allowed ? "err" : nConf ? "warn" : "",
+        q.allowed ? "Answer" : "Access denied",
+        statement,
+        q.allowed ? ["confidence ~" + conf + "%", "conflicts: " + nConf] : ["blocked"]
+      );
+    } catch (e) {
+      var d = e.data || {};
+      showBox("senseAskResult", "err", "Ask failed", d.denial_reason || d.error || e.message || "Request failed.");
+    } finally { setBusy(false); }
+  }
+
+  async function doMaterialize() {
+    setBusy(true, "Materializing…");
+    try {
+      var view = $("emitView").value;
+      var res = await api("/v1/materialize", {
+        method: "POST",
+        body: JSON.stringify({ view: view, out: ".data/materialized_sense" }),
+      });
+      showBox(
+        "emitResult",
+        "",
+        "Materialized",
+        (res.view.row_count || 0) + " rows written to " + Object.values(res.paths || {}).join(", ")
+      );
+      var rows = res.view.rows_preview || [];
+      if (rows.length) {
+        var cols = res.view.columns || Object.keys(rows[0]);
+        renderTable("emitPreview", rows, cols, function (r) {
+          return "<tr>" + cols.map(function (c) {
+            return "<td>" + escapeHtml(String(r[c] == null ? "" : r[c])) + "</td>";
+          }).join("") + "</tr>";
+        });
+      } else {
+        $("emitPreview").innerHTML = '<p class="empty-note">No rows yet.</p>';
+      }
+    } catch (e) {
+      showBox("emitResult", "err", "Materialize failed", e.message || String(e));
+    } finally { setBusy(false); }
+  }
+
+  async function doDropJson() {
+    var text = $("dropJsonText").value.trim();
+    if (!text) { toast("Paste some JSON or text first"); return; }
+    setBusy(true, "Landing…");
+    try {
+      var res = await api("/v1/sense/drop", {
+        method: "POST",
+        body: JSON.stringify({ kind: "json", payload: text }),
+      });
+      showBox(
+        "dropResult",
+        "",
+        "Landed",
+        (res.deduplicated ? "Already had this (deduplicated). " : "") +
+          (res.entity ? "Understood entity: " + res.entity : "No entity pattern recognized yet — check MEANING tab.") +
+          (res.residual_facts ? " · " + res.residual_facts + " residual fact(s)" : "")
+      );
+      $("dropJsonText").value = "";
+      await refreshSenseSummary();
+    } catch (e) {
+      showBox("dropResult", "err", "Land failed", e.message || String(e));
+    } finally { setBusy(false); }
+  }
+
+  async function doDropPath(kind, inputId) {
+    var p = $(inputId).value.trim();
+    if (!p) { toast("Enter a file path"); return; }
+    setBusy(true, "Landing " + kind + "…");
+    try {
+      var res = await api("/v1/sense/drop", {
+        method: "POST",
+        body: JSON.stringify({ kind: kind, path: p }),
+      });
+      var poll = res.poll || {};
+      showBox(
+        "dropResult",
+        "",
+        "Landed " + kind.toUpperCase(),
+        (poll.landed || 0) + " new, " + (poll.deduplicated || 0) + " deduped, " + (poll.extracted || 0) + " entity extracts."
+      );
+      await refreshSenseSummary();
+    } catch (e) {
+      showBox("dropResult", "err", "Land failed", e.message || String(e));
+    } finally { setBusy(false); }
+  }
+
+  function goSense(tab) {
+    document.querySelectorAll(".sub-tab").forEach(function (t) {
+      t.classList.toggle("active", t.getAttribute("data-sense") === tab);
+    });
+    document.querySelectorAll(".sense-panel").forEach(function (p) {
+      p.classList.toggle("active", p.id === "sense" + tab.charAt(0).toUpperCase() + tab.slice(1));
+    });
+    if (tab === "raw") loadSenseRaw();
+    else if (tab === "meaning") loadSenseMeaning();
+    else if (tab === "conflicts") loadSenseConflicts();
+  }
+
+  var senseMode = false;
+  function toggleMode() {
+    senseMode = !senseMode;
+    $("wizardView").style.display = senseMode ? "none" : "block";
+    $("senseView").style.display = senseMode ? "block" : "none";
+    $("btnModeToggle").textContent = senseMode ? "← Back to guided demo" : "Open Sense board →";
+    if (senseMode) {
+      refreshSenseSummary();
+      loadSenseRaw();
+    }
+  }
+
+  $("btnModeToggle").addEventListener("click", toggleMode);
+  document.querySelectorAll(".sub-tab").forEach(function (t) {
+    t.addEventListener("click", function () { goSense(t.getAttribute("data-sense")); });
+  });
+  $("btnRefreshRaw").addEventListener("click", loadSenseRaw);
+  $("btnRefreshMeaning").addEventListener("click", loadSenseMeaning);
+  $("btnRefreshConflicts").addEventListener("click", loadSenseConflicts);
+  $("btnDropJson").addEventListener("click", doDropJson);
+  $("btnDropCsv").addEventListener("click", function () { doDropPath("csv", "dropCsvPath"); });
+  $("btnDropJsonl").addEventListener("click", function () { doDropPath("jsonl", "dropJsonlPath"); });
+  $("btnSenseAsk").addEventListener("click", doSenseAsk);
+  $("btnMaterialize").addEventListener("click", doMaterialize);
+
+  // Wire events — use click on document for reliability
+  $("btnLoadCheckout").addEventListener("click", function () {
+    loadStory(
+      "checkout",
+      "checkout-service",
+      "Incident loaded: deploy pipeline vs live cluster vs chat all disagree on the running version."
+    );
+  });
+  $("btnLoadBilling").addEventListener("click", function () {
+    loadStory(
+      "billing",
+      "Acme Corp",
+      "Revenue conflict loaded: CRM forecast vs Billing system of record."
+    );
+  });
+  $("btnLoadIdentity").addEventListener("click", function () {
+    loadStory(
+      "identity",
+      "Jane Doe",
+      "Identity conflict loaded: HR and IdP disagree on account status."
+    );
+  });
+
+  $("btnAsk").addEventListener("click", doAsk);
+  $("btnLoadConflicts").addEventListener("click", loadConflicts);
+  $("btnPin").addEventListener("click", doPin);
+
+  $("btnToStep2").addEventListener("click", function () { goStep(2); });
+  $("btnToStep3").addEventListener("click", function () {
+    goStep(3);
+    if (!state.conflicts.length) loadConflicts();
+  });
+  $("btnToStep4").addEventListener("click", function () { goStep(4); });
+  $("btnBack1").addEventListener("click", function () { goStep(1); });
+  $("btnBack2").addEventListener("click", function () { goStep(2); });
+  $("btnBack3").addEventListener("click", function () { goStep(3); });
+  $("btnRestart").addEventListener("click", restart);
+
+  document.querySelectorAll(".progress-step").forEach(function (tab) {
+    tab.addEventListener("click", function () {
+      goStep(tab.getAttribute("data-go"));
+    });
+  });
+
+  // Enter key on question
+  $("question").addEventListener("keydown", function (e) {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      doAsk();
+    }
+  });
+
+  // Boot
+  refreshNavEnabled();
+  checkHealth().then(function (ok) {
+    if (ok) refreshStats();
+  });
+})();
+  </script>
+</body>
+</html>

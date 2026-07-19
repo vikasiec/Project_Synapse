@@ -1,0 +1,58 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.10", "3.11", "3.12"]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Run unit tests
+        run: python -m unittest discover -s tests -t . -v
+
+      - name: Golden-set eval (all packs)
+        run: python -m synapse eval --pack all
+
+      - name: Per-pack eval
+        run: |
+          python -m synapse eval --pack checkout
+          python -m synapse eval --pack billing
+          python -m synapse eval --pack identity
+          python -m synapse eval --pack org
+
+      - name: Seed + multi-engine ask smoke
+        run: |
+          python -m synapse seed --scenario org --db /tmp/synapse_ci.db
+          python -m synapse ask "What are global themes?" --budget deep --db /tmp/synapse_ci.db
+          python -m synapse history checkout-service --predicate current_version --db /tmp/synapse_ci.db
+          python -m synapse graph --db /tmp/synapse_ci.db
+          python -m synapse export --out /tmp/snap.json --db /tmp/synapse_ci.db
+          python -m synapse materialize --out /tmp/mat --db /tmp/synapse_ci.db
+          python -m synapse reprocess --limit 5 --db /tmp/synapse_ci.db
+          python -m synapse capability
+          python -m synapse cost --budget standard
+
+      - name: CDC mock + webhook + SaaS stubs smoke
+        run: |
+          python -m synapse mock-emit --payload "BUILD SUCCESSFUL: checkout-service deployed image tag v8.1.0 automatically." --poll --db /tmp/synapse_ci.db
+          python -m synapse webhook --payload "service: payments-service status: degraded" --poll --db /tmp/synapse_ci.db
+          python -m synapse poll --connector crm-stub --db /tmp/synapse_ci.db
+          python -m synapse poll --connector slack-stub --db /tmp/synapse_ci.db
+          python -m synapse connectors --db /tmp/synapse_ci.db
+
+      - name: Full platform proof script
+        run: python scripts/prove_platform.py
