@@ -1,11 +1,11 @@
 # Road Map — Project Synapse Healthcare Vertical
 
-**Status:** Updated 2026-07-19 (evening) from `Active_File.md` rows 1-19.
+**Status:** Updated 2026-07-19 (evening) from `Active_File.md` rows 1-20, all closed.
 **Ownership model:** per `.agent_os/collaboration_model_V2.0.md` (V2.8) Rule 13 —
 Lead AI (Claude) allocates, owning agent delivers end-to-end incl. tests
 (Rule 14), Lead AI reviews before `🟢 DONE`.
 
-## Completed (rows 1-19, all 🟢 DONE)
+## Completed (rows 1-20, all 🟢 DONE)
 
 | # | Item | Owner | Sequential/Parallel |
 |---|---|---|---|
@@ -22,15 +22,12 @@ Lead AI (Claude) allocates, owning agent delivers end-to-end incl. tests
 | 16 | Git repo-scope/remote issue → own repository created | Codex → Claude → Vikas → Claude | Escalated, decided, executed |
 | 17 | Collaboration-model V2.7 process fixes + Codex confirmation | Claude → Codex | Sequential, gating for row-append discipline |
 | 18 | `management/master_plan.md`/`Features.md`/`Road_map.md` written | Claude | Autonomous pickup, self-paced loop |
-| 19 | V2.8 (15-min self-loop rule) notification to Codex | Claude → Codex | Open — awaiting Codex's reply on its own scheduling capability |
+| 19 | V2.8 (15-min self-loop rule) notification to Codex | Claude → Codex | Closed — Codex confirmed no standing scheduler, purely turn-based, consistent with its existing Execution Mode declaration |
+| 20 | Duplicate independent confirmation of row 12's banking-ASK 403 bug | Codex → Claude | Closed as duplicate-confirmed, no separate fix needed |
 
 ## Currently open
 
-| Row | Owner | What's needed |
-|---|---|---|
-| 19 | Codex | Reply on whether it has a self-scheduling mechanism equivalent to Claude's `/loop`, or confirm it's per-invocation only — keeps the Execution Mode declaration honest. |
-
-Nothing else is open. Every product-track row (1-18) is closed as of this update.
+Nothing. All 20 rows are `🟢 DONE` as of this update.
 
 ## The pattern that emerged this round (rows 9, 12, 14)
 
