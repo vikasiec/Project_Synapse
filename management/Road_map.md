@@ -99,12 +99,15 @@ before opening any tracker rows — all checked out exactly as described.
 - **Row 31 — open, Claude, depends on row 30.** RC-03 (P1): Graphiti
   push/search carry no ACL/tenant metadata. Sequenced after row 30 since
   it needs the same principal pattern.
-- **Row 35 — open, backlog, not urgent.** RC-06/07/08/09/10 (P2/P3):
-  contract validation not enforced at runtime, no WORM/durability root
-  (review itself calls this an accepted POC boundary), materialize/export
-  still ACL-blind (now unblocked by row 30's principal pattern, not yet
-  done), engine execution-vs-detection telemetry split, golden eval
-  quality gates. Logged, not assigned for immediate execution.
+- **Row 36 — done (2026-07-20).** RC-08 (P2): `materialize`/`export` were
+  ACL-blind. Split out of row 35 once row 30 landed and unblocked it.
+  `role:admin`/`role:operator` grant capability to call the route, not a
+  bypass of ACL visibility — proven by test. Full suite 183/183.
+- **Row 35 — open, backlog, not urgent.** RC-06/07/09/10 (P2/P3): contract
+  validation not enforced at runtime, no WORM/durability root (review
+  itself calls this an accepted POC boundary), engine execution-vs-
+  detection telemetry split, golden eval quality gates. Logged, not
+  assigned for immediate execution.
 
 ## Process notes carried forward (V2.8)
 

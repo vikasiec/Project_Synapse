@@ -33,7 +33,6 @@ from typing import Any, Optional
 from urllib.parse import parse_qs, urlparse
 
 from synapse.entity_resolution import EntityResolutionService
-from synapse.export_import import export_store
 from synapse.scenarios.billing_customer import BillingCustomerScenario
 from synapse.scenarios.checkout_incident import CheckoutIncidentScenario
 from synapse.security import (
@@ -196,6 +195,44 @@ def _filtered_timeline(
         }
         for f in visible
     ]
+
+
+def _filtered_export(session: SynapseSession, principal: Principal) -> dict[str, Any]:
+    """
+    ACL-scoped counterpart to `export_store()` (Active_File.md row 36,
+    RC-08). `role:admin` (required to reach `/v1/export` at all, see
+    `_require_role`) only grants the *capability* to call this route --
+    it does not bypass ACL visibility, same separation of concerns as
+    everywhere else in this file. Deliberately not touching
+    `export_store()`'s own signature: it's shared with other legitimate
+    full-access callers (CLI, tests) that don't have a principal to scope
+    by, same boundary decision as `_filtered_timeline`.
+    """
+    store = session.store
+    visible_raw = filter_raw_objects(principal, store.raw_objects.values())
+    visible_episodes = filter_episodes(principal, store.episodes.values())
+    visible_entities = filter_entities(principal, store.entities.values())
+    visible_facts = filter_facts(principal, store.facts.values())
+    visible_conflicts = filter_conflicts(principal, store.conflicts.values(), store.facts)
+    visible_fact_ids = {f.fact_id for f in visible_facts}
+    visible_claims = [
+        c
+        for c in store.claims.values()
+        if c.supporting_fact_ids and visible_fact_ids.issuperset(c.supporting_fact_ids)
+    ]
+    from synapse.models import utc_now_iso
+
+    return {
+        "snapshot_version": 1,
+        "exported_at": utc_now_iso(),
+        "raw_objects": [o.to_dict() for o in visible_raw],
+        "episodes": [e.to_dict() for e in visible_episodes],
+        "entities": [e.to_dict() for e in visible_entities],
+        "facts": [f.to_dict() for f in visible_facts],
+        "conflicts": [c.to_dict() for c in visible_conflicts],
+        "claims": [c.to_dict() for c in visible_claims],
+        "audit": [],
+    }
 
 
 def _require_role(handler: BaseHTTPRequestHandler, principal: Principal, role: str) -> bool:
@@ -485,7 +522,7 @@ def make_handler(session: SynapseSession):
                 principal = _principal_from_query(qs, session.store)
                 if not _require_role(self, principal, "admin"):
                     return None
-                return _json_response(self, 200, export_store(session.store))
+                return _json_response(self, 200, _filtered_export(session, principal))
             if path == "/v1/audit":
                 qs = parse_qs(urlparse(self.path).query)
                 principal = _principal_from_query(qs, session.store)
@@ -852,13 +889,14 @@ def make_handler(session: SynapseSession):
                 return _json_response(self, 200, report.to_dict())
 
             if path == "/v1/materialize":
-                if not _require_role(self, _principal_from_body(body, session.store), "operator"):
+                mat_principal = _principal_from_body(body, session.store)
+                if not _require_role(self, mat_principal, "operator"):
                     return None
                 view_name = (body.get("view") or "entity_facts").lower()
                 view = (
-                    session.materializer.conflict_table()
+                    session.materializer.conflict_table(principal=mat_principal)
                     if view_name == "conflicts"
-                    else session.materializer.entity_fact_table()
+                    else session.materializer.entity_fact_table(principal=mat_principal)
                 )
                 out_dir = body.get("out") or ".data/materialized"
                 paths = session.materializer.write(view, out_dir)

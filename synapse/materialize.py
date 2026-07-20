@@ -14,6 +14,7 @@ from pathlib import Path
 from typing import Any, Optional
 
 from synapse.models import EntityStatus, utc_now_iso
+from synapse.security import Principal, filter_conflicts, filter_entities, filter_facts
 from synapse.store import SemanticStore
 
 
@@ -51,8 +52,17 @@ class Materializer:
         *,
         predicates: Optional[list[str]] = None,
         min_confidence: float = 0.0,
+        principal: Optional[Principal] = None,
     ) -> MaterializedView:
-        """Wide-ish projection: one row per (entity, predicate) with best active fact."""
+        """
+        Wide-ish projection: one row per (entity, predicate) with best active
+        fact. `principal`, when given, restricts the view to ACL-visible
+        entities/facts (Active_File.md row 36 -- H16 views are derivatives
+        and need the same ACL treatment as query claims, not a policy-blind
+        dump). `None` preserves prior behavior for existing full-access
+        callers (CLI, tests, other internal use) that don't have a
+        principal to scope by.
+        """
         rows: list[dict[str, Any]] = []
         notes: list[str] = []
         open_conflicts = {
@@ -66,7 +76,11 @@ class Materializer:
                 "prefer conflict-aware query path for regulated predicates."
             )
 
-        for ent in self.store.entities.values():
+        entities = self.store.entities.values()
+        if principal is not None:
+            entities = filter_entities(principal, entities)
+
+        for ent in entities:
             if ent.status != EntityStatus.ACTIVE and ent.status.value != "active":
                 continue
             facts = [
@@ -74,6 +88,8 @@ class Materializer:
                 for f in self.store.facts_for_entity(ent.entity_id)
                 if f.valid_to is None and f.confidence >= min_confidence
             ]
+            if principal is not None:
+                facts = filter_facts(principal, facts)
             by_pred: dict[str, list] = {}
             for f in facts:
                 if predicates and f.predicate not in predicates:
@@ -127,9 +143,15 @@ class Materializer:
             notes=notes,
         )
 
-    def conflict_table(self) -> MaterializedView:
+    def conflict_table(self, *, principal: Optional[Principal] = None) -> MaterializedView:
+        """`principal`, when given, restricts rows to conflicts the
+        principal can see every competing fact of (row 36) -- `None`
+        preserves prior unrestricted behavior."""
         rows = []
-        for c in self.store.conflicts.values():
+        conflicts = self.store.conflicts.values()
+        if principal is not None:
+            conflicts = filter_conflicts(principal, conflicts, self.store.facts)
+        for c in conflicts:
             rows.append(
                 {
                     "conflict_id": c.conflict_id,

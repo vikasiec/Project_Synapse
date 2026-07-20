@@ -143,6 +143,41 @@ class TestApiAbac(unittest.TestCase):
         status, _ = self._get("/v1/export?principal=domain:sre,clearance:l2,role:admin")
         self.assertEqual(status, 200)
 
+    def test_export_and_materialize_are_acl_scoped_not_just_role_gated(self):
+        """Row 36 (RC-08): role:admin/role:operator only grant the
+        capability to call these routes -- they must not bypass ACL
+        visibility. A privileged-but-wrong-domain principal must still see
+        nothing, matching every other read route's behavior."""
+        self._post("/v1/seed", {"scenario": "checkout"})
+
+        status, admin_wrong_domain = self._get(
+            "/v1/export?principal=domain:nonexistent,clearance:l2,role:admin"
+        )
+        self.assertEqual(status, 200)
+        self.assertEqual(admin_wrong_domain["entities"], [])
+        self.assertEqual(admin_wrong_domain["facts"], [])
+
+        status, admin_right_domain = self._get(
+            "/v1/export?principal=domain:sre,clearance:l2,channel:incidents,role:admin"
+        )
+        self.assertEqual(status, 200)
+        self.assertTrue(admin_right_domain["entities"])
+        self.assertTrue(admin_right_domain["facts"])
+
+        status, mat_wrong_domain = self._post(
+            "/v1/materialize",
+            {"principal": "domain:nonexistent,clearance:l2,role:operator"},
+        )
+        self.assertEqual(status, 200)
+        self.assertEqual(mat_wrong_domain["view"]["row_count"], 0)
+
+        status, mat_right_domain = self._post(
+            "/v1/materialize",
+            {"principal": "domain:sre,clearance:l2,channel:incidents,role:operator"},
+        )
+        self.assertEqual(status, 200)
+        self.assertGreater(mat_right_domain["view"]["row_count"], 0)
+
     def test_mutation_routes_require_operator_role(self):
         """Negative: a principal without role:operator cannot merge
         entities, pin a conflict, reprocess, materialize, or land data via

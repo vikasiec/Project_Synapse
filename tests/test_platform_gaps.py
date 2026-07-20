@@ -39,6 +39,36 @@ class TestPlatformGaps(unittest.TestCase):
             self.assertTrue(Path(paths["json"]).is_file())
             self.assertTrue(Path(paths["csv"]).is_file())
 
+    def test_materialize_respects_principal_acl(self):
+        """Active_File.md row 36 (RC-08): entity_fact_table/conflict_table
+        must not dump the whole store regardless of who's asking --
+        `principal=None` preserves prior unrestricted behavior for
+        existing full-access callers (CLI, this same test's own baseline
+        call above), but a scoped principal must only see its own domain."""
+        store = SemanticStore()
+        CheckoutIncidentScenario(store=store).seed()
+        mat = Materializer(store)
+
+        unrestricted = mat.entity_fact_table()
+        self.assertGreaterEqual(len(unrestricted.rows), 1)
+
+        blocked = Principal.from_tags("t-blocked", ["domain:nonexistent", "clearance:l2"])
+        scoped = mat.entity_fact_table(principal=blocked)
+        self.assertEqual(scoped.rows, [])
+
+        allowed = Principal.from_tags(
+            "t-allowed", ["domain:sre", "clearance:l2", "channel:incidents"]
+        )
+        scoped_visible = mat.entity_fact_table(principal=allowed)
+        self.assertEqual(len(scoped_visible.rows), len(unrestricted.rows))
+
+        conflicts_unrestricted = mat.conflict_table()
+        conflicts_blocked = mat.conflict_table(principal=blocked)
+        self.assertEqual(conflicts_blocked.rows, [])
+        if conflicts_unrestricted.rows:
+            conflicts_allowed = mat.conflict_table(principal=allowed)
+            self.assertEqual(len(conflicts_allowed.rows), len(conflicts_unrestricted.rows))
+
     def test_action_bus_approval(self):
         store = SemanticStore()
         bus = ActionBus(store)
