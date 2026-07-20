@@ -880,7 +880,15 @@ class RuleExtractor:
             all_facts.append(self._fact(patient, "gender", gender, 0.9, raw, episode))
 
         result_entity_ids: set[str] = set()
-        for obx in msg.get("OBX"):
+        current_obr = None
+        obx_obrs = []
+        for segment in msg.segments:
+            if segment.name == "OBR":
+                current_obr = segment
+            elif segment.name == "OBX":
+                obx_obrs.append(current_obr)
+
+        for obx, obr in zip(msg.get("OBX"), obx_obrs):
             test_code = obx.value(3, 1)
             test_name = obx.value(3, 2) or test_code
             if not test_name:
@@ -894,7 +902,14 @@ class RuleExtractor:
             # unrelated results). Scope the identity key by patient so each
             # patient's occurrence of a test stays its own entity, same
             # strict_identity pattern already proven for Patient (task 4).
-            result_key = f"{patient_id}:{test_code or test_name}".lower()
+            order_id = ""
+            if obr is not None:
+                order_id = obr.value(2) or obr.value(3)
+            instance_id = order_id.strip() or ""
+            result_key = f"{patient_id}:{test_code or test_name}"
+            if instance_id:
+                result_key += f":{instance_id}"
+            result_key = result_key.lower()
             result = self.er.get_or_create(
                 "LabResult",
                 test_name,
@@ -906,6 +921,11 @@ class RuleExtractor:
                 identifier_authority=patient_authority,
             )
             result_entity_ids.add(result.entity_id)
+
+            if instance_id:
+                all_facts.append(
+                    self._fact(result, "observation_instance_id", instance_id, 0.9, raw, episode)
+                )
 
             value = obx.value(5)
             if value:
@@ -1025,7 +1045,15 @@ class RuleExtractor:
             if not test_name:
                 continue
 
-            result_key = f"{patient_id}:{test_code or test_name}".lower()
+            instance_id = str(obs.get("id") or "").strip()
+            if not instance_id:
+                based_on = obs.get("basedOn") or []
+                if based_on:
+                    instance_id = str((based_on[0] or {}).get("reference") or "").strip()
+            result_key = f"{patient_id}:{test_code or test_name}"
+            if instance_id:
+                result_key += f":{instance_id}"
+            result_key = result_key.lower()
             result = self.er.get_or_create(
                 "LabResult",
                 test_name,
@@ -1037,6 +1065,11 @@ class RuleExtractor:
                 identifier_authority=patient_authority,
             )
             result_entity_ids.add(result.entity_id)
+
+            if instance_id:
+                all_facts.append(
+                    self._fact(result, "observation_instance_id", instance_id, 0.9, raw, episode)
+                )
 
             qty = obs.get("valueQuantity") or {}
             value = qty.get("value")

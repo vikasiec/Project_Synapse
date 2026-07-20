@@ -167,3 +167,17 @@ scenario now proves a completely independent healthcare vertical, and the one re
 gap that surfaced (`query.py`'s narration whitelist) was a **core** bug, not a
 missing healthcare-specific feature — exactly the kind of finding
 `docs/DOMAIN_PACK_CONTRACT.md` exists to keep catching honestly.
+# FHIR same-time conflict proof (Active_File.md task 24, 2026-07-20)
+
+Two fixtures, `bundle004_conflict_source_a.json` and
+`bundle005_conflict_source_b.json`, describe patient `P777` (Asha Patel) and
+the same LOINC 718-7 Hemoglobin observation. Both use assigning authority
+`urn:oid:HIS` and `2023-10-05T10:00:00Z`, while values disagree: `13.2 g/dL`
+versus `9.1 g/dL`.
+
+`python scripts/smoke_fhir_conflict.py` produced one Patient, one LabResult,
+two current competing `result` facts, and `SURFACED_AMBIGUOUS_CONFLICT`.
+Against the live Sense API on `.data/fhir_conflict_demo.db`, `/v1/sense/summary`
+reported 2 raw objects, 2 episodes, 2 entities, 18 facts, and 1 open conflict;
+`/v1/conflicts?open_only=true` returned that conflict and the board root returned
+HTTP 200. This is a same-time disagreement, not temporal supersession.

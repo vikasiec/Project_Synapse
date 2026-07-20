@@ -64,6 +64,15 @@ designed against a real collision risk in the actual data, not hypothetically:
    match), not raw string equality, to preserve the already-proven CSV/HL7/FHIR
    convergence. Closes the PID-3 gap Codex's rows 13/14 reviews independently
    flagged as the main remaining architectural limitation.
+6. **`observation_instance_id` scoping on `LabResult`** (Codex, row 25, reviewed by
+   Claude) — `LabResult` identity now incorporates the source's own instance
+   identifier (FHIR `Observation.id`/`basedOn`, HL7 OBR-2 placer order falling
+   back to OBR-3 filler order) when present, retaining the prior patient+test key
+   as a fallback. **Corrects a real over-eager part of row 14's fix**: two
+   genuinely separate lab orders a month apart are two distinct real-world facts
+   and must both stay visible, not have one supersede the other as row 14's
+   original test asserted for that same fixture data. `identifier_authority`
+   (item 5) stays intact — verified unchanged at both call sites.
 
 ## New interoperability formats (real invention, not pack repetition)
 

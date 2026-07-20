@@ -52,6 +52,29 @@ def _bundle(patient_id, family, given, obs_code, obs_display, value, unit, low, 
 
 
 class TestFhirExtract(unittest.TestCase):
+    def test_distinct_fhir_observation_instances_stay_distinct(self):
+        store = SemanticStore()
+        ex = RuleExtractor(store, ontology=OntologyRegistry.default())
+        ing = IngestionService(store, domain="clinical_lab")
+        first = _bundle("P777", "Patel", "Asha", "718-7", "Hemoglobin", 13.2, "g/dL", 12, 16, "N").replace(
+            "obs-p777", "obs-p777-draw-a"
+        )
+        second = _bundle("P777", "Patel", "Asha", "718-7", "Hemoglobin", 9.1, "g/dL", 12, 16, "L").replace(
+            "obs-p777", "obs-p777-draw-b"
+        )
+        for source, text in (("FHIR-Lab-A", first), ("FHIR-Lab-B", second)):
+            landed = ing.land(source, text, ["domain:clinical", "clearance:l2"])
+            ex.extract_from_episode(landed.episode, landed.raw)
+        hgb = [e for e in store.entities.values() if e.canonical_name == "Hemoglobin"]
+        self.assertEqual(len(hgb), 2)
+        self.assertEqual(
+            sorted(
+                f.object for e in hgb for f in store.facts_for_entity(e.entity_id)
+                if f.predicate == "result"
+            ),
+            [9.1, 13.2],
+        )
+
     def test_bundle_produces_patient_and_labresult(self):
         store = SemanticStore()
         ex = RuleExtractor(store, ontology=OntologyRegistry.default())
@@ -250,8 +273,10 @@ class TestFhirExtract(unittest.TestCase):
             session.connectors.register(conn)
             poll = session.connector_runner.poll_one("fhir-test")
 
-            self.assertEqual(poll.events, 3)
-            self.assertEqual(poll.extracted, 3)
+            # The fixture directory also carries the two same-authority conflict
+            # bundles used by the Sense conflict proof (bundle004/005).
+            self.assertEqual(poll.events, 5)
+            self.assertEqual(poll.extracted, 5)
 
             post_id = session.store.get_entity_by_name("David Williams").entity_id
             self.assertEqual(csv_id, post_id)
@@ -259,9 +284,9 @@ class TestFhirExtract(unittest.TestCase):
             lab_results = [
                 e for e in session.store.entities.values() if e.entity_type == "LabResult"
             ]
-            # bundle001: 1 (Glucose, new patient) + bundle002: 2 (Platelet, Creatinine,
-            # existing P001) + bundle003: 1 (Platelet, different patient) = 4
-            self.assertEqual(len(lab_results), 4)
+            # bundle001: 1 + bundle002: 2 + bundle003: 1 + bundle004/005:
+            # one shared Observation.id = 1 distinct instance, total 5.
+            self.assertEqual(len(lab_results), 5)
 
             plt_entities = [e for e in lab_results if e.canonical_name == "Platelet Count"]
             self.assertEqual(len(plt_entities), 2)  # P001's and P904's stay distinct

@@ -48,9 +48,10 @@ design.
    Every superficial hit was a legitimate closed vocabulary the module itself
    owns (query-intent categories, `BudgetClass` enum, injected authority map),
    not a domain/predicate leak.
-2. **A real conflict-detection proof for FHIR** — row 15 proved extraction +
-   cross-format identity convergence, but never tested FHIR against a deliberately
-   conflicting second source the way row 4 did for the HL7/CSV pair.
+2. ~~A real conflict-detection proof for FHIR~~ — **done, row 24 (2026-07-20,
+   Codex, reviewed by Claude).** `bundle004`/`bundle005` fixtures, same patient/
+   authority/`Observation.id`/time, genuinely different values. Proven via
+   `scripts/smoke_fhir_conflict.py` and the live Sense API. No bug found.
 3. ~~PID-3 / FHIR identifier namespacing~~ — **done, row 23 (2026-07-20).**
    `identifier_authority` threaded from HL7 PID-3.4 / FHIR `Identifier.system`
    through `EntityResolutionService`, compared via `normalize_authority()` so
@@ -61,11 +62,20 @@ design.
    `get_or_create` initially bypassed the new check entirely) — see row 23's
    resolution note for both. `tests/test_identifier_authority.py` (new, 7
    tests) + 2 format-level regression tests. Full suite 167/167.
-4. **Observation-vs-analyte instance modeling** (Codex, row 14) — distinct
-   observation instances per order/specimen/time, not just per patient+test.
+4. ~~Observation-vs-analyte instance modeling~~ — **done, row 25 (2026-07-20,
+   Codex, reviewed by Claude).** `LabResult` identity now incorporates the
+   source's own instance ID (FHIR `Observation.id`/`basedOn`, HL7 OBR-2/3) when
+   present. **Corrects a real over-eager part of row 14's original fix**, not just
+   an addition — row 14's own regression test had asserted two separate lab
+   orders a month apart should supersede into one entity, but on inspection that
+   fixture represents two genuinely distinct real-world results, not one
+   "correcting" the other. Row 25 fixes that. Lead review added one missing
+   regression test (`test_same_hl7_order_id_amended_result_still_supersedes`)
+   to confirm the *other* half — a truly amended result for the *same* order
+   still supersedes correctly. Full suite 169/169.
 5. **A third domain** — would mostly re-confirm what banking (row 10) already
-   proved; lower marginal value than 2-4 unless a specific new domain becomes a
-   real requirement.
+   proved; lower marginal value unless a specific new domain becomes a real
+   requirement. The only item left on this list.
 
 ## Process notes carried forward (V2.8)
 

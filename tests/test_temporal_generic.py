@@ -33,7 +33,7 @@ MSG_DAY2 = (
 
 
 class TestTemporalGenericSupersession(unittest.TestCase):
-    def test_repeated_hl7_lab_result_supersedes_not_conflicts(self):
+    def test_distinct_hl7_observation_instances_do_not_collide(self):
         store = SemanticStore()
         ex = RuleExtractor(store, ontology=OntologyRegistry.default())
         ing = IngestionService(store, domain="clinical_lab")
@@ -46,8 +46,50 @@ class TestTemporalGenericSupersession(unittest.TestCase):
         hgb_entities = [
             e for e in store.entities.values() if e.canonical_name == "Hemoglobin"
         ]
-        self.assertEqual(len(hgb_entities), 1)
+        self.assertEqual(len(hgb_entities), 2)
+        values = []
+        for entity in hgb_entities:
+            results = [
+                f for f in store.facts_for_entity(entity.entity_id) if f.predicate == "result"
+            ]
+            self.assertEqual(len(results), 1)
+            self.assertIsNone(results[0].valid_to)
+            values.append(results[0].object)
+        self.assertEqual(sorted(values), [13.8, 14.2])
 
+    def test_same_hl7_order_id_amended_result_still_supersedes(self):
+        """Row 25 scopes LabResult identity by order/specimen (OBR-2/3), not
+        by "any repeat for this patient+test" -- the test above proves two
+        genuinely different orders now correctly stay separate. This proves
+        the other half still holds: a corrected/amended result for the SAME
+        order (same placer order number) must still land on one entity and
+        supersede, which is the actual real-world case row 14's original fix
+        was for (an amended result, not a new draw)."""
+        store = SemanticStore()
+        ex = RuleExtractor(store, ontology=OntologyRegistry.default())
+        ing = IngestionService(store, domain="clinical_lab")
+
+        msg_original = (
+            "MSH|^~\\&|LIS|CityLab|HIS|GeneralHospital|20230810083000||ORU^R01|MSG1|P|2.5.1\n"
+            "PID|1||P001^^^HIS^MR||Williams^David||19550604|F|||789 Pine Rd||6939585183\n"
+            "OBR|1|ORD1|LAB1|CBC^Complete Blood Count^L|||20230810080000\n"
+            "OBX|1|NM|HGB^Hemoglobin^L||14.2|g/dL|13.5-17.5|N|||F\n"
+        )
+        msg_amended = (
+            "MSH|^~\\&|LIS|CityLab|HIS|GeneralHospital|20230810091500||ORU^R01|MSG1A|P|2.5.1\n"
+            "PID|1||P001^^^HIS^MR||Williams^David||19550604|F|||789 Pine Rd||6939585183\n"
+            "OBR|1|ORD1|LAB1|CBC^Complete Blood Count^L|||20230810080000\n"
+            "OBX|1|NM|HGB^Hemoglobin^L||13.9|g/dL|13.5-17.5|N|||F\n"
+        )
+        r1 = ing.land("LIS-ORU", msg_original, ["domain:clinical", "clearance:l2"])
+        ex.extract_from_episode(r1.episode, r1.raw)
+        r2 = ing.land("LIS-ORU", msg_amended, ["domain:clinical", "clearance:l2"])
+        ex.extract_from_episode(r2.episode, r2.raw)
+
+        hgb_entities = [
+            e for e in store.entities.values() if e.canonical_name == "Hemoglobin"
+        ]
+        self.assertEqual(len(hgb_entities), 1, "same order ID must stay one entity")
         results = [
             f for f in store.facts_for_entity(hgb_entities[0].entity_id) if f.predicate == "result"
         ]
@@ -55,7 +97,7 @@ class TestTemporalGenericSupersession(unittest.TestCase):
         current = [f for f in results if f.valid_to is None]
         superseded = [f for f in results if f.valid_to is not None]
         self.assertEqual(len(current), 1, "exactly one current result, not an open conflict")
-        self.assertEqual(current[0].object, 13.8)
+        self.assertEqual(current[0].object, 13.9)
         self.assertEqual(len(superseded), 1)
         self.assertEqual(superseded[0].object, 14.2)
 

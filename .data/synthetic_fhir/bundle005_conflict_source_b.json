@@ -1,0 +1,8 @@
+{
+  "resourceType": "Bundle",
+  "type": "message",
+  "entry": [
+    {"resource": {"resourceType": "Patient", "id": "p777", "identifier": [{"system": "urn:oid:HIS", "value": "P777"}], "name": [{"family": "Patel", "given": ["Asha"]}], "birthDate": "1979-04-18", "gender": "female"}},
+    {"resource": {"resourceType": "Observation", "id": "obs-p777-hgb-20231005", "status": "final", "code": {"coding": [{"system": "http://loinc.org", "code": "718-7", "display": "Hemoglobin"}]}, "subject": {"reference": "Patient/p777"}, "effectiveDateTime": "2023-10-05T10:00:00Z", "valueQuantity": {"value": 9.1, "unit": "g/dL"}, "referenceRange": [{"low": {"value": 12.0}, "high": {"value": 16.0}}]}}
+  ]
+}

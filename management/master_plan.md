@@ -98,6 +98,23 @@ no fourth instance found.
    authority check entirely, caught by a failing regression test, not by design
    review. Full suite 167/167 (was 158/158).
 
+7. **Rows 24-25 (2026-07-20, Codex, reviewed by Claude)** — FHIR same-time
+   conflict proof (row 24, mirrors row 4's method, no bug found) and
+   observation-instance identity scoping for `LabResult` (row 25). Row 25 is
+   worth stating plainly rather than glossing over: it **corrects** part of row
+   14's fix, not just extends it. Row 14's own regression test asserted that two
+   Hemoglobin results a month apart (different lab orders, `OBR|1|ORD1` vs
+   `OBR|1|ORD2`) should supersede into one entity with one "current" value —
+   but that's clinically wrong; two separate draws are two separate real facts,
+   and superseding one hid real data. Row 25 fixes this by scoping `LabResult`
+   identity to the source's own order/observation instance ID when one exists.
+   Codex updated the affected test openly rather than hiding the behavior
+   change, which is the right instinct, but repurposing the only test covering
+   that path left a real gap: nothing still proved a genuinely *amended* result
+   for the *same* order still supersedes (the actual case row 14 was for).
+   Lead review added `test_same_hl7_order_id_amended_result_still_supersedes` to
+   close it. Full suite: 169/169 (was 167/167).
+
 ## 6. What's deliberately not done, and why (stated, not hidden)
 
 - **Observation-vs-analyte instance modeling** (row 14) — `LabResult` identity is

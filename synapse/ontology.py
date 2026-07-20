@@ -108,6 +108,7 @@ _L1: list[OntologyType] = [
         strict_identity=True,
         predicates=(
             "result",
+            "observation_instance_id",
             "unit",
             "reference_range",
             "result_status",
