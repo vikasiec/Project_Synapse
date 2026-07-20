@@ -42,8 +42,12 @@ design.
 
 ## Natural next candidates (not yet assigned, for discussion)
 
-1. **Audit remaining core modules for the hardcoded-whitelist pattern** (see above)
-   — proactive, cheap, directly motivated by 3 real bugs found this session.
+1. ~~Audit remaining core modules for the hardcoded-whitelist pattern~~ — **done,
+   row 22 (2026-07-20).** Checked `orchestrator.py`, `store.py`, `control_plane.py`,
+   `budget.py`, `resolution.py`. Clean result: no fourth instance of the pattern.
+   Every superficial hit was a legitimate closed vocabulary the module itself
+   owns (query-intent categories, `BudgetClass` enum, injected authority map),
+   not a domain/predicate leak.
 2. **A real conflict-detection proof for FHIR** — row 15 proved extraction +
    cross-format identity convergence, but never tested FHIR against a deliberately
    conflicting second source the way row 4 did for the HL7/CSV pair.
@@ -55,7 +59,7 @@ design.
 4. **Observation-vs-analyte instance modeling** (Codex, row 14) — distinct
    observation instances per order/specimen/time, not just per patient+test.
 5. **A third domain** — would mostly re-confirm what banking (row 10) already
-   proved; lower marginal value than 1-4 unless a specific new domain becomes a
+   proved; lower marginal value than 2-4 unless a specific new domain becomes a
    real requirement.
 
 ## Process notes carried forward (V2.8)
