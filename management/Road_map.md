@@ -82,7 +82,29 @@ design.
    risk closed. Full suite 172/172.
 6. **A third domain** — would mostly re-confirm what banking (row 10) already
    proved; lower marginal value unless a specific new domain becomes a real
-   requirement. The only item left on this list.
+   requirement.
+
+## Grok-architecture review (Codex, `review_comments.md`, 2026-07-20)
+
+Codex reviewed the implementation against `docs/Project_Synapse_Unified_
+Master_Architecture_By_Grok.pdf` and filed 10 findings (RC-01 through
+RC-10). Claude verified the 6 most severe ones directly against the code
+before opening any tracker rows — all checked out exactly as described.
+
+- **Rows 30, 32-34 — done (2026-07-20).** RC-01 (P0, no ABAC gate on any
+  API route), RC-02 (P1, content-hash dedup dropped cross-source
+  provenance), RC-04 (P1, claim cache never invalidated on ordinary
+  ingest), RC-05 (P1, reprocess overwrote episode pipeline version in
+  place). Full suite 181/181.
+- **Row 31 — open, Claude, depends on row 30.** RC-03 (P1): Graphiti
+  push/search carry no ACL/tenant metadata. Sequenced after row 30 since
+  it needs the same principal pattern.
+- **Row 35 — open, backlog, not urgent.** RC-06/07/08/09/10 (P2/P3):
+  contract validation not enforced at runtime, no WORM/durability root
+  (review itself calls this an accepted POC boundary), materialize/export
+  still ACL-blind (now unblocked by row 30's principal pattern, not yet
+  done), engine execution-vs-detection telemetry split, golden eval
+  quality gates. Logged, not assigned for immediate execution.
 
 ## Process notes carried forward (V2.8)
 
