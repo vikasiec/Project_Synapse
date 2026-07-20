@@ -19,6 +19,7 @@ from synapse.fhir import (
     FhirParseError,
     bundle_resources,
     coding_display_and_code,
+    first_identifier_system,
     first_identifier_value,
     human_name,
     looks_like_fhir,
@@ -848,6 +849,12 @@ class RuleExtractor:
         if pid is None:
             return None
         patient_id = pid.value(3, 1)
+        # PID-3.4 is the assigning-authority component of the patient
+        # identifier (CX data type) -- e.g. "P001^^^HIS^MR" means "P001",
+        # assigned by "HIS". Two different facilities can independently
+        # issue the same bare ID to two different real people; passing this
+        # through lets cross-source identity blocking tell them apart.
+        patient_authority = pid.value(3, 4) or None
         last = pid.value(5, 1)
         first = pid.value(5, 2)
         name = f"{first} {last}".strip() or patient_id
@@ -862,6 +869,7 @@ class RuleExtractor:
             external_id=patient_id,
             trust_score=0.85,
             domain="hospital_ops",
+            identifier_authority=patient_authority,
         )
         all_facts: list[Fact] = []
         dob = pid.value(7)
@@ -895,6 +903,7 @@ class RuleExtractor:
                 external_id=result_key,
                 trust_score=0.8,
                 domain="clinical_lab",
+                identifier_authority=patient_authority,
             )
             result_entity_ids.add(result.entity_id)
 
@@ -972,6 +981,11 @@ class RuleExtractor:
             return None
 
         patient_id = first_identifier_value(patient_res)
+        # Identifier.system is the FHIR analogue of HL7v2 PID-3's
+        # assigning-authority component -- same collision risk (two
+        # facilities issuing the same bare ID to two different people),
+        # same fix: pass it through to cross-source identity blocking.
+        patient_authority = first_identifier_system(patient_res)
         family, given = human_name(patient_res)
         name = f"{given} {family}".strip() or patient_id
         if not patient_id or not name:
@@ -985,6 +999,7 @@ class RuleExtractor:
             external_id=patient_id,
             trust_score=0.85,
             domain="hospital_ops",
+            identifier_authority=patient_authority,
         )
         all_facts: list[Fact] = []
         dob = patient_res.get("birthDate")
@@ -1019,6 +1034,7 @@ class RuleExtractor:
                 external_id=result_key,
                 trust_score=0.8,
                 domain="clinical_lab",
+                identifier_authority=patient_authority,
             )
             result_entity_ids.add(result.entity_id)
 

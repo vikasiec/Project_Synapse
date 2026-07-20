@@ -110,6 +110,29 @@ cross-source merges of the *same* ID — see `test_same_patient_id_across_source
 Types where a name genuinely is a safe blocking key (services, generic
 support tickets, lab analyte names) leave this `False` — the default.
 
+## 4.1 `identifier_authority` — assigning-authority scoping for `strict_identity` types
+
+**Found in HL7v2/FHIR review (Active_File.md rows 13/14, closed row 23):**
+`find_by_external_id_value` blocks by bare ID value alone. That's safe within
+one facility/system, but two different real-world sources can independently
+issue the *same* bare ID to two *different* real people — e.g. two hospitals
+both calling a patient "P001". Left unscoped, a second source's data would
+silently widen the first source's entity with an unrelated person's facts.
+
+**Rule:** if a source format carries an assigning-authority concept for an
+identifier — HL7v2 PID-3's 4th component, FHIR's `Identifier.system` — pass
+it through `get_or_create(..., identifier_authority=...)`. Sources with no
+such concept (plain CSV columns) simply omit it; matching stays permissive
+by bare ID in that case, preserving existing convergence.
+
+Comparison uses `entity_resolution.normalize_authority`, not raw string
+equality — the same real authority is represented differently across
+formats (HL7's bare `"HIS"` vs. FHIR's URI-wrapped `"urn:oid:HIS"`), and
+naive exact matching would fracture the proven cross-format identity
+convergence instead of protecting it. Only genuinely different, both-sides-
+known authorities block a match; an unstated authority on either side is
+never treated as a conflict.
+
 ## 5. Disambiguation is the hard part, not extraction
 
 Every real defect in this codebase's pack work has been a disambiguation

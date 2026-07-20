@@ -82,15 +82,24 @@ pattern (a hardcoded "known domains/predicates" list quietly baked into code tha
 supposed to be domain-blind) found three separate times in three different core
 modules (`query.py`, `api.py`, `temporal.py`) — worth treating as a systemic class
 of risk, not three unrelated bugs, when auditing any other core module later.
+**Audited (row 22, 2026-07-20)**: checked the remaining core modules
+(`orchestrator.py`, `store.py`, `control_plane.py`, `budget.py`, `resolution.py`) —
+no fourth instance found.
+
+6. **Row 23 (2026-07-20)** — the PID-3/FHIR assigning-authority namespacing gap
+   (previously deferred, see prior version of §6 below) was fixed: added
+   `identifier_authority` to `get_or_create`/`find_by_external_id_value`, normalized
+   via `normalize_authority()` so equivalent cross-format representations still
+   converge. Two near-misses caught before shipping, not after: naive string
+   equality between HL7's `"HIS"` and FHIR's `"urn:oid:HIS"` would have broken the
+   proven cross-format convergence (caught by inspecting the actual fixture data
+   before writing the comparison logic); and the pre-existing exact
+   `(source_system, external_id)` shortcut in `get_or_create` bypassed the new
+   authority check entirely, caught by a failing regression test, not by design
+   review. Full suite 167/167 (was 158/158).
 
 ## 6. What's deliberately not done, and why (stated, not hidden)
 
-- **PID-3 / FHIR identifier assigning-authority namespacing** (rows 13, 14, 15) — a
-  bare patient ID could theoretically collide across different facilities. Not fixed:
-  doing so would require re-namespacing identity consistently across every connector,
-  risking the already-proven cross-format convergence, for a multi-facility scenario
-  this POC's data doesn't exercise. Stated as a POC limitation, independently
-  reaffirmed by Codex's row-14 H1-H16 review as the main remaining architectural gap.
 - **Observation-vs-analyte instance modeling** (row 14) — `LabResult` identity is
   patient+test scoped (fixed, row 13) and now correctly supersedes over time (fixed,
   row 14), but doesn't yet model a distinct observation instance per order/specimen.

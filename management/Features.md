@@ -56,6 +56,14 @@ designed against a real collision risk in the actual data, not hypothetically:
    source_system)` grouping, not a predicate allowlist. Fixed a real false-conflict
    bug: the same patient's repeated lab result over time looked like an open
    disagreement instead of an updated value.
+5. **`identifier_authority` / `normalize_authority`** (`synapse/entity_resolution.py`,
+   row 23) — `find_by_external_id_value` and `get_or_create` now accept an optional
+   assigning-authority scope for `strict_identity` types, so two different
+   real-world sources issuing the same bare ID to two different people no longer
+   silently converge. Comparison is normalized (`"HIS"` vs `"urn:oid:HIS"` both
+   match), not raw string equality, to preserve the already-proven CSV/HL7/FHIR
+   convergence. Closes the PID-3 gap Codex's rows 13/14 reviews independently
+   flagged as the main remaining architectural limitation.
 
 ## New interoperability formats (real invention, not pack repetition)
 

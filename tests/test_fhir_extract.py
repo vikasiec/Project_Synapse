@@ -96,6 +96,85 @@ class TestFhirExtract(unittest.TestCase):
             self.assertEqual(len(values), 1)
         self.assertNotEqual(out_a.entity.entity_id, out_b.entity.entity_id)
 
+    def test_same_bare_identifier_different_system_stays_distinct(self):
+        """FHIR analogue of the PID-3 namespace-collision case (row 23):
+        two different facilities can independently issue the same bare
+        identifier value ("P001") under two genuinely different
+        Identifier.system URIs, for two different real people."""
+        store = SemanticStore()
+        ex = RuleExtractor(store, ontology=OntologyRegistry.default())
+        ing = IngestionService(store, domain="clinical_lab")
+
+        general = json.dumps(
+            {
+                "resourceType": "Bundle",
+                "type": "message",
+                "entry": [
+                    {
+                        "resource": {
+                            "resourceType": "Patient",
+                            "id": "p001-general",
+                            "identifier": [{"system": "urn:oid:HIS", "value": "P001"}],
+                            "name": [{"family": "Williams", "given": ["David"]}],
+                            "birthDate": "1955-06-04",
+                            "gender": "male",
+                        }
+                    },
+                    {
+                        "resource": {
+                            "resourceType": "Observation",
+                            "id": "obs-general",
+                            "status": "final",
+                            "code": {"coding": [{"code": "777-3", "display": "Platelet Count"}]},
+                            "subject": {"reference": "Patient/p001-general"},
+                            "valueQuantity": {"value": 245, "unit": "10*3/uL"},
+                        }
+                    },
+                ],
+            }
+        )
+        stmary = json.dumps(
+            {
+                "resourceType": "Bundle",
+                "type": "message",
+                "entry": [
+                    {
+                        "resource": {
+                            "resourceType": "Patient",
+                            "id": "p001-stmary",
+                            "identifier": [{"system": "urn:oid:STMARY", "value": "P001"}],
+                            "name": [{"family": "Sharma", "given": ["Priya"]}],
+                            "birthDate": "1988-07-12",
+                            "gender": "female",
+                        }
+                    },
+                    {
+                        "resource": {
+                            "resourceType": "Observation",
+                            "id": "obs-stmary",
+                            "status": "final",
+                            "code": {"coding": [{"code": "777-3", "display": "Platelet Count"}]},
+                            "subject": {"reference": "Patient/p001-stmary"},
+                            "valueQuantity": {"value": 132, "unit": "10*3/uL"},
+                        }
+                    },
+                ],
+            }
+        )
+        r1 = ing.land("FHIR-Interface", general, ["domain:clinical", "clearance:l2"])
+        out_a = ex.extract_from_episode(r1.episode, r1.raw)
+        r2 = ing.land("FHIR-Interface", stmary, ["domain:clinical", "clearance:l2"])
+        out_b = ex.extract_from_episode(r2.episode, r2.raw)
+
+        self.assertNotEqual(out_a.entity.entity_id, out_b.entity.entity_id)
+        self.assertEqual(out_a.entity.canonical_name, "David Williams")
+        self.assertEqual(out_b.entity.canonical_name, "Priya Sharma")
+
+        plt_entities = [
+            e for e in store.entities.values() if e.canonical_name == "Platelet Count"
+        ]
+        self.assertEqual(len(plt_entities), 2, "same bare identifier, different system, must not merge LabResults either")
+
     def test_non_bundle_resource_not_extracted(self):
         """Scoped to Bundle only -- a standalone resource falls through
         honestly rather than being guessed at."""

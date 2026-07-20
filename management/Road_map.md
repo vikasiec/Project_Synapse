@@ -51,11 +51,16 @@ design.
 2. **A real conflict-detection proof for FHIR** — row 15 proved extraction +
    cross-format identity convergence, but never tested FHIR against a deliberately
    conflicting second source the way row 4 did for the HL7/CSV pair.
-3. **PID-3 / FHIR identifier namespacing** — the stated-but-unfixed limitation from
-   rows 13/14/15 (bare identifier, no assigning-authority scope). Independently
-   reaffirmed by Codex's row-14 review as the main remaining architectural gap.
-   Real fix, not urgent, deferred repeatedly for the same reason (risks the proven
-   cross-format convergence without a driving need yet).
+3. ~~PID-3 / FHIR identifier namespacing~~ — **done, row 23 (2026-07-20).**
+   `identifier_authority` threaded from HL7 PID-3.4 / FHIR `Identifier.system`
+   through `EntityResolutionService`, compared via `normalize_authority()` so
+   equivalent cross-format representations ("HIS" vs "urn:oid:HIS") still
+   converge while genuinely different authorities no longer silently merge.
+   Two real near-misses caught before shipping (naive string equality would
+   have broken cross-format convergence; the exact-match shortcut in
+   `get_or_create` initially bypassed the new check entirely) — see row 23's
+   resolution note for both. `tests/test_identifier_authority.py` (new, 7
+   tests) + 2 format-level regression tests. Full suite 167/167.
 4. **Observation-vs-analyte instance modeling** (Codex, row 14) — distinct
    observation instances per order/specimen/time, not just per patient+test.
 5. **A third domain** — would mostly re-confirm what banking (row 10) already

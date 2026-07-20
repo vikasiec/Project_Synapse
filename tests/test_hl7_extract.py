@@ -129,6 +129,41 @@ class TestHl7Extract(unittest.TestCase):
 
         self.assertNotEqual(out_a.entity.entity_id, out_b.entity.entity_id)
 
+    def test_same_bare_patient_id_different_assigning_authority_stays_distinct(self):
+        """The PID-3 namespace-collision case, closed row 23: two different
+        facilities can independently issue the same bare patient ID
+        ("P001") to two different real people. PID-3.4 (assigning
+        authority) must be honored, not just PID-3.1 (the bare ID)."""
+        store = SemanticStore()
+        ex = RuleExtractor(store, ontology=OntologyRegistry.default())
+        ing = IngestionService(store, domain="clinical_lab")
+
+        msg_general = (
+            "MSH|^~\\&|LIS|CityLab|HIS|GeneralHospital|20230810083000||ORU^R01|MSG1|P|2.5.1\n"
+            "PID|1||P001^^^HIS^MR||Williams^David||19550604|F|||789 Pine Rd||6939585183\n"
+            "OBR|1|ORD1|LAB1|CBC^Complete Blood Count^L|||20230810080000\n"
+            "OBX|1|NM|HGB^Hemoglobin^L||14.2|g/dL|13.5-17.5|N|||F\n"
+        )
+        msg_stmary = (
+            "MSH|^~\\&|LIS|StMaryLab|HIS|StMaryHospital|20230811090000||ORU^R01|MSG2|P|2.5.1\n"
+            "PID|1||P001^^^STMARY^MR||Sharma^Priya||19880712|F|||2 Elm St||5559012345\n"
+            "OBR|1|ORD2|LAB2|CBC^Complete Blood Count^L|||20230811085000\n"
+            "OBX|1|NM|HGB^Hemoglobin^L||12.4|g/dL|13.5-17.5|L|||F\n"
+        )
+        r1 = ing.land("LIS-ORU", msg_general, ["domain:clinical", "clearance:l2"])
+        out_a = ex.extract_from_episode(r1.episode, r1.raw)
+        r2 = ing.land("LIS-ORU", msg_stmary, ["domain:clinical", "clearance:l2"])
+        out_b = ex.extract_from_episode(r2.episode, r2.raw)
+
+        self.assertNotEqual(out_a.entity.entity_id, out_b.entity.entity_id)
+        self.assertEqual(out_a.entity.canonical_name, "David Williams")
+        self.assertEqual(out_b.entity.canonical_name, "Priya Sharma")
+
+        hgb_entities = [
+            e for e in store.entities.values() if e.canonical_name == "Hemoglobin"
+        ]
+        self.assertEqual(len(hgb_entities), 2, "same bare patient_id, different authority, must not merge LabResults either")
+
     def test_malformed_hl7_falls_through_honestly(self):
         store = SemanticStore()
         ex = RuleExtractor(store, ontology=OntologyRegistry.default())

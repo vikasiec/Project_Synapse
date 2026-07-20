@@ -75,6 +75,20 @@ def first_identifier_value(resource: dict[str, Any]) -> Optional[str]:
     return None
 
 
+def first_identifier_system(resource: dict[str, Any]) -> Optional[str]:
+    """
+    The assigning-authority equivalent for a FHIR identifier -- the
+    `Identifier.system` URI of the same first identifier entry
+    `first_identifier_value` reads. Used to scope cross-source identity
+    matching by more than a bare ID value (the FHIR analogue of HL7v2
+    PID-3's assigning-authority component).
+    """
+    ids = resource.get("identifier") or []
+    if ids and isinstance(ids, list):
+        return ids[0].get("system")
+    return None
+
+
 def human_name(resource: dict[str, Any]) -> tuple[str, str]:
     """Returns (family, given) from the first `name` entry, if present."""
     names = resource.get("name") or []

@@ -17,11 +17,39 @@ from synapse.ontology import OntologyRegistry
 from synapse.store import SemanticStore
 
 _NON_ALNUM = re.compile(r"[^a-z0-9]+")
+_AUTHORITY_URI_PREFIXES = ("urn:oid:", "urn:uuid:", "urn:", "https://", "http://")
 
 
 def normalize_name(name: str) -> str:
     """Cheap blocking key: lowercase, strip non-alnum."""
     return _NON_ALNUM.sub("", name.lower().strip())
+
+
+def normalize_authority(raw: Optional[str]) -> str:
+    """
+    Normalize an assigning-authority string for comparison, not storage.
+
+    The same real-world authority is represented differently across
+    formats -- HL7v2 PID-3.4 gives a bare namespace-id ("HIS"), FHIR
+    Identifier.system gives a URI wrapping the same code
+    ("urn:oid:HIS"). Comparing raw strings would treat every FHIR/HL7
+    pair for the same facility as different authorities and silently
+    fracture the already-proven cross-format identity convergence.
+    Strip common URI scheme prefixes and take the last path segment so
+    both representations collapse to the same key; anything unrecognized
+    just gets lowercased, which is a safe no-op for bare HL7-style codes.
+    """
+    if not raw:
+        return ""
+    v = raw.strip()
+    for prefix in _AUTHORITY_URI_PREFIXES:
+        if v.lower().startswith(prefix):
+            v = v[len(prefix):]
+            break
+    v = v.rstrip("/")
+    if "/" in v:
+        v = v.rsplit("/", 1)[-1]
+    return v.lower()
 
 
 @dataclass
@@ -96,20 +124,41 @@ class EntityResolutionService:
         return self.get_active(eid)
 
     def find_by_external_id_value(
-        self, ext_id: str, *, entity_type: Optional[str] = None
+        self,
+        ext_id: str,
+        *,
+        entity_type: Optional[str] = None,
+        authority: Optional[str] = None,
     ) -> Optional[Entity]:
         """
         Cross-source blocking by the ID value alone, ignoring which source
         reported it. Safe for strict-identity types (e.g. patient_id) where
         the ID itself is the authoritative identifier — unlike name, which
         two different real people can share.
+
+        `authority` scopes this further by assigning authority (HL7v2
+        PID-3's assigning-authority component / FHIR Identifier.system):
+        two different facilities can independently issue the same bare ID
+        (e.g. both call a patient "P001") to two different real people.
+        When both sides state a known, differing authority, the match is
+        rejected even though the bare ID matches. When either side has no
+        recorded authority (the common case for CSV-sourced identifiers,
+        which have no assigning-authority concept), matching stays
+        permissive by bare ID, preserving the existing cross-format
+        convergence proof.
         """
         for ent in self.store.entities.values():
             if ent.status != EntityStatus.ACTIVE:
                 continue
             if entity_type and ent.entity_type != entity_type:
                 continue
-            if any(x.get("id") == ext_id for x in ent.external_ids):
+            for x in ent.external_ids:
+                if x.get("id") != ext_id:
+                    continue
+                existing_authority = normalize_authority(x.get("authority"))
+                incoming_authority = normalize_authority(authority)
+                if incoming_authority and existing_authority and existing_authority != incoming_authority:
+                    continue
                 return ent
         return None
 
@@ -123,10 +172,17 @@ class EntityResolutionService:
         external_id: Optional[str] = None,
         trust_score: float = 0.7,
         domain: Optional[str] = None,
+        identifier_authority: Optional[str] = None,
     ) -> Entity:
         """
         Resolve-or-create with name + external_id blocking.
         Ontology governs storage type + L0/L1 tags (H8).
+
+        `identifier_authority` (optional) is the assigning-authority scope
+        for `external_id` — HL7v2 PID-3's assigning-authority component or
+        FHIR Identifier.system — passed through to the strict-identity
+        cross-source blocking check. Omit for sources with no
+        assigning-authority concept (e.g. plain CSV columns).
         """
         governed = self.ontology.govern_extract(entity_type, domain=domain)
         storage_type = governed.storage_type
@@ -136,6 +192,26 @@ class EntityResolutionService:
 
         if external_id:
             by_ext = self.find_by_external_id(source_system, external_id)
+            if by_ext and strict_identity and identifier_authority:
+                # The exact (source_system, external_id) shortcut above
+                # assumes the same source_system label never reissues the
+                # same bare ID to a different real-world entity. That's not
+                # actually guaranteed -- one LIS/connector label can serve
+                # multiple facilities with overlapping ID spaces. Only
+                # trust the shortcut if this specific (system, id) pairing
+                # was never previously recorded under a genuinely different
+                # authority; otherwise fall through to the authority-aware
+                # cross-source check below.
+                recorded_conflict = any(
+                    x.get("system") == source_system
+                    and x.get("id") == external_id
+                    and x.get("authority")
+                    and normalize_authority(x.get("authority"))
+                    != normalize_authority(identifier_authority)
+                    for x in by_ext.external_ids
+                )
+                if recorded_conflict:
+                    by_ext = None
             if by_ext:
                 self._widen(
                     by_ext,
@@ -145,6 +221,7 @@ class EntityResolutionService:
                     external_id,
                     ontology_type=governed.ontology_type,
                     ontology_layer=governed.ontology_layer,
+                    identifier_authority=identifier_authority,
                 )
                 return by_ext
             if strict_identity:
@@ -153,7 +230,7 @@ class EntityResolutionService:
                 # Block on the ID value itself instead — safe because the ID
                 # is authoritative, unlike a name two people can share.
                 by_ext_val = self.find_by_external_id_value(
-                    external_id, entity_type=storage_type
+                    external_id, entity_type=storage_type, authority=identifier_authority
                 )
                 if by_ext_val:
                     self._widen(
@@ -164,6 +241,7 @@ class EntityResolutionService:
                         external_id,
                         ontology_type=governed.ontology_type,
                         ontology_layer=governed.ontology_layer,
+                        identifier_authority=identifier_authority,
                     )
                     return by_ext_val
                 by_name = None
@@ -184,6 +262,7 @@ class EntityResolutionService:
                 external_id or canonical_name,
                 ontology_type=governed.ontology_type,
                 ontology_layer=governed.ontology_layer,
+                identifier_authority=identifier_authority,
             )
             return by_name
 
@@ -191,13 +270,18 @@ class EntityResolutionService:
         if governed.ontology_layer == "L2":
             trust_score = min(trust_score, 0.55)
 
+        ext_entry: dict[str, str] = {
+            "system": source_system,
+            "id": external_id or canonical_name,
+        }
+        if identifier_authority:
+            ext_entry["authority"] = identifier_authority
+
         entity = Entity.create(
             entity_type=storage_type,
             canonical_name=canonical_name,
             aliases=[canonical_name],
-            external_ids=[
-                {"system": source_system, "id": external_id or canonical_name}
-            ],
+            external_ids=[ext_entry],
             trust_score=trust_score,
             acl_tags=list(acl_tags),
             ontology_type=governed.ontology_type,
@@ -215,13 +299,16 @@ class EntityResolutionService:
         *,
         ontology_type: Optional[str] = None,
         ontology_layer: Optional[str] = None,
+        identifier_authority: Optional[str] = None,
     ) -> None:
         for t in acl_tags:
             if t not in entity.acl_tags:
                 entity.acl_tags.append(t)
         if alias and alias not in entity.aliases:
             entity.aliases.append(alias)
-        ext = {"system": source_system, "id": external_id}
+        ext: dict[str, str] = {"system": source_system, "id": external_id}
+        if identifier_authority:
+            ext["authority"] = identifier_authority
         if ext not in entity.external_ids:
             entity.external_ids.append(ext)
         # Upgrade ontology tag when domain L1 is more specific than current
