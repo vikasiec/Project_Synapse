@@ -801,14 +801,24 @@ def make_handler(session: SynapseSession):
                 )
 
             if path == "/v1/graphiti/search":
+                from synapse.graph_memory import derive_group_id
                 from synapse.graphiti_ops import GraphitiOps
 
                 q = body.get("query") or ""
                 if not q:
                     return _json_response(self, 400, {"error": "query required"})
+                principal = _principal_from_body(body, session.store)
+                visible_episodes = filter_episodes(principal, session.store.episodes.values())
+                allowed_group_ids = sorted(
+                    {derive_group_id(ep.acl_tags) for ep in visible_episodes}
+                )
                 ops = GraphitiOps()
                 try:
-                    hits = ops.search(q, num_results=int(body.get("limit") or 8))
+                    hits = ops.search(
+                        q,
+                        num_results=int(body.get("limit") or 8),
+                        group_ids=allowed_group_ids,
+                    )
                     return _json_response(
                         self, 200, {"hits": [h.to_dict() for h in hits]}
                     )

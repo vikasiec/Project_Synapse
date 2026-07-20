@@ -34,6 +34,7 @@ class SearchHit:
     fact: str
     source_node_uuid: Optional[str] = None
     target_node_uuid: Optional[str] = None
+    group_id: Optional[str] = None
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)
@@ -76,13 +77,42 @@ class GraphitiOps:
                 pass
         self._client = None
 
-    def search(self, query: str, *, num_results: int = 8) -> list[SearchHit]:
+    def search(
+        self,
+        query: str,
+        *,
+        num_results: int = 8,
+        group_ids: Optional[list[str]] = None,
+    ) -> list[SearchHit]:
+        """
+        `group_ids`, when given, restricts results to that ACL-derived
+        tenant partition (Active_File.md row 31, RC-03 -- see
+        `synapse.graph_memory.derive_group_id`). Applied twice, not once:
+        query-side (`client.search(..., group_ids=...)`, Graphiti's own
+        native filter) AND result-side (dropping any returned edge whose
+        own `group_id` isn't in the allowed set). A remote graph is a
+        derivative, not a policy escape hatch -- don't trust the query-side
+        filter alone as the only thing standing between an unscoped push
+        and a caller who shouldn't see it.
+        """
         client = self._ensure_client()
+        allowed = set(group_ids) if group_ids is not None else None
 
         async def _run() -> list[SearchHit]:
-            edges = await client.search(query, num_results=num_results)
+            kwargs: dict[str, Any] = {"num_results": num_results}
+            if group_ids is not None:
+                kwargs["group_ids"] = group_ids
+            try:
+                edges = await client.search(query, **kwargs)
+            except TypeError:
+                # Client doesn't support group_ids server-side -- the
+                # result-side filter below still protects the caller.
+                edges = await client.search(query, num_results=num_results)
             hits: list[SearchHit] = []
             for e in edges or []:
+                gid = getattr(e, "group_id", None)
+                if allowed is not None and gid not in allowed:
+                    continue
                 hits.append(
                     SearchHit(
                         uuid=str(getattr(e, "uuid", "") or ""),
@@ -92,6 +122,7 @@ class GraphitiOps:
                         or None,
                         target_node_uuid=str(getattr(e, "target_node_uuid", "") or "")
                         or None,
+                        group_id=str(gid) if gid is not None else None,
                     )
                 )
             return hits

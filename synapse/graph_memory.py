@@ -16,6 +16,18 @@ from synapse.models import EntityStatus, Fact, utc_now_iso
 from synapse.store import SemanticStore
 
 
+def derive_group_id(acl_tags: "list[str] | tuple[str, ...]") -> str:
+    """
+    Deterministic encoding of an ACL tag set into Graphiti's native
+    `group_id` tenant-partition string (Active_File.md row 31, RC-03).
+    `group_id` is a single string; an episode's ACL is a set of tags, so
+    this must be order-independent and collision-safe across genuinely
+    different tag sets -- sorted-and-joined satisfies both without
+    inventing a new ACL representation.
+    """
+    return "|".join(sorted(set(acl_tags)))
+
+
 @dataclass
 class GraphNode:
     node_id: str
@@ -349,6 +361,7 @@ class OptionalGraphitiAdapter:
                 name = f"synapse-episode-{ep.episode_id[:8]}"
                 body = ep.payload_text
                 ref = datetime.now(timezone.utc)
+                group_id = derive_group_id(ep.acl_tags)
                 try:
                     if inspect.iscoroutinefunction(add_episode):
                         await add_episode(
@@ -356,6 +369,7 @@ class OptionalGraphitiAdapter:
                             episode_body=body,
                             source_description=ep.domain or "synapse",
                             reference_time=ref,
+                            group_id=group_id,
                         )
                     else:
                         add_episode(
@@ -363,6 +377,7 @@ class OptionalGraphitiAdapter:
                             episode_body=body,
                             source_description=ep.domain or "synapse",
                             reference_time=ref,
+                            group_id=group_id,
                         )
                 except TypeError:
                     if inspect.iscoroutinefunction(add_episode):
@@ -370,12 +385,14 @@ class OptionalGraphitiAdapter:
                             name=name,
                             episode_body=body,
                             source_description=ep.domain or "synapse",
+                            group_id=group_id,
                         )
                     else:
                         add_episode(
                             name=name,
                             episode_body=body,
                             source_description=ep.domain or "synapse",
+                            group_id=group_id,
                         )
                 self._pushed_ids.add(ep.episode_id)
                 self._episodes_pushed += 1

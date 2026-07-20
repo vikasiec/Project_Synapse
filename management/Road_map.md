@@ -96,9 +96,10 @@ before opening any tracker rows — all checked out exactly as described.
   provenance), RC-04 (P1, claim cache never invalidated on ordinary
   ingest), RC-05 (P1, reprocess overwrote episode pipeline version in
   place). Full suite 181/181.
-- **Row 31 — open, Claude, depends on row 30.** RC-03 (P1): Graphiti
-  push/search carry no ACL/tenant metadata. Sequenced after row 30 since
-  it needs the same principal pattern.
+- **Row 31 — done (2026-07-20).** RC-03 (P1): Graphiti push/search carried
+  no ACL/tenant metadata. Used Graphiti's real `group_id`/`group_ids`
+  multi-tenancy primitive (confirmed against the installed `graphiti_core`
+  signatures), applied both query-side and result-side. Full suite 189/189.
 - **Row 36 — done (2026-07-20).** RC-08 (P2): `materialize`/`export` were
   ACL-blind. Split out of row 35 once row 30 landed and unblocked it.
   `role:admin`/`role:operator` grant capability to call the route, not a
