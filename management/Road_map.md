@@ -73,7 +73,14 @@ design.
    regression test (`test_same_hl7_order_id_amended_result_still_supersedes`)
    to confirm the *other* half — a truly amended result for the *same* order
    still supersedes correctly. Full suite 169/169.
-5. **A third domain** — would mostly re-confirm what banking (row 10) already
+5. ~~H6 reprocess idempotency for HL7v2/FHIR/banking~~ — **done, rows 28-29
+   (2026-07-20).** Reprocess had only ever been tested against the original
+   checkout scenario; this session changed LabResult/Patient identity twice
+   (rows 23, 25). Verified empirically for HL7, FHIR (row 28, Claude), and
+   banking (row 29, Codex, Lead spot-checked): entity counts and current-fact
+   counts unchanged after reprocess, no false conflicts. Negative result, real
+   risk closed. Full suite 172/172.
+6. **A third domain** — would mostly re-confirm what banking (row 10) already
    proved; lower marginal value unless a specific new domain becomes a real
    requirement. The only item left on this list.
 
