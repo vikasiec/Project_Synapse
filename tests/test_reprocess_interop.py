@@ -17,12 +17,15 @@ from __future__ import annotations
 
 import json
 import unittest
+from pathlib import Path
 
 from synapse.extraction import RuleExtractor
 from synapse.ingestion import IngestionService
 from synapse.ontology import OntologyRegistry
 from synapse.reprocess import ReprocessService
 from synapse.store import SemanticStore
+
+BANKING_DIR = Path(__file__).resolve().parents[1] / ".data" / "synthetic_banking"
 
 HL7_MSG = (
     "MSH|^~\\&|LIS|CityLab|HIS|GeneralHospital|20230810083000||ORU^R01|MSG1|P|2.5.1\n"
@@ -62,6 +65,45 @@ FHIR_BUNDLE = json.dumps(
 
 
 class TestReprocessInterop(unittest.TestCase):
+    def test_banking_reprocess_does_not_duplicate_entities_or_conflicts(self):
+        from synapse.connectors.csv_drop import CsvDropConnector
+        from synapse.session import open_session
+
+        session = open_session(domain="banking")
+        try:
+            for fname, source_system, cid in (
+                ("account_holders.csv", "Bank-CoreBanking", "reprocess-bank-holders"),
+                ("accounts.csv", "Bank-CoreBanking", "reprocess-bank-accounts"),
+                ("transactions.csv", "Bank-Ledger", "reprocess-bank-transactions"),
+            ):
+                conn = CsvDropConnector(
+                    path=str(BANKING_DIR / fname),
+                    connector_id=cid,
+                    source_system=source_system,
+                    default_acl=["domain:banking", "clearance:l2"],
+                )
+                session.connectors.register(conn)
+                session.connector_runner.poll_one(cid)
+
+            entity_count_before = len(session.store.entities)
+            current_before = sum(
+                1 for fact in session.store.facts.values() if fact.valid_to is None
+            )
+            report = ReprocessService(session.store).run(limit=1000)
+            self.assertGreaterEqual(report.episodes_reprocessed, 1)
+            self.assertEqual(len(session.store.entities), entity_count_before)
+
+            current_after = sum(
+                1 for fact in session.store.facts.values() if fact.valid_to is None
+            )
+            self.assertEqual(current_after, current_before)
+            conflicts = []
+            for entity in session.store.entities.values():
+                conflicts.extend(session.resolver.detect_scalar_conflicts(entity.entity_id))
+            self.assertEqual(conflicts, [], "banking reprocess must not create false conflicts")
+        finally:
+            session.close()
+
     def test_hl7_reprocess_does_not_duplicate_entities(self):
         store = SemanticStore()
         ex = RuleExtractor(store, ontology=OntologyRegistry.default())
