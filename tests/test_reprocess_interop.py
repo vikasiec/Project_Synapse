@@ -104,6 +104,27 @@ class TestReprocessInterop(unittest.TestCase):
         finally:
             session.close()
 
+    def test_reprocess_preserves_episode_creation_version_history(self):
+        store = SemanticStore()
+        ex = RuleExtractor(store, ontology=OntologyRegistry.default())
+        ing = IngestionService(store, domain="clinical_lab")
+        r = ing.land("LIS-ORU", HL7_MSG, ["domain:clinical", "clearance:l2"])
+        ex.extract_from_episode(r.episode, r.raw)
+        original = r.episode.prep_pipeline_version
+
+        first = ReprocessService(store, pipeline_version="reprocess/1.0").run(limit=10)
+        second = ReprocessService(store, pipeline_version="reprocess/2.0").run(limit=10)
+        repeat = ReprocessService(store, pipeline_version="reprocess/2.0").run(limit=10)
+        self.assertGreaterEqual(first.episodes_reprocessed, 1)
+        self.assertGreaterEqual(second.episodes_reprocessed, 1)
+        self.assertGreaterEqual(repeat.episodes_reprocessed, 1)
+        episode = store.episodes[r.episode.episode_id]
+        self.assertEqual(episode.prep_pipeline_version, original)
+        self.assertEqual(
+            episode.pipeline_version_history,
+            [original, "reprocess/1.0", "reprocess/2.0"],
+        )
+
     def test_hl7_reprocess_does_not_duplicate_entities(self):
         store = SemanticStore()
         ex = RuleExtractor(store, ontology=OntologyRegistry.default())

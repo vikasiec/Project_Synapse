@@ -125,6 +125,9 @@ def _episode(d: dict[str, Any]) -> Episode:
         time_span_start=d.get("time_span_start"),
         time_span_end=d.get("time_span_end"),
         quality_signals=dict(d.get("quality_signals") or {}),
+        pipeline_version_history=list(
+            d.get("pipeline_version_history") or [d["prep_pipeline_version"]]
+        ),
     )
 
 

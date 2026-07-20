@@ -75,8 +75,11 @@ class ReprocessService:
                 if raw is None:
                     report.errors.append(f"{ep.episode_id}: missing_raw")
                     continue
-                # Stamp new prep version on a shallow copy episode for lineage
-                ep.prep_pipeline_version = self.pipeline_version
+                # Preserve the creation version; append reprocess versions so
+                # lineage/rollback can inspect every pass without overwriting
+                # the episode's original identity.
+                if self.pipeline_version not in ep.pipeline_version_history:
+                    ep.pipeline_version_history.append(self.pipeline_version)
                 self.store.put_episode(ep)
                 self.dual_path.extract(ep, raw)
                 report.episodes_reprocessed += 1

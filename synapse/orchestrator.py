@@ -242,6 +242,7 @@ class QueryOrchestrator:
                 intent=parsed.intent,
                 entity=parsed.entity_hint or entity_name,
                 budget_class=f"{parsed.budget_class.value}|as_of={as_of or ''}",
+                data_revision=self.store.revision,
             )
             cached = self.claim_cache.get(ckey)
             if cached is not None:

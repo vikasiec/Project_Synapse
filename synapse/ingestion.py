@@ -87,7 +87,9 @@ class IngestionService:
 
         cleaned = prep.text
         h = content_hash(cleaned)
-        existing = self.store.get_raw_by_content_hash(h)
+        existing = self.store.get_raw_by_content_hash(
+            h, source_system=source_system, source_uri=source_uri
+        )
         if existing is not None:
             ep = self.store.episode_for_raw(existing.object_id)
             if ep is None:

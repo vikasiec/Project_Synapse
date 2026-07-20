@@ -22,6 +22,11 @@
     },
     "domain": { "type": "string", "minLength": 1 },
     "prep_pipeline_version": { "type": "string" },
+    "pipeline_version_history": {
+      "type": "array",
+      "items": { "type": "string" },
+      "minItems": 1
+    },
     "acl_tags": {
       "type": "array",
       "items": { "type": "string" }

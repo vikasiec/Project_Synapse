@@ -5,7 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Iterable, Sequence
 
-from synapse.models import Fact, RawObject
+from synapse.models import Conflict, Entity, Episode, Fact, RawObject
 
 
 @dataclass
@@ -66,6 +66,46 @@ def filter_facts(principal: Principal, facts: Sequence[Fact]) -> list[Fact]:
         required = set(fact.acl_tags)
         if required and required.issubset(principal.attributes):
             allowed.append(fact)
+    return allowed
+
+
+def filter_episodes(principal: Principal, episodes: Sequence[Episode]) -> list[Episode]:
+    """Drop episodes the principal cannot see (per-episode ACL)."""
+    allowed: list[Episode] = []
+    for ep in episodes:
+        required = set(ep.acl_tags)
+        if required and required.issubset(principal.attributes):
+            allowed.append(ep)
+    return allowed
+
+
+def filter_entities(principal: Principal, entities: Sequence[Entity]) -> list[Entity]:
+    """Drop entities the principal cannot see (per-entity ACL)."""
+    allowed: list[Entity] = []
+    for ent in entities:
+        required = set(ent.acl_tags)
+        if required and required.issubset(principal.attributes):
+            allowed.append(ent)
+    return allowed
+
+
+def filter_conflicts(
+    principal: Principal, conflicts: Sequence[Conflict], facts_by_id: dict
+) -> list[Conflict]:
+    """
+    A conflict is only visible if the principal can see every fact it's
+    comparing -- a partial view (some competing values hidden) could
+    mislead about what's actually in disagreement, so this is stricter
+    than "can see at least one side."
+    """
+    allowed: list[Conflict] = []
+    for c in conflicts:
+        competing = [facts_by_id[fid] for fid in c.competing_fact_ids if fid in facts_by_id]
+        if not competing:
+            continue
+        required = derived_acl_from_facts(competing)
+        if principal_may_access(principal, required):
+            allowed.append(c)
     return allowed
 
 

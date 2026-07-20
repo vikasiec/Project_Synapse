@@ -54,9 +54,10 @@ class ClaimCache:
         intent: Optional[str] = None,
         entity: Optional[str] = None,
         budget_class: Optional[str] = None,
+        data_revision: Optional[int] = None,
     ) -> str:
         attrs = ",".join(sorted(principal_attrs))
-        blob = f"{question}|{intent}|{entity}|{budget_class}|{attrs}"
+        blob = f"{question}|{intent}|{entity}|{budget_class}|{attrs}|revision={data_revision}"
         return hashlib.sha256(blob.encode("utf-8")).hexdigest()[:32]
 
     @staticmethod

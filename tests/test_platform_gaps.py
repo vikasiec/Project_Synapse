@@ -100,6 +100,28 @@ class TestPlatformGaps(unittest.TestCase):
         finally:
             session.close()
 
+    def test_cache_revision_changes_after_new_ingest(self):
+        session = open_session()
+        try:
+            CheckoutIncidentScenario(store=session.store).seed()
+            p = Principal.from_tags(
+                "t-revision",
+                ["domain:sre", "clearance:l2", "channel:incidents"],
+            )
+            a1 = session.orchestrator.ask(
+                p, "What is checkout-service?", entity_name="checkout-service"
+            )
+            session.ingestion.land(
+                "Monitor", "checkout-service status changed", ["domain:sre", "clearance:l2"]
+            )
+            a2 = session.orchestrator.ask(
+                p, "What is checkout-service?", entity_name="checkout-service"
+            )
+            self.assertTrue(a1.allowed)
+            self.assertFalse(a2.cache_hit)
+        finally:
+            session.close()
+
     def test_webhook_connector(self):
         from synapse.connectors.webhook_inbox import WebhookInboxConnector
 

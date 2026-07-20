@@ -95,6 +95,9 @@ class Episode:
     time_span_start: Optional[str] = None
     time_span_end: Optional[str] = None
     quality_signals: dict[str, Any] = field(default_factory=dict)
+    # Creation version remains stable; reprocess versions are append-only
+    # lineage markers rather than an in-place overwrite.
+    pipeline_version_history: list[str] = field(default_factory=list)
 
     @classmethod
     def from_raw(
@@ -115,6 +118,7 @@ class Episode:
             time_span_start=raw.ingested_at,
             time_span_end=raw.ingested_at,
             quality_signals=quality_signals or {"token_estimate": max(1, len(raw.raw_payload.split()))},
+            pipeline_version_history=[prep_pipeline_version],
         )
 
     def to_dict(self) -> dict[str, Any]:

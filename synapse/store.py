@@ -23,17 +23,43 @@ class SemanticStore:
     entity_index: dict[str, str] = field(default_factory=dict)
     # canonical_name lower -> entity_id (same type preference handled by caller)
     name_index: dict[str, str] = field(default_factory=dict)
-    # content_hash -> object_id for idempotent ingest
-    content_hash_index: dict[str, str] = field(default_factory=dict)
+    # (source_system, source_uri, content_hash) -> object_id for idempotent
+    # connector replay. Identical bytes from different sources remain distinct
+    # so provenance and ACL tags cannot be silently replaced by the first source.
+    content_hash_index: dict[tuple[str, Optional[str], str], str] = field(default_factory=dict)
+    # Monotonic in-process revision used to prevent stale query claims after
+    # new raw/fact/conflict state is written.
+    revision: int = 0
     audit: AuditLog = field(default_factory=AuditLog)
 
     def put_raw(self, obj: RawObject) -> RawObject:
+        self.revision += 1
         self.raw_objects[obj.object_id] = obj
-        self.content_hash_index[obj.content_hash] = obj.object_id
+        key = (obj.source_system, obj.source_uri, obj.content_hash)
+        self.content_hash_index[key] = obj.object_id
         return obj
 
-    def get_raw_by_content_hash(self, content_hash: str) -> Optional[RawObject]:
-        oid = self.content_hash_index.get(content_hash)
+    def get_raw_by_content_hash(
+        self,
+        content_hash: str,
+        *,
+        source_system: Optional[str] = None,
+        source_uri: Optional[str] = None,
+    ) -> Optional[RawObject]:
+        """Find a replay duplicate within the same source/URI scope."""
+        if source_system is None:
+            # Preserve a safe read-only compatibility path for callers that
+            # only know the hash: return a match only when it is unambiguous.
+            matches = [
+                oid
+                for (src, uri, digest), oid in self.content_hash_index.items()
+                if digest == content_hash
+            ]
+            if len(matches) != 1:
+                return None
+            oid = matches[0]
+        else:
+            oid = self.content_hash_index.get((source_system, source_uri, content_hash))
         return self.raw_objects.get(oid) if oid else None
 
     def episode_for_raw(self, raw_object_id: str) -> Optional[Episode]:
@@ -43,10 +69,12 @@ class SemanticStore:
         return None
 
     def put_episode(self, episode: Episode) -> Episode:
+        self.revision += 1
         self.episodes[episode.episode_id] = episode
         return episode
 
     def put_entity(self, entity: Entity) -> Entity:
+        self.revision += 1
         self.entities[entity.entity_id] = entity
         # Index names to survivor when merged
         target_id = entity.merged_into or entity.entity_id
@@ -68,6 +96,7 @@ class SemanticStore:
         return entity
 
     def put_fact(self, fact: Fact) -> Fact:
+        self.revision += 1
         self.facts[fact.fact_id] = fact
         return fact
 

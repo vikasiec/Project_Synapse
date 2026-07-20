@@ -36,7 +36,15 @@ from synapse.entity_resolution import EntityResolutionService
 from synapse.export_import import export_store
 from synapse.scenarios.billing_customer import BillingCustomerScenario
 from synapse.scenarios.checkout_incident import CheckoutIncidentScenario
-from synapse.security import Principal
+from synapse.security import (
+    Principal,
+    filter_conflicts,
+    filter_entities,
+    filter_episodes,
+    filter_facts,
+    filter_raw_objects,
+    principal_may_access,
+)
 from synapse.session import SynapseSession, open_session
 from synapse.store import SemanticStore
 
@@ -79,16 +87,25 @@ def _read_json(handler: BaseHTTPRequestHandler) -> dict[str, Any]:
 _FALLBACK_DEMO_DOMAINS = ["domain:sre", "domain:revenue", "domain:identity"]
 
 
-def _principal_from_body(
-    body: dict[str, Any], store: Optional[SemanticStore] = None
+def _resolve_principal(
+    principal: Any, store: Optional[SemanticStore] = None
 ) -> Principal:
     """
+    Shared principal resolution for both GET (query string) and POST (JSON
+    body) routes -- kept as one function so the two paths can't drift.
+
     l1/l2 are demo/UI convenience presets, not real per-user ACL profiles --
     they've always meant "broad viewer access to everything currently known
-    to this store". When `store` is provided, the domain tags are derived
-    from what's actually landed (`store.known_acl_domains()`) instead of a
-    hardcoded list, so a new pack's data (e.g. domain:banking) is visible to
-    the default UI viewer the moment it lands, not just the three original
+    to this store", now including `role:operator` so the existing Sense
+    board UI's mutation calls (merge, pin, reprocess, materialize, connector
+    poll, sense drop, ...) keep working exactly as before under Active_File.md
+    row 30's ABAC gate -- neither preset grants `role:admin` (export/audit),
+    which is a genuine, deliberate tightening from before that row.
+
+    When `store` is provided, the domain tags are derived from what's
+    actually landed (`store.known_acl_domains()`) instead of a hardcoded
+    list, so a new pack's data (e.g. domain:banking) is visible to the
+    default UI viewer the moment it lands, not just the three original
     scenario domains (Active_File.md row 12, Codex review). Falls back to
     the original static list when no store is available (e.g. unit tests
     constructing a Principal directly).
@@ -97,13 +114,19 @@ def _principal_from_body(
     if not domains:
         domains = list(_FALLBACK_DEMO_DOMAINS)
 
-    principal = body.get("principal", "l2")
     if principal == "l1":
-        return Principal.from_tags("user-l1", domains + ["clearance:l1"])
+        return Principal.from_tags("user-l1", domains + ["clearance:l1", "role:operator"])
     if principal == "l2":
         return Principal.from_tags(
             "user-l2",
-            domains + ["clearance:l2", "channel:incidents", "channel:support", "channel:itsm"],
+            domains
+            + [
+                "clearance:l2",
+                "channel:incidents",
+                "channel:support",
+                "channel:itsm",
+                "role:operator",
+            ],
         )
     if isinstance(principal, dict):
         return Principal.from_tags(
@@ -114,8 +137,78 @@ def _principal_from_body(
         return Principal.from_tags("api-user", [t.strip() for t in principal.split(",")])
     return Principal.from_tags(
         "user-l2",
-        domains + ["clearance:l2", "channel:incidents", "channel:support", "channel:itsm"],
+        domains
+        + [
+            "clearance:l2",
+            "channel:incidents",
+            "channel:support",
+            "channel:itsm",
+            "role:operator",
+        ],
     )
+
+
+def _principal_from_body(
+    body: dict[str, Any], store: Optional[SemanticStore] = None
+) -> Principal:
+    return _resolve_principal(body.get("principal", "l2"), store)
+
+
+def _principal_from_query(
+    qs: dict[str, list[str]], store: Optional[SemanticStore] = None
+) -> Principal:
+    """GET-route counterpart to `_principal_from_body` -- reads `?principal=`
+    from the parsed query string instead of a JSON body (Active_File.md
+    row 30: GET routes previously resolved no principal at all)."""
+    raw = qs.get("principal", ["l2"])[0]
+    return _resolve_principal(raw, store)
+
+
+def _filtered_timeline(
+    session: SynapseSession,
+    entity_id: str,
+    principal: Principal,
+    predicate: Optional[str] = None,
+) -> list[dict[str, Any]]:
+    """
+    ACL-filtered counterpart to `TemporalService.timeline()` for the API
+    layer (Active_File.md row 30) -- deliberately not touching
+    `timeline()`'s own signature, since it's a lower-level, separately
+    tested service used by callers that don't have a principal. Same dict
+    shape and ordering as `timeline()`, just built from
+    `filter_facts()`-scoped facts.
+    """
+    facts = session.store.facts_for_entity(entity_id, predicate)
+    visible = filter_facts(principal, facts)
+    from synapse.control_plane import parse_iso_z
+
+    visible.sort(key=lambda f: parse_iso_z(f.valid_from))
+    return [
+        {
+            "fact_id": f.fact_id,
+            "predicate": f.predicate,
+            "object": f.object,
+            "source_system": f.source_system,
+            "valid_from": f.valid_from,
+            "valid_to": f.valid_to,
+            "confidence": f.confidence,
+            "active": f.valid_to is None,
+        }
+        for f in visible
+    ]
+
+
+def _require_role(handler: BaseHTTPRequestHandler, principal: Principal, role: str) -> bool:
+    """Returns True and writes a 403 if `principal` lacks `role` -- caller
+    must `return` immediately when this returns False."""
+    if f"role:{role}" in principal.attributes:
+        return True
+    _json_response(
+        handler,
+        403,
+        {"error": "forbidden", "required_role": role, "principal_id": principal.principal_id},
+    )
+    return False
 
 
 def make_handler(session: SynapseSession):
@@ -181,11 +274,9 @@ def make_handler(session: SynapseSession):
             if path == "/v1/raw":
                 qs = parse_qs(urlparse(self.path).query)
                 limit = int(qs.get("limit", ["50"])[0])
-                rows = sorted(
-                    session.store.raw_objects.values(),
-                    key=lambda r: r.ingested_at,
-                    reverse=True,
-                )[:limit]
+                principal = _principal_from_query(qs, session.store)
+                visible = filter_raw_objects(principal, session.store.raw_objects.values())
+                rows = sorted(visible, key=lambda r: r.ingested_at, reverse=True)[:limit]
                 items = [
                     {
                         "object_id": r.object_id,
@@ -199,16 +290,14 @@ def make_handler(session: SynapseSession):
                 return _json_response(
                     self,
                     200,
-                    {"items": items, "count": len(session.store.raw_objects)},
+                    {"items": items, "count": len(visible)},
                 )
             if path == "/v1/episodes":
                 qs = parse_qs(urlparse(self.path).query)
                 limit = int(qs.get("limit", ["50"])[0])
-                rows = sorted(
-                    session.store.episodes.values(),
-                    key=lambda e: e.time_span_start or "",
-                    reverse=True,
-                )[:limit]
+                principal = _principal_from_query(qs, session.store)
+                visible = filter_episodes(principal, session.store.episodes.values())
+                rows = sorted(visible, key=lambda e: e.time_span_start or "", reverse=True)[:limit]
                 items = []
                 for e in rows:
                     sources = sorted(
@@ -229,13 +318,14 @@ def make_handler(session: SynapseSession):
                 return _json_response(
                     self,
                     200,
-                    {"items": items, "count": len(session.store.episodes)},
+                    {"items": items, "count": len(visible)},
                 )
             if path == "/v1/facts":
                 qs = parse_qs(urlparse(self.path).query)
                 limit = int(qs.get("limit", ["100"])[0])
                 entity_id = qs.get("entity_id", [None])[0]
-                rows = list(session.store.facts.values())
+                principal = _principal_from_query(qs, session.store)
+                rows = filter_facts(principal, session.store.facts.values())
                 if entity_id:
                     rows = [f for f in rows if f.subject_entity_id == entity_id]
                 rows.sort(key=lambda f: f.valid_from, reverse=True)
@@ -327,17 +417,23 @@ def make_handler(session: SynapseSession):
             if path == "/v1/conflicts":
                 qs = parse_qs(urlparse(self.path).query)
                 open_only = qs.get("open_only", ["false"])[0].lower() == "true"
+                principal = _principal_from_query(qs, session.store)
                 for ent in session.store.entities.values():
                     if ent.status.value == "active":
                         session.resolver.detect_scalar_conflicts(ent.entity_id)
-                rows = []
-                for c in session.store.conflicts.values():
-                    if open_only and c.status.value != "open":
-                        continue
-                    rows.append(c.to_dict())
+                candidates = [
+                    c
+                    for c in session.store.conflicts.values()
+                    if not open_only or c.status.value == "open"
+                ]
+                visible = filter_conflicts(principal, candidates, session.store.facts)
+                rows = [c.to_dict() for c in visible]
                 return _json_response(self, 200, rows)
             if path == "/v1/entities":
-                rows = [e.to_dict() for e in session.store.entities.values()]
+                qs = parse_qs(urlparse(self.path).query)
+                principal = _principal_from_query(qs, session.store)
+                visible = filter_entities(principal, session.store.entities.values())
+                rows = [e.to_dict() for e in visible]
                 return _json_response(self, 200, rows)
             if path.startswith("/v1/history/"):
                 name = path[len("/v1/history/") :].strip("/")
@@ -348,8 +444,11 @@ def make_handler(session: SynapseSession):
                 if not ent:
                     return _json_response(self, 404, {"error": "entity not found"})
                 qs = parse_qs(urlparse(self.path).query)
+                principal = _principal_from_query(qs, session.store)
+                if not principal_may_access(principal, set(ent.acl_tags)):
+                    return _json_response(self, 404, {"error": "entity not found"})
                 pred = (qs.get("predicate") or [None])[0]
-                rows = session.temporal.timeline(ent.entity_id, predicate=pred or None)
+                rows = _filtered_timeline(session, ent.entity_id, principal, pred or None)
                 return _json_response(
                     self,
                     200,
@@ -382,9 +481,16 @@ def make_handler(session: SynapseSession):
                     },
                 )
             if path == "/v1/export":
+                qs = parse_qs(urlparse(self.path).query)
+                principal = _principal_from_query(qs, session.store)
+                if not _require_role(self, principal, "admin"):
+                    return None
                 return _json_response(self, 200, export_store(session.store))
             if path == "/v1/audit":
                 qs = parse_qs(urlparse(self.path).query)
+                principal = _principal_from_query(qs, session.store)
+                if not _require_role(self, principal, "admin"):
+                    return None
                 limit = int(qs.get("limit", ["50"])[0])
                 etype = qs.get("type", [None])[0]
                 events = session.store.audit.to_list()
@@ -534,9 +640,10 @@ def make_handler(session: SynapseSession):
                 ent = session.store.get_entity_by_name(entity)
                 if not ent:
                     return _json_response(self, 404, {"error": "entity not found"})
-                rows = session.temporal.timeline(
-                    ent.entity_id, predicate=body.get("predicate")
-                )
+                principal = _principal_from_body(body, session.store)
+                if not principal_may_access(principal, set(ent.acl_tags)):
+                    return _json_response(self, 404, {"error": "entity not found"})
+                rows = _filtered_timeline(session, ent.entity_id, principal, body.get("predicate"))
                 return _json_response(
                     self,
                     200,
@@ -564,6 +671,8 @@ def make_handler(session: SynapseSession):
                 )
 
             if path == "/v1/entities/merge":
+                if not _require_role(self, _principal_from_body(body, session.store), "operator"):
+                    return None
                 try:
                     merge = er.merge(
                         body["survivor_id"],
@@ -585,6 +694,8 @@ def make_handler(session: SynapseSession):
 
             m = _PIN_RE.match(path)
             if m:
+                if not _require_role(self, _principal_from_body(body, session.store), "operator"):
+                    return None
                 conflict_id = m.group(1)
                 try:
                     pin = session.adjudication.human_pin(
@@ -612,6 +723,8 @@ def make_handler(session: SynapseSession):
                 )
 
             if path == "/v1/connectors/poll":
+                if not _require_role(self, _principal_from_body(body, session.store), "operator"):
+                    return None
                 cid = body.get("connector_id")
                 if cid:
                     results = [session.connector_runner.poll_one(cid)]
@@ -623,6 +736,8 @@ def make_handler(session: SynapseSession):
                 )
 
             if path == "/v1/connectors/mock-emit":
+                if not _require_role(self, _principal_from_body(body, session.store), "operator"):
+                    return None
                 from synapse.connectors.mock_cdc import MockCdcConnector
 
                 cid = body.get("connector_id") or "mock-cdc"
@@ -673,6 +788,8 @@ def make_handler(session: SynapseSession):
                     ops.close()
 
             if path == "/v1/inbox/poll":
+                if not _require_role(self, _principal_from_body(body, session.store), "operator"):
+                    return None
                 from pathlib import Path
 
                 from synapse.connectors.file_jsonl import JsonlFileConnector
@@ -724,6 +841,8 @@ def make_handler(session: SynapseSession):
                 )
 
             if path == "/v1/reprocess":
+                if not _require_role(self, _principal_from_body(body, session.store), "operator"):
+                    return None
                 report = session.reprocess.run(
                     domain=body.get("domain"),
                     limit=body.get("limit"),
@@ -733,6 +852,8 @@ def make_handler(session: SynapseSession):
                 return _json_response(self, 200, report.to_dict())
 
             if path == "/v1/materialize":
+                if not _require_role(self, _principal_from_body(body, session.store), "operator"):
+                    return None
                 view_name = (body.get("view") or "entity_facts").lower()
                 view = (
                     session.materializer.conflict_table()
@@ -755,6 +876,8 @@ def make_handler(session: SynapseSession):
                 return _json_response(self, 200, a.to_dict())
 
             if path == "/v1/actions/decide":
+                if not _require_role(self, _principal_from_body(body, session.store), "operator"):
+                    return None
                 aid = body.get("action_id")
                 if not aid:
                     return _json_response(self, 400, {"error": "action_id required"})
@@ -776,6 +899,8 @@ def make_handler(session: SynapseSession):
                     return _json_response(self, 400, {"error": str(e)})
 
             if path == "/v1/sense/drop":
+                if not _require_role(self, _principal_from_body(body, session.store), "operator"):
+                    return None
                 kind = (body.get("kind") or "json").lower()
                 acl = body.get("acl_tags") or ["domain:sre", "clearance:l2"]
 
@@ -858,6 +983,8 @@ def make_handler(session: SynapseSession):
                 return _json_response(self, 400, {"error": f"unknown kind: {kind}"})
 
             if path == "/v1/webhook":
+                if not _require_role(self, _principal_from_body(body, session.store), "operator"):
+                    return None
                 from synapse.connectors.webhook_inbox import WebhookInboxConnector
 
                 try:
