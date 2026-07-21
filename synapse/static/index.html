@@ -196,6 +196,12 @@
       display: grid;
       gap: 0.5rem;
     }
+    .choice-grid-label {
+      margin: 1rem 0 0.5rem;
+      font-size: 0.85rem;
+      color: var(--muted);
+      font-weight: 600;
+    }
 
     /* Result cards */
     .result {
@@ -539,7 +545,12 @@
         and detect where sources disagree.
       </p>
 
-      <div class="choice-grid">
+      <div id="dynamicStoryWrap" style="display:none">
+        <div class="choice-grid" id="dynamicStoryCard"></div>
+        <p class="choice-grid-label">Or try a sample story instead:</p>
+      </div>
+
+      <div class="choice-grid" id="cannedStoryGrid">
         <button type="button" class="big-btn primary" id="btnLoadCheckout">
           Checkout outage (recommended)
           <span class="sub">CI says v2.4.1 · Kubernetes says v2.4.0 crash-loop · Slack says manual pin</span>
@@ -852,10 +863,58 @@
         $("dataPill").textContent = (s.entities || 0) + " entities · " + (s.facts || 0) + " facts";
         $("dataPill").className = "pill ok";
       }
+      refreshDynamicStory();
       return s;
     } catch (e) {
       return null;
     }
+  }
+
+  // Step 1's "what's actually loaded" card -- reflects real ingested
+  // data instead of always showing the three canned demo scenarios
+  // regardless of what's in the store. Falls back to the canned cards
+  // (left untouched) when the store is empty.
+  async function refreshDynamicStory() {
+    try {
+      var s = await api("/v1/sense/summary");
+      renderDynamicStory(s.dynamic_story);
+    } catch (e) {
+      renderDynamicStory(null);
+    }
+  }
+
+  function renderDynamicStory(story) {
+    var wrap = $("dynamicStoryWrap");
+    var card = $("dynamicStoryCard");
+    var cannedGrid = $("cannedStoryGrid");
+    if (!story) {
+      wrap.style.display = "none";
+      return;
+    }
+    wrap.style.display = "block";
+    card.innerHTML =
+      '<button type="button" class="big-btn success" id="btnUseLoadedData">' +
+      escapeHtml(story.title) +
+      '<span class="sub">' + escapeHtml(story.subtitle) + "</span>" +
+      "</button>";
+    $("btnUseLoadedData").addEventListener("click", function () {
+      state.loaded = true;
+      state.entity = null;
+      // No single canonical entity for real ingested data (unlike the
+      // canned demos) -- clear the checkout-service placeholder copy
+      // rather than showing an irrelevant default.
+      $("entity").value = "";
+      $("question").value = "";
+      refreshNavEnabled();
+      toast("Loaded data ready — type an entity name to ask about");
+      goStep(2);
+    });
+    // The loaded-data card is now the recommended path; demote the
+    // canned demos to secondary options rather than hiding them.
+    cannedGrid.querySelectorAll(".big-btn").forEach(function (btn) {
+      btn.classList.remove("primary");
+      btn.classList.add("ghost");
+    });
   }
 
   async function checkHealth() {

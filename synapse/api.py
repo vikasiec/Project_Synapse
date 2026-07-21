@@ -18,7 +18,9 @@ Endpoints:
   GET  /v1/raw            → Sense board RAW panel
   GET  /v1/episodes       → Sense board RAW panel (prepped units)
   GET  /v1/facts          → Sense board MEANING panel
-  GET  /v1/sense/summary  → Sense board status strip
+  GET  /v1/sense/summary  → Sense board status strip (incl. dynamic_story
+                            reflecting whatever's actually loaded, so
+                            Step 1 doesn't always show the canned demos)
   POST /v1/sense/drop     → land CSV/JSONL path or pasted JSON (C1)
 """
 
@@ -49,6 +51,82 @@ from synapse.store import SemanticStore
 
 _PIN_RE = re.compile(r"^/v1/conflicts/([^/]+)/pin$")
 STATIC_DIR = Path(__file__).resolve().parent / "static"
+
+# Human labels for the domain ACL tags actually in use across this proof's
+# scenarios/connectors. A domain with no entry here still gets a readable
+# fallback ("{tag} data") rather than disappearing from the dynamic story.
+_DOMAIN_LABELS: dict[str, str] = {
+    "domain:sre": "Incident / infra data",
+    "domain:revenue": "Billing / revenue data",
+    "domain:identity": "Identity / access data",
+    "domain:support": "Support ticket data",
+    "domain:clinical": "Clinical / lab data",
+    "domain:banking": "Banking data",
+}
+
+
+def _dynamic_story(store: SemanticStore) -> Optional[dict[str, Any]]:
+    """
+    "What's actually loaded" summary for the Sense board's Step 1 card, so
+    it reflects real ingested data instead of always showing the three
+    original canned demo scenarios regardless of what's in the store
+    (the gap a user flagged: after loading real clinical data, Step 1
+    still advertised "Checkout outage" / "Billing revenue conflict").
+
+    Returns None when the store has no raw objects at all -- the canned
+    cards remain the correct fallback for that first-time-visitor
+    bootstrap case, not something this function should paper over.
+
+    Scoped to whichever domain has the most landed raw objects, so a
+    store that's mostly one domain (the common case -- one demo run, one
+    real ingest) gets one coherent story rather than an average of
+    everything landed so far.
+    """
+    if not store.raw_objects:
+        return None
+
+    counts: dict[str, int] = {}
+    sources_by_domain: dict[str, set[str]] = {}
+    for raw in store.raw_objects.values():
+        domains = [t for t in raw.acl_tags if t.startswith("domain:")] or ["domain:unknown"]
+        for d in domains:
+            counts[d] = counts.get(d, 0) + 1
+            sources_by_domain.setdefault(d, set()).add(raw.source_system)
+
+    primary_domain = max(counts, key=counts.get)
+    sources = sorted(sources_by_domain[primary_domain])
+
+    entity_count = sum(
+        1 for e in store.entities.values() if primary_domain in e.acl_tags
+    )
+    conflict_count = sum(
+        1
+        for c in store.conflicts.values()
+        if c.status.value == "open"
+        and primary_domain in getattr(store.entities.get(c.subject_entity_id), "acl_tags", [])
+    )
+
+    label = _DOMAIN_LABELS.get(primary_domain, f"{primary_domain.split(':', 1)[-1]} data")
+    source_note = (
+        f"{len(sources)} sources converging: {', '.join(sources[:4])}"
+        if len(sources) > 1
+        else f"1 source: {sources[0]}"
+    )
+    conflict_note = (
+        f" · {conflict_count} open conflict{'s' if conflict_count != 1 else ''}"
+        if conflict_count
+        else ""
+    )
+
+    return {
+        "domain": primary_domain,
+        "title": f"{label} loaded",
+        "subtitle": f"{entity_count} entities · {source_note}{conflict_note}",
+        "entity_count": entity_count,
+        "source_count": len(sources),
+        "sources": sources,
+        "conflict_count": conflict_count,
+    }
 
 
 def _json_response(handler: BaseHTTPRequestHandler, code: int, body: Any) -> None:
@@ -404,6 +482,7 @@ def make_handler(session: SynapseSession):
                         "facts": len(s.facts),
                         "conflicts_open": open_conflicts,
                         "conflicts_total": len(s.conflicts),
+                        "dynamic_story": _dynamic_story(s),
                     },
                 )
             if path == "/v1/metrics":
@@ -1009,7 +1088,10 @@ def make_handler(session: SynapseSession):
                             from synapse.connectors.csv_drop import CsvDropConnector
 
                             conn = CsvDropConnector(
-                                path=file_path, connector_id=cid, source_system=source
+                                path=file_path,
+                                connector_id=cid,
+                                source_system=source,
+                                default_acl=list(acl),
                             )
                         else:
                             from synapse.connectors.file_jsonl import (
@@ -1017,7 +1099,10 @@ def make_handler(session: SynapseSession):
                             )
 
                             conn = JsonlFileConnector(
-                                path=file_path, connector_id=cid, source_system=source
+                                path=file_path,
+                                connector_id=cid,
+                                source_system=source,
+                                default_acl=list(acl),
                             )
                         session.connectors.register(conn)
                     result = session.connector_runner.poll_one(cid)

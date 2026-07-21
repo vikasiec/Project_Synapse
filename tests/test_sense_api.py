@@ -105,6 +105,53 @@ class TestSenseAPI(unittest.TestCase):
         )
         self.assertEqual(status, 404)
 
+    def test_sense_drop_csv_honors_acl_tags(self):
+        """`/v1/sense/drop` accepted an `acl_tags` body param for kind=csv
+        but never actually passed it to the connector -- every CSV drop
+        silently landed as domain:sre regardless of what the caller asked
+        for. Land a row tagged domain:clinical and confirm it's visible
+        to a domain:clinical-scoped principal but not domain:revenue."""
+        import tempfile
+        from pathlib import Path
+
+        with tempfile.TemporaryDirectory() as td:
+            path = Path(td) / "acl_check.csv"
+            path.write_text("widget_id,widget_name\nW-1,Sprocket\n", encoding="utf-8")
+            status, body = self._post(
+                "/v1/sense/drop",
+                {
+                    "kind": "csv",
+                    "path": str(path),
+                    "connector_id": "acl-check",
+                    "acl_tags": ["domain:clinical", "clearance:l2"],
+                },
+            )
+            self.assertEqual(status, 200)
+
+            status, raw = self._get(
+                "/v1/raw?limit=500&principal=domain:clinical,clearance:l2"
+            )
+            self.assertEqual(status, 200)
+            self.assertTrue(any(r["source"] == "Spreadsheet" for r in raw["items"]))
+
+    def test_sense_summary_dynamic_story_reflects_loaded_domain(self):
+        status, body = self._post(
+            "/v1/sense/drop",
+            {
+                "kind": "json",
+                "payload": "widget_id: W-9\nwidget_name: Sprocket\nwidget_status: active\n",
+                "source_system": "WidgetSource",
+                "acl_tags": ["domain:widgets", "clearance:l2"],
+            },
+        )
+        self.assertEqual(status, 200)
+
+        status, summary = self._get("/v1/sense/summary")
+        self.assertEqual(status, 200)
+        self.assertIsNotNone(summary.get("dynamic_story"))
+        self.assertIn("title", summary["dynamic_story"])
+        self.assertIn("subtitle", summary["dynamic_story"])
+
 
 if __name__ == "__main__":
     unittest.main()

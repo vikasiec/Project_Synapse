@@ -181,6 +181,22 @@ body; an out-of-domain predicate is dropped; a known synonym is folded.
   standards-conformant on both sides. `normalize_code` is proven correct
   against a conformant fixture; the New Data fixture's own data quality is
   a separate, documented issue.
+  **Second, independent barrier, so this isn't overclaimed:** even with
+  conformant codes on both sides, this dataset's HL7 and FHIR results
+  still would not converge, because `instance_id` (which scopes identity
+  alongside the code, deliberately, to keep separate blood draws from
+  colliding) is derived differently per format — FHIR prefers
+  `Observation.id` (e.g. `obs-raw-9000`) when present, falling back to
+  `basedOn` only when it's absent; HL7 uses the OBR order id. New Data's
+  FHIR observations all carry an `id`, so in practice `basedOn` (which
+  *would* line up with HL7's order id) never gets used. The
+  `test_same_patient_same_loinc_code_converges_across_hl7_and_fhir` fixture
+  in `tests/test_code_normalization.py` proves `normalize_code` itself is
+  sound by deliberately omitting `obs.id` so `basedOn` is what scopes the
+  instance — it is not evidence that this dataset's lab results would
+  converge if the codes alone were fixed. Reconciling `instance_id`
+  derivation across formats is a real follow-up, out of this pass's four
+  scoped items.
 - HL7 ADT/ORM/SIU message types remain unregistered in
   `_HL7_MESSAGE_HANDLERS` — structurally pluggable now, not implemented,
   since none of this proof's actual data needs them yet.
