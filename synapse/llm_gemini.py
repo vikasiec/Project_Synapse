@@ -28,6 +28,7 @@ from urllib.parse import urlencode
 from synapse.dual_path import ResidualExtractor
 from synapse.metrics import METRICS
 from synapse.models import Episode, Fact, RawObject
+from synapse.ontology import RESIDUAL_PREDICATE_VOCAB
 
 DEFAULT_MODEL = os.environ.get("GEMINI_MODEL", "gemini-3.1-flash-lite")
 API_BASE = "https://generativelanguage.googleapis.com/v1beta/models"
@@ -217,7 +218,7 @@ class GeminiResidualExtractor(ResidualExtractor):
                 raise RuntimeError(reason)
             return []
 
-        prompt = self._build_prompt(residual_text, raw.source_system)
+        prompt = self._build_prompt(residual_text, raw.source_system, episode.domain)
         try:
             with METRICS.timer("gemini.generate"):
                 text = call_gemini_generate(
@@ -291,11 +292,24 @@ class GeminiResidualExtractor(ResidualExtractor):
         )
 
     @staticmethod
-    def _build_prompt(residual_text: str, source_system: str) -> str:
+    def _build_prompt(
+        residual_text: str, source_system: str, domain: Optional[str] = None
+    ) -> str:
+        # Bounded by the same per-domain vocabulary dual_path.py enforces
+        # server-side after the call (synapse/ontology.py). Telling the
+        # model the actual allowed set up front -- instead of a fixed set
+        # of SRE-incident example words baked into every prompt regardless
+        # of domain -- means a clinical episode gets asked for clinical
+        # predicates, not "risk_flag"/"incident_theme" by default; the
+        # post-call filter is the hard guarantee, this is just so the
+        # model isn't guessing blind.
+        allowed = sorted(RESIDUAL_PREDICATE_VOCAB.get(domain or "", set()) | {"free_text_note"})
+        allowed_str = ", ".join(allowed)
         return f"""You extract residual semantic facts from operational text for a schema-on-read system.
 Structured fields were already extracted by deterministic rules. Only extract EXTRA free-text insights.
 
 Source system: {source_system}
+Domain: {domain or "unknown"}
 
 Text:
 ---
@@ -307,9 +321,9 @@ Return ONLY valid JSON of the form:
 
 Rules:
 - Max 5 facts
-- Prefer predicates like free_text_note, risk_flag, human_action, incident_theme
+- Predicate MUST be one of exactly: {allowed_str}. Do not invent new predicate names.
 - Do not invent version numbers, money amounts, or IDs not in the text
-- If nothing useful, return {{"facts":[]}}
+- If nothing useful, or nothing fits an allowed predicate, return {{"facts":[]}}
 """
 
 

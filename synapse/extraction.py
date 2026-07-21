@@ -14,11 +14,13 @@ import re
 from dataclasses import dataclass
 from typing import Any, Optional
 
+from synapse.coding_systems import normalize_code, resolve_synonyms
 from synapse.entity_resolution import EntityResolutionService
 from synapse.fhir import (
     FhirParseError,
     bundle_resources,
     coding_display_and_code,
+    coding_system,
     first_identifier_system,
     first_identifier_value,
     human_name,
@@ -150,7 +152,7 @@ class RuleExtractor:
         # HL7v2 messages are unambiguous (MSH segment first) — check before
         # any key:value-style pattern, since this text has no ":" at all.
         if looks_like_hl7(text):
-            hl7 = self._extract_hl7_oru(episode, raw, text)
+            hl7 = self._extract_hl7(episode, raw, text)
             if hl7 is not None:
                 return hl7
         # FHIR is JSON, also unambiguous (no ":" key:value shape) — check
@@ -228,8 +230,21 @@ class RuleExtractor:
         return out
 
     @staticmethod
+    def _parse_kv_for(text: str, ontology_type: str) -> dict[str, str]:
+        """
+        `_parse_kv` plus schema-synonym resolution (synapse/coding_systems.py)
+        for the given ontology type -- so a header spelling like `PatientID`
+        or `MRN` resolves onto the same `patient_id` canonical field a
+        `Patient_id:` row already matched, instead of requiring an exact
+        column-name allowlist per known source file. Additive: a source
+        already using the canonical vocabulary is unaffected, since
+        `resolve_synonyms` never overwrites a key that's already present.
+        """
+        return resolve_synonyms(RuleExtractor._parse_kv(text), ontology_type)
+
+    @staticmethod
     def _looks_like_lab(text: str) -> bool:
-        kv = RuleExtractor._parse_kv(text)
+        kv = RuleExtractor._parse_kv_for(text, "LabResult")
         keys = set(kv.keys())
         # Need test name + result-like field
         has_test = bool(keys & {"test_name", "analyte", "test"})
@@ -238,17 +253,18 @@ class RuleExtractor:
 
     @staticmethod
     def _looks_like_patient(text: str) -> bool:
-        kv = RuleExtractor._parse_kv(text)
+        kv = RuleExtractor._parse_kv_for(text, "Patient")
         keys = set(kv.keys())
         has_id = "patient_id" in keys
         has_identity = bool(
-            keys & {"first_name", "last_name", "insurance_provider", "date_of_birth"}
+            keys
+            & {"first_name", "last_name", "full_name", "insurance_provider", "date_of_birth"}
         )
         return has_id and has_identity
 
     @staticmethod
     def _looks_like_doctor(text: str) -> bool:
-        kv = RuleExtractor._parse_kv(text)
+        kv = RuleExtractor._parse_kv_for(text, "Doctor")
         keys = set(kv.keys())
         has_id = "doctor_id" in keys
         has_identity = bool(keys & {"first_name", "last_name", "specialization"})
@@ -277,7 +293,7 @@ class RuleExtractor:
 
     @staticmethod
     def _looks_like_holder(text: str) -> bool:
-        kv = RuleExtractor._parse_kv(text)
+        kv = RuleExtractor._parse_kv_for(text, "AccountHolder")
         keys = set(kv.keys())
         has_id = "holder_id" in keys
         has_identity = bool(
@@ -287,17 +303,17 @@ class RuleExtractor:
 
     @staticmethod
     def _looks_like_account(text: str) -> bool:
-        kv = RuleExtractor._parse_kv(text)
+        kv = RuleExtractor._parse_kv_for(text, "Account")
         keys = set(kv.keys())
         # accounts.csv only — transactions.csv also has account_id (as a
         # foreign key) but never these account-attribute columns.
         has_id = "account_id" in keys
-        has_attrs = bool(keys & {"account_type", "branch", "status"})
+        has_attrs = bool(keys & {"account_type", "branch", "status", "account_status"})
         return has_id and has_attrs
 
     @staticmethod
     def _looks_like_transaction(text: str) -> bool:
-        kv = RuleExtractor._parse_kv(text)
+        kv = RuleExtractor._parse_kv_for(text, "Transaction")
         return "transaction_id" in kv
 
     def _extract_lab(
@@ -309,7 +325,7 @@ class RuleExtractor:
         Aligns with master doc multi-domain schema-on-read: new vertical without
         warehouse ETL — Path A deterministic parsers for known key clusters.
         """
-        kv = self._parse_kv(text)
+        kv = self._parse_kv_for(text, "LabResult")
         test_name = (
             kv.get("test_name")
             or kv.get("analyte")
@@ -394,11 +410,16 @@ class RuleExtractor:
         Own storage_type/ontology family (never ER-merges with employee
         identity Person) — same-name patient and employee must stay distinct.
         """
-        kv = self._parse_kv(text)
+        kv = self._parse_kv_for(text, "Patient")
         patient_id = kv.get("patient_id", "").strip()
         first = kv.get("first_name", "").strip()
         last = kv.get("last_name", "").strip()
-        name = f"{first} {last}".strip() or patient_id
+        # Some sources (this proof's original hospital fixture) split the
+        # name into first_name/last_name; others (a single "FullName"
+        # column, e.g. an LIS patient master export) don't -- both are
+        # legitimate, so fall back to the synonym-resolved full_name field
+        # rather than requiring the split-name shape specifically.
+        name = f"{first} {last}".strip() or kv.get("full_name", "").strip() or patient_id
         if not patient_id or not name:
             return None
 
@@ -440,7 +461,7 @@ class RuleExtractor:
         self, episode: Episode, raw: RawObject, text: str
     ) -> Optional[ExtractionResult]:
         """HIS doctor record row -> Doctor entity + structured facts."""
-        kv = self._parse_kv(text)
+        kv = self._parse_kv_for(text, "Doctor")
         doctor_id = kv.get("doctor_id", "").strip()
         first = kv.get("first_name", "").strip()
         last = kv.get("last_name", "").strip()
@@ -678,7 +699,7 @@ class RuleExtractor:
         self, episode: Episode, raw: RawObject, text: str
     ) -> Optional[ExtractionResult]:
         """Bank account-holder row -> AccountHolder entity + facts."""
-        kv = self._parse_kv(text)
+        kv = self._parse_kv_for(text, "AccountHolder")
         holder_id = kv.get("holder_id", "").strip()
         first = kv.get("first_name", "").strip()
         last = kv.get("last_name", "").strip()
@@ -723,7 +744,7 @@ class RuleExtractor:
     ) -> Optional[ExtractionResult]:
         """Bank account row -> Account entity, resolving the AccountHolder
         entity id by external id when it has already landed."""
-        kv = self._parse_kv(text)
+        kv = self._parse_kv_for(text, "Account")
         account_id = kv.get("account_id", "").strip()
         if not account_id:
             return None
@@ -776,7 +797,7 @@ class RuleExtractor:
     ) -> Optional[ExtractionResult]:
         """Bank ledger row -> Transaction entity, resolving the Account
         entity id by external id when it has already landed."""
-        kv = self._parse_kv(text)
+        kv = self._parse_kv_for(text, "Transaction")
         transaction_id = kv.get("transaction_id", "").strip()
         if not transaction_id:
             return None
@@ -825,25 +846,53 @@ class RuleExtractor:
         self.temporal.apply_for_entity(entity.entity_id)
         return ExtractionResult(entity=entity, facts=facts)
 
-    def _extract_hl7_oru(
+    # HL7v2 message type -> semantic handler. A generic segment/component
+    # tokenizer (synapse/hl7v2.py) can already read *any* message type;
+    # this table is the only place "which types this proof actually
+    # understands" is decided, so adding ADT/ORM/SIU support later is a
+    # new dict entry + handler method, not a rewrite of the dispatch
+    # logic. Only ORU^R01 is registered today -- matching what this proof
+    # implements end to end -- so every other real-world message type
+    # (ADT admit/discharge/transfer, ORM orders, SIU scheduling, ...)
+    # still falls through as "not yet extracted", same honest behavior as
+    # before, just structurally extensible now instead of a single `if`.
+    _HL7_MESSAGE_HANDLERS: dict[tuple[str, str], str] = {
+        ("ORU", "R01"): "_extract_hl7_oru",
+    }
+
+    def _extract_hl7(
         self, episode: Episode, raw: RawObject, text: str
+    ) -> Optional[ExtractionResult]:
+        try:
+            msg = parse_hl7_message(text)
+        except Hl7ParseError:
+            return None
+        msh = msg.first("MSH")
+        if msh is None:
+            return None
+        handler_name = self._HL7_MESSAGE_HANDLERS.get((msh.value(9, 1), msh.value(9, 2)))
+        if handler_name is None:
+            return None
+        return getattr(self, handler_name)(episode, raw, text, msg)
+
+    def _extract_hl7_oru(
+        self, episode: Episode, raw: RawObject, text: str, msg: Optional[Any] = None
     ) -> Optional[ExtractionResult]:
         """
         HL7v2 ORU^R01 (observation result) message -> a Patient entity
         (reusing the existing Patient type, cross-domain: the same patient
         identity concept whether it arrives via a hospital_ops CSV or a
         clinical_lab HL7 feed) plus one LabResult entity per OBX segment,
-        each linked back to the patient. Scoped to ORU^R01 only — other
-        message types fall through as "not yet extracted", honestly.
+        each linked back to the patient.
         """
-        try:
-            msg = parse_hl7_message(text)
-        except Hl7ParseError:
-            return None
-
-        msh = msg.first("MSH")
-        if msh is None or msh.value(9, 1) != "ORU" or msh.value(9, 2) != "R01":
-            return None
+        if msg is None:
+            try:
+                msg = parse_hl7_message(text)
+            except Hl7ParseError:
+                return None
+            msh = msg.first("MSH")
+            if msh is None or msh.value(9, 1) != "ORU" or msh.value(9, 2) != "R01":
+                return None
 
         pid = msg.first("PID")
         if pid is None:
@@ -891,6 +940,15 @@ class RuleExtractor:
         for obx, obr in zip(msg.get("OBX"), obx_obrs):
             test_code = obx.value(3, 1)
             test_name = obx.value(3, 2) or test_code
+            # OBX-3 component 3 is the CE data type's coding-system
+            # identifier (HL7 Table 0396: "LN" = LOINC, "SCT"/"SNM" =
+            # SNOMED CT, "L" = local, ...) -- the same standards signal
+            # FHIR carries as `coding[0].system`. Reading it (instead of
+            # discarding it, as this proof originally did) is what lets
+            # the same analyte converge with its FHIR-side counterpart
+            # via the shared normalize_code() below, rather than every
+            # format producing its own disconnected identity.
+            coding_system_id = obx.value(3, 3)
             if not test_name:
                 continue
 
@@ -906,7 +964,8 @@ class RuleExtractor:
             if obr is not None:
                 order_id = obr.value(2) or obr.value(3)
             instance_id = order_id.strip() or ""
-            result_key = f"{patient_id}:{test_code or test_name}"
+            code_key = normalize_code(coding_system_id, test_code) or (test_code or test_name)
+            result_key = f"{patient_id}:{code_key}"
             if instance_id:
                 result_key += f":{instance_id}"
             result_key = result_key.lower()
@@ -971,15 +1030,95 @@ class RuleExtractor:
             self.temporal.apply_for_entity(rid)
         return ExtractionResult(entity=patient, facts=all_facts)
 
+    def _resolve_or_stub_patient(
+        self,
+        resources: list[dict[str, Any]],
+        subject: Optional[dict[str, Any]],
+        *,
+        episode: Episode,
+        raw: RawObject,
+        all_facts: list[Fact],
+    ) -> Optional[tuple[Entity, Optional[str], Optional[str]]]:
+        """
+        Resolve an Observation's `subject` to a Patient entity, embedded or
+        not. Returns (patient_entity, patient_id, patient_authority) or
+        None if the reference is missing/malformed -- genuinely nothing to
+        attribute the Observation to, same as before this method existed.
+
+        Most real FHIR Observation exports reference the patient by a bare
+        `"Patient/<id>"` string with no inline resource at all (that's the
+        point of a `Reference` -- it is not a promise the target is bundled
+        alongside it). Requiring an embedded resource, as this proof
+        originally did, only works on hand-built demo bundles where every
+        Observation happens to travel with its Patient. This resolves the
+        embedded case first (unchanged), then falls back to a lightweight
+        stub entity keyed on the bare reference id -- using `subject.display`
+        for a human-readable name when the source provided one (a real FHIR
+        convention for exactly this "don't need the full resource" case),
+        lower trust than a fully-resolved record since demographic facts
+        (DOB, gender, ...) are not available for it.
+        """
+        ref = (subject or {}).get("reference")
+        if not ref or "/" not in ref:
+            return None
+        res_type, res_id = ref.split("/", 1)
+        if res_type != "Patient" or not res_id:
+            return None
+
+        embedded = resolve_local_reference(resources, ref)
+        if embedded is not None:
+            patient_id = first_identifier_value(embedded) or res_id
+            patient_authority = first_identifier_system(embedded)
+            family, given = human_name(embedded)
+            name = f"{given} {family}".strip() or patient_id
+            if not name:
+                return None
+            patient = self.er.get_or_create(
+                "Patient",
+                name,
+                source_system=raw.source_system,
+                acl_tags=list(raw.acl_tags),
+                external_id=patient_id,
+                trust_score=0.85,
+                domain="hospital_ops",
+                identifier_authority=patient_authority,
+            )
+            dob = embedded.get("birthDate")
+            if dob:
+                all_facts.append(self._fact(patient, "date_of_birth", dob, 0.9, raw, episode))
+            gender = embedded.get("gender")
+            if gender:
+                all_facts.append(self._fact(patient, "gender", gender, 0.9, raw, episode))
+            return patient, patient_id, patient_authority
+
+        # Not embedded -- external reference. `subject.display` is FHIR's
+        # own mechanism for a human-readable name without a full resource;
+        # fall back to the bare id when even that is absent.
+        display = ((subject or {}).get("display") or "").strip()
+        name = display or res_id
+        patient = self.er.get_or_create(
+            "Patient",
+            name,
+            source_system=raw.source_system,
+            acl_tags=list(raw.acl_tags),
+            external_id=res_id,
+            trust_score=0.55,
+            domain="hospital_ops",
+            identifier_authority=None,
+        )
+        return patient, res_id, None
+
     def _extract_fhir_bundle(
         self, episode: Episode, raw: RawObject, text: str
     ) -> Optional[ExtractionResult]:
         """
-        FHIR Bundle (Patient + Observation resources) -> a Patient entity
-        plus one LabResult entity per Observation, linked back to the
-        patient. The FHIR analogue of an HL7v2 ORU^R01 message. Scoped to
-        Bundle-of-inline-resources only -- no external reference fetching,
-        no `contained` resources.
+        FHIR Bundle of Observation resources (each referencing its Patient,
+        inline or by bare reference -- see `_resolve_or_stub_patient`) ->
+        one Patient entity per distinct subject plus one LabResult entity
+        per Observation, linked back to its own patient. The FHIR analogue
+        of an HL7v2 ORU^R01 message, generalized to the common bulk-export
+        shape (many Observations, many patients, no inline Patient
+        resources) rather than only a hand-assembled single-patient bundle.
 
         LabResult identity is scoped by patient_id from the start here
         (Active_File.md task 13/Codex's review found this the hard way for
@@ -994,52 +1133,55 @@ class RuleExtractor:
             return None
 
         resources = bundle_resources(data)
-        patient_res = next(
-            (r for r in resources if r.get("resourceType") == "Patient"), None
-        )
-        if patient_res is None:
-            return None
-
-        patient_id = first_identifier_value(patient_res)
-        # Identifier.system is the FHIR analogue of HL7v2 PID-3's
-        # assigning-authority component -- same collision risk (two
-        # facilities issuing the same bare ID to two different people),
-        # same fix: pass it through to cross-source identity blocking.
-        patient_authority = first_identifier_system(patient_res)
-        family, given = human_name(patient_res)
-        name = f"{given} {family}".strip() or patient_id
-        if not patient_id or not name:
-            return None
-
-        patient = self.er.get_or_create(
-            "Patient",
-            name,
-            source_system=raw.source_system,
-            acl_tags=list(raw.acl_tags),
-            external_id=patient_id,
-            trust_score=0.85,
-            domain="hospital_ops",
-            identifier_authority=patient_authority,
-        )
         all_facts: list[Fact] = []
-        dob = patient_res.get("birthDate")
-        if dob:
-            all_facts.append(self._fact(patient, "date_of_birth", dob, 0.9, raw, episode))
-        gender = patient_res.get("gender")
-        if gender:
-            all_facts.append(self._fact(patient, "gender", gender, 0.9, raw, episode))
-
         result_entity_ids: set[str] = set()
+        patient_entity_ids: set[str] = set()
+        primary_patient: Optional[Entity] = None
+        # Cache so the same bare reference within one bundle resolves to
+        # one entity object without re-querying the store per Observation.
+        patient_cache: dict[str, tuple[Entity, Optional[str], Optional[str]]] = {}
+
+        # Patient resources with no Observation referencing them still get
+        # their own demographic facts landed (unchanged from before).
+        for res in resources:
+            if res.get("resourceType") != "Patient":
+                continue
+            rid = res.get("id")
+            resolved = self._resolve_or_stub_patient(
+                resources,
+                {"reference": f"Patient/{rid}"} if rid else None,
+                episode=episode,
+                raw=raw,
+                all_facts=all_facts,
+            )
+            if resolved is not None:
+                if rid:
+                    patient_cache[rid] = resolved
+                patient_entity_ids.add(resolved[0].entity_id)
+                if primary_patient is None:
+                    primary_patient = resolved[0]
+
         for obs in resources:
             if obs.get("resourceType") != "Observation":
                 continue
-            subject = resolve_local_reference(
-                resources, (obs.get("subject") or {}).get("reference")
-            )
-            if subject is not patient_res:
-                # Observation for a different/unresolvable subject in this
-                # bundle -- do not attribute it to this patient by accident.
+            subject = obs.get("subject") or {}
+            ref = subject.get("reference") or ""
+            res_id = ref.split("/", 1)[1] if "/" in ref else None
+
+            resolved = patient_cache.get(res_id) if res_id else None
+            if resolved is None:
+                resolved = self._resolve_or_stub_patient(
+                    resources, subject, episode=episode, raw=raw, all_facts=all_facts
+                )
+                if resolved is not None and res_id:
+                    patient_cache[res_id] = resolved
+            if resolved is None:
+                # No reference at all, or malformed -- genuinely nothing to
+                # attribute this Observation to.
                 continue
+            patient, patient_id, patient_authority = resolved
+            if primary_patient is None:
+                primary_patient = patient
 
             test_name, test_code = coding_display_and_code(obs.get("code"))
             if not test_name:
@@ -1050,7 +1192,17 @@ class RuleExtractor:
                 based_on = obs.get("basedOn") or []
                 if based_on:
                     instance_id = str((based_on[0] or {}).get("reference") or "").strip()
-            result_key = f"{patient_id}:{test_code or test_name}"
+            # coding[0].system is FHIR's analogue of HL7 OBX-3's coding-
+            # system component -- read via the same normalize_code() the
+            # HL7 path uses, so the identical analyte converges to the
+            # same LabResult identity across both formats when both
+            # sources actually agree on a coding system (see
+            # synapse/coding_systems.py's module docstring for the
+            # caveat when they don't).
+            code_key = normalize_code(coding_system(obs.get("code")), test_code) or (
+                test_code or test_name
+            )
+            result_key = f"{patient_id}:{code_key}"
             if instance_id:
                 result_key += f":{instance_id}"
             result_key = result_key.lower()
@@ -1102,16 +1254,18 @@ class RuleExtractor:
             all_facts.append(
                 self._fact(result, "patient_entity_id", patient.entity_id, 0.85, raw, episode)
             )
+            patient_entity_ids.add(patient.entity_id)
 
-        if not all_facts:
+        if primary_patient is None or not all_facts:
             return None
 
         for f in all_facts:
             self.store.put_fact(f)
-        self.temporal.apply_for_entity(patient.entity_id)
+        for pid_ in patient_entity_ids:
+            self.temporal.apply_for_entity(pid_)
         for rid in result_entity_ids:
             self.temporal.apply_for_entity(rid)
-        return ExtractionResult(entity=patient, facts=all_facts)
+        return ExtractionResult(entity=primary_patient, facts=all_facts)
 
     def _extract_service(
         self, episode: Episode, raw: RawObject, text: str

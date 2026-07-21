@@ -112,6 +112,44 @@ def coding_display_and_code(field: Optional[dict[str, Any]]) -> tuple[str, str]:
     return c.get("display", "") or "", c.get("code", "") or ""
 
 
+def coding_system(field: Optional[dict[str, Any]]) -> Optional[str]:
+    """
+    Returns the terminology system URI (`coding[0].system`, e.g.
+    "http://loinc.org") of a CodeableConcept's first coding -- the FHIR
+    analogue of HL7v2's CE component 3. Callers use this for standards-
+    based code identity normalization (`synapse/coding_systems.py`)
+    instead of keying on the bare `code` string alone.
+    """
+    if not field:
+        return None
+    codings = field.get("coding") or []
+    if not codings or not isinstance(codings, list):
+        return None
+    return codings[0].get("system") or None
+
+
+def extract_note_free_text(resources: list[dict[str, Any]]) -> str:
+    """
+    Genuinely unstructured free text from a bundle's resources -- FHIR's
+    `Annotation`-typed `note` array (present on Observation and many other
+    resource types), the FHIR analogue of HL7v2's NTE segment. Used to
+    scope the residual/LLM path to text no deterministic parser already
+    consumed, instead of the whole already-structured resource JSON.
+    """
+    lines: list[str] = []
+    for res in resources:
+        notes = res.get("note") or []
+        if not isinstance(notes, list):
+            continue
+        for n in notes:
+            if not isinstance(n, dict):
+                continue
+            text = (n.get("text") or "").strip()
+            if text:
+                lines.append(text)
+    return "\n".join(lines)
+
+
 def reference_range_string(observation: dict[str, Any]) -> str:
     ranges = observation.get("referenceRange") or []
     if not ranges or not isinstance(ranges, list):

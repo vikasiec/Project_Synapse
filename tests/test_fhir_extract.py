@@ -217,9 +217,10 @@ class TestFhirExtract(unittest.TestCase):
         out = ex.extract_from_episode(r.episode, r.raw)
         self.assertIsNone(out)
 
-    def test_observation_for_unresolvable_subject_skipped(self):
-        """An Observation referencing a subject not in this bundle must not
-        be silently attributed to whichever Patient happens to be present."""
+    def test_observation_with_malformed_reference_skipped(self):
+        """An Observation with no usable subject reference at all -- not
+        "/"-shaped, or missing entirely -- must not be silently attributed
+        to whichever Patient happens to be present in the bundle."""
         store = SemanticStore()
         ex = RuleExtractor(store, ontology=OntologyRegistry.default())
         ing = IngestionService(store, domain="clinical_lab")
@@ -241,7 +242,7 @@ class TestFhirExtract(unittest.TestCase):
                             "resourceType": "Observation",
                             "status": "final",
                             "code": {"coding": [{"code": "777-3", "display": "Platelet Count"}]},
-                            "subject": {"reference": "Patient/someone-else"},
+                            "subject": {"display": "no reference, just a name"},
                             "valueQuantity": {"value": 245, "unit": "10*3/uL"},
                         }
                     },
@@ -252,6 +253,123 @@ class TestFhirExtract(unittest.TestCase):
         out = ex.extract_from_episode(r.episode, r.raw)
         self.assertIsNotNone(out)  # Patient's own birthDate still extracts
         self.assertIsNone(store.get_entity_by_name("Platelet Count"))
+
+    def test_observation_for_external_reference_creates_stub_patient(self):
+        """An Observation whose subject is a bare "Patient/<id>" reference
+        with NO inline resource anywhere in the bundle -- the common shape
+        for real bulk Observation exports, and the shape this proof
+        originally refused to extract at all (Claude_Instructions.md Step
+        3.2) -- must get its own lightweight stub Patient, not be dropped
+        and not be misattributed to an unrelated Patient resource that
+        happens to be present."""
+        store = SemanticStore()
+        ex = RuleExtractor(store, ontology=OntologyRegistry.default())
+        ing = IngestionService(store, domain="clinical_lab")
+        bundle = json.dumps(
+            {
+                "resourceType": "Bundle",
+                "entry": [
+                    {
+                        "resource": {
+                            "resourceType": "Patient",
+                            "id": "p001",
+                            "identifier": [{"value": "P001"}],
+                            "name": [{"family": "Williams", "given": ["David"]}],
+                            "birthDate": "1955-06-04",
+                        }
+                    },
+                    {
+                        "resource": {
+                            "resourceType": "Observation",
+                            "status": "final",
+                            "code": {"coding": [{"code": "777-3", "display": "Platelet Count"}]},
+                            "subject": {
+                                "reference": "Patient/someone-else",
+                                "display": "Someone Else",
+                            },
+                            "valueQuantity": {"value": 245, "unit": "10*3/uL"},
+                        }
+                    },
+                ],
+            }
+        )
+        r = ing.land("FHIR-Interface", bundle, ["domain:clinical", "clearance:l2"])
+        out = ex.extract_from_episode(r.episode, r.raw)
+        self.assertIsNotNone(out)
+
+        plt = store.get_entity_by_name("Platelet Count")
+        self.assertIsNotNone(plt)
+        preds = {f.predicate: f.object for f in store.facts_for_entity(plt.entity_id)}
+        self.assertEqual(preds["result"], 245)
+
+        stub = store.get_entity_by_name("Someone Else")
+        self.assertIsNotNone(stub)
+        self.assertEqual(stub.entity_type, "Patient")
+        self.assertLess(stub.trust_score, 0.85)  # lower confidence than a resolved record
+        self.assertEqual(preds["patient_entity_id"], stub.entity_id)
+
+        # Not attributed to the unrelated embedded Patient.
+        david = store.get_entity_by_name("David Williams")
+        self.assertIsNotNone(david)
+        self.assertNotEqual(david.entity_id, stub.entity_id)
+
+    def test_observation_only_bundle_no_embedded_patient_extracts(self):
+        """The real bulk-export shape this proof could not handle at all
+        before: a Bundle containing ONLY Observation resources, each
+        referencing its patient externally, with zero embedded Patient
+        resources anywhere. Must extract every observation against its
+        own correctly-distinguished stub patient."""
+        store = SemanticStore()
+        ex = RuleExtractor(store, ontology=OntologyRegistry.default())
+        ing = IngestionService(store, domain="clinical_lab")
+        bundle = json.dumps(
+            {
+                "resourceType": "Bundle",
+                "type": "collection",
+                "entry": [
+                    {
+                        "resource": {
+                            "resourceType": "Observation",
+                            "id": "obs-1",
+                            "status": "final",
+                            "code": {
+                                "coding": [
+                                    {"system": "http://loinc.org", "code": "3016-3", "display": "TSH"}
+                                ]
+                            },
+                            "subject": {"reference": "Patient/PAT-1", "display": "Alpha Patient"},
+                            "valueQuantity": {"value": 2.1, "unit": "uIU/mL"},
+                        }
+                    },
+                    {
+                        "resource": {
+                            "resourceType": "Observation",
+                            "id": "obs-2",
+                            "status": "final",
+                            "code": {
+                                "coding": [
+                                    {"system": "http://loinc.org", "code": "3016-3", "display": "TSH"}
+                                ]
+                            },
+                            "subject": {"reference": "Patient/PAT-2", "display": "Beta Patient"},
+                            "valueQuantity": {"value": 3.4, "unit": "uIU/mL"},
+                        }
+                    },
+                ],
+            }
+        )
+        r = ing.land("FHIR-Interface", bundle, ["domain:clinical", "clearance:l2"])
+        out = ex.extract_from_episode(r.episode, r.raw)
+        self.assertIsNotNone(out)
+
+        alpha = store.get_entity_by_name("Alpha Patient")
+        beta = store.get_entity_by_name("Beta Patient")
+        self.assertIsNotNone(alpha)
+        self.assertIsNotNone(beta)
+        self.assertNotEqual(alpha.entity_id, beta.entity_id)
+
+        tsh_entities = [e for e in store.entities.values() if e.canonical_name == "TSH"]
+        self.assertEqual(len(tsh_entities), 2, "two patients' TSH must stay distinct")
 
     @unittest.skipUnless(FHIR_DIR.is_dir(), "synthetic FHIR data not present")
     def test_real_directory_cross_format_with_csv_and_hl7(self):

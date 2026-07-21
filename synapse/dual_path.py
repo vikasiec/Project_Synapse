@@ -15,7 +15,10 @@ from dataclasses import dataclass, field
 from typing import Any, Optional
 
 from synapse.extraction import ExtractionResult, RuleExtractor
+from synapse.fhir import bundle_resources, extract_note_free_text, looks_like_fhir, parse_fhir_resource, FhirParseError
+from synapse.hl7v2 import extract_nte_free_text, looks_like_hl7, parse_hl7_message, Hl7ParseError
 from synapse.models import Episode, Fact, RawObject
+from synapse.ontology import canonicalize_residual_predicate
 from synapse.store import SemanticStore
 
 # Free-text residue after structured keys are stripped (heuristic)
@@ -147,9 +150,15 @@ class DualPathExtractor:
 
     def extract(self, episode: Episode, raw: RawObject) -> DualPathResult:
         primary = self.path_a.extract_from_episode(episode, raw)
-        residual_text = self._residual_text(episode.payload_text)
-        # If structured lines consumed everything but body still has prose, keep full text
-        if not residual_text.strip() and episode.payload_text.strip():
+        residual_text, bounded = self._compute_residual_text(episode.payload_text)
+        # If structured lines consumed everything but body still has prose, keep
+        # full text -- but only for the generic key:value shape. For HL7/FHIR
+        # ("bounded"), an empty result from the format-aware extractor means
+        # "this message truly has no free-text segment", not "the stripper
+        # missed something" -- falling back to the full raw text here is
+        # exactly the bug that sent every already-parsed HL7 message to the
+        # residual/LLM path wholesale.
+        if not bounded and not residual_text.strip() and episode.payload_text.strip():
             residual_text = episode.payload_text.strip()
 
         if primary is None:
@@ -180,6 +189,23 @@ class DualPathExtractor:
             raw=raw,
             entity_id=primary.entity.entity_id,
         )
+        # Bound the residual path to a pre-defined, per-domain predicate
+        # vocabulary (Claude_Instructions.md absolute constraint: no
+        # freeform predicates from the LLM path). Folds known synonyms to
+        # one canonical spelling first, then drops anything still outside
+        # the domain's allowed set -- applied once, here, so every
+        # ResidualExtractor implementation (Gemini, heuristic, future
+        # backends) is bounded the same way rather than each having to
+        # remember to self-police.
+        bounded_facts: list[Fact] = []
+        for f in res_facts:
+            canonical = canonicalize_residual_predicate(f.predicate, episode.domain)
+            if canonical is None:
+                continue
+            f.predicate = canonical
+            bounded_facts.append(f)
+        res_facts = bounded_facts
+
         try:
             from synapse.verifier import FactVerifier
 
@@ -208,8 +234,41 @@ class DualPathExtractor:
         )
 
     @staticmethod
-    def _residual_text(text: str) -> str:
-        """Strip lines that look fully structured key:value."""
+    def _compute_residual_text(text: str) -> tuple[str, bool]:
+        """
+        Returns (residual_text, bounded).
+
+        `bounded=True` means the format was positively identified (HL7v2
+        or FHIR) and residual_text is the *complete* answer for that
+        format's genuine free-text carrier (NTE segments / `note`
+        arrays) -- an empty string is a real, final answer ("no free
+        text here"), not a sign the caller should fall back to the raw
+        payload. Every OBX/PID/OBR field and every FHIR resource field
+        already has its own dedicated, correctly-typed extraction path;
+        re-submitting the whole structured message to a residual/LLM
+        pass (this proof's original behavior) both wastes a call per
+        message and lets the model reinterpret values a deterministic
+        parser already read precisely.
+
+        `bounded=False` is the original generic key:value stripping,
+        unchanged, for every other payload shape (CSV-drop rows, plain
+        text, etc.) where the caller's existing "if still empty, keep
+        the full text" fallback remains correct.
+        """
+        if looks_like_hl7(text):
+            try:
+                msg = parse_hl7_message(text)
+            except Hl7ParseError:
+                return "", False
+            return extract_nte_free_text(msg), True
+        if looks_like_fhir(text):
+            try:
+                data = parse_fhir_resource(text)
+            except FhirParseError:
+                return "", False
+            resources = bundle_resources(data) if data.get("resourceType") == "Bundle" else [data]
+            return extract_note_free_text(resources), True
+
         kept = []
         for line in text.splitlines():
             if _KEY_LINE.match(line.strip()):
@@ -223,4 +282,4 @@ class DualPathExtractor:
                 continue
             if line.strip():
                 kept.append(line)
-        return "\n".join(kept).strip()
+        return "\n".join(kept).strip(), False

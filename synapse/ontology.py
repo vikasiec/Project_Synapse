@@ -272,6 +272,65 @@ PREDICATE_SOURCE_BOOST: dict[str, dict[str, float]] = {
     "contact_number": {"HIS-Patients": 0.12, "FrontDesk-Intake": 0.02},
 }
 
+# Bounded residual (Path B / LLM) predicate vocabulary, per domain
+# (Claude_Instructions.md absolute constraint: "NO FREEFORM PREDICATES --
+# the LLM residual path must be bounded by a pre-defined... ontology").
+# `free_text_note` is always allowed everywhere: it is the universal,
+# domain-neutral catch-all the heuristic (non-LLM) residual path already
+# emits, and is never itself a source of domain-vocabulary drift.
+RESIDUAL_PREDICATE_VOCAB: dict[str, set[str]] = {
+    "infra_ops": {"risk_flag", "human_action", "incident_theme"},
+    "revenue": {"risk_flag", "human_action"},
+    "identity": {"risk_flag", "human_action"},
+    "support": {"risk_flag", "human_action", "incident_theme"},
+    "clinical_lab": {"clinical_finding", "risk_flag", "ordering_physician", "comment"},
+    "hospital_ops": {"clinical_finding", "risk_flag", "ordering_physician", "comment"},
+    "banking": {"risk_flag", "human_action"},
+}
+_DEFAULT_RESIDUAL_VOCAB: set[str] = set()
+
+# Near-duplicate predicate names the model may emit for the same real
+# concept -- folded to one canonical spelling *before* the allowlist
+# check, so the same fact never silently splits across two predicate
+# strings depending on which call happened to produce which phrasing.
+RESIDUAL_PREDICATE_SYNONYMS: dict[str, str] = {
+    "ordering_provider": "ordering_physician",
+    "ordering_doctor": "ordering_physician",
+    "requesting_physician": "ordering_physician",
+    "clinical_observation": "clinical_finding",
+    "clinical_observation_flag": "clinical_finding",
+    "abnormal_result_flag": "risk_flag",
+    "test_panel_name": "comment",
+    "test_panel_type": "comment",
+    "instrument_id": "comment",
+    "instrument_identifier": "comment",
+    "analysis_device": "comment",
+    "lab_instrument_id": "comment",
+    "testing_device": "comment",
+}
+
+
+def canonicalize_residual_predicate(
+    predicate: str, domain: Optional[str]
+) -> Optional[str]:
+    """
+    Fold a residual-path predicate to its canonical spelling and check it
+    against that domain's bounded vocabulary. Returns the canonical
+    predicate name if allowed, or None if the fact should be dropped --
+    an unbounded/wrong-domain predicate the model invented (e.g. an
+    SRE-flavored `incident_theme` on a clinical-domain episode) rather
+    than accepted at face value.
+    """
+    pred = (predicate or "").strip()
+    if not pred:
+        return None
+    pred = RESIDUAL_PREDICATE_SYNONYMS.get(pred, pred)
+    if pred == "free_text_note":
+        return pred
+    allowed = RESIDUAL_PREDICATE_VOCAB.get(domain or "", _DEFAULT_RESIDUAL_VOCAB)
+    return pred if pred in allowed else None
+
+
 # Extractor storage types stay stable for ER; L1 is annotation + ranking context
 _STORAGE_ALIASES: dict[str, str] = {
     "service": "Service",

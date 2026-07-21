@@ -34,6 +34,33 @@ HOSPITAL_DIR = (
 
 
 class TestPatientExtract(unittest.TestCase):
+    def test_lis_header_synonyms_extract_same_as_canonical_headers(self):
+        """A patient-master export using LIS-style headers (`PatientID`,
+        `FullName`, `GenderCode`, `DOB`, `ContactNumber` -- New Data/'s
+        actual lis_patient_master.csv shape) must extract exactly like the
+        canonical `Patient_id`/`First_name`/`Last_name` shape does, via
+        schema-synonym resolution (synapse/coding_systems.py) rather than
+        requiring an exact column-name allowlist per known file."""
+        store = SemanticStore()
+        ex = RuleExtractor(store, ontology=OntologyRegistry.default())
+        ing = IngestionService(store, domain="hospital_ops")
+        row = (
+            "PatientID: PAT-88301\n"
+            "FullName: Johnathan Martin\n"
+            "GenderCode: M\n"
+            "DOB: 1974-09-04\n"
+            "ContactNumber: +1-555-350-4657\n"
+        )
+        r = ing.land("LIS-PatientMaster", row, ["domain:clinical", "clearance:l2"])
+        out = ex.extract_from_episode(r.episode, r.raw)
+        self.assertIsNotNone(out)
+        self.assertEqual(out.entity.entity_type, "Patient")
+        self.assertEqual(out.entity.canonical_name, "Johnathan Martin")
+        preds = {f.predicate: f.object for f in out.facts}
+        self.assertEqual(preds.get("date_of_birth"), "1974-09-04")
+        self.assertEqual(preds.get("gender"), "M")
+        self.assertEqual(preds.get("contact_number"), "+1-555-350-4657")
+
     def test_ontology_patient(self):
         ont = OntologyRegistry.default()
         self.assertIn("Patient", ont.types)

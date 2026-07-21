@@ -97,6 +97,25 @@ def looks_like_hl7(text: str) -> bool:
     return text.lstrip().startswith("MSH")
 
 
+def extract_nte_free_text(msg: Hl7Message) -> str:
+    """
+    Genuinely unstructured free text from a message -- the NTE (Notes and
+    Comments) segment, NTE-3, present in any HL7v2 message type. Used to
+    scope the residual/LLM path to text no deterministic parser already
+    consumed, instead of the whole already-structured pipe-delimited
+    message (every OBX/PID/OBR field already has a dedicated, correctly-
+    typed extraction path -- re-feeding them to an LLM as "free text"
+    both wastes a call and invites the model to reinterpret a value that
+    was already read precisely).
+    """
+    lines: list[str] = []
+    for seg in msg.get("NTE"):
+        text = seg.value(3).strip()
+        if text:
+            lines.append(text)
+    return "\n".join(lines)
+
+
 def parse_hl7_message(text: str) -> Hl7Message:
     """
     Parse a single HL7v2 pipe-delimited message using its own declared
