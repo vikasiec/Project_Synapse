@@ -13,6 +13,10 @@ Endpoints:
   GET  /v1/entities
   POST /v1/entities/merge
   GET  /v1/er/suggestions
+  GET  /v1/explore        → query-free discovery view: entity types/counts/
+                            samples, sources + observed fields, fields
+                            shared across sources, predicate vocabulary,
+                            open-issue counts (no entity name required)
   GET  /v1/audit
   POST /v1/eval
   GET  /v1/raw            → Sense board RAW panel
@@ -34,7 +38,9 @@ from pathlib import Path
 from typing import Any, Optional
 from urllib.parse import parse_qs, urlparse
 
-from synapse.entity_resolution import EntityResolutionService
+from synapse.drift import _KEY_RE
+from synapse.entity_resolution import EntityResolutionService, normalize_name
+from synapse.models import Entity
 from synapse.scenarios.billing_customer import BillingCustomerScenario
 from synapse.scenarios.checkout_incident import CheckoutIncidentScenario
 from synapse.security import (
@@ -126,6 +132,151 @@ def _dynamic_story(store: SemanticStore) -> Optional[dict[str, Any]]:
         "source_count": len(sources),
         "sources": sources,
         "conflict_count": conflict_count,
+    }
+
+
+_EXPLORE_SAMPLE_LIMIT = 8
+
+
+def _explore_summary(
+    session: SynapseSession, principal: Principal
+) -> dict[str, Any]:
+    """
+    Query-free "what's actually in here" view (H-explore): entity types +
+    counts + a few sample names, sources with their observed field
+    vocabulary, which fields are shared across sources, and open-issue
+    counts -- everything a user needs to go from "I don't know what to
+    ask" to "now I know a name," without ever requiring one up front.
+
+    Deliberately pure aggregation over already-computed store/detector
+    state -- no LLM narration. An LLM asked to "describe this dataset"
+    has no bounded predicate vocabulary to constrain it against, which is
+    exactly the shape of prompt that produced this session's fabricated
+    residual-path facts; Explore stays counts/lists/links only.
+
+    ACL-scoped the same way every other read route is: filter_entities/
+    filter_facts/filter_raw_objects against the resolved principal, so a
+    principal missing a domain tag doesn't learn that domain's types,
+    sources, or fields exist at all.
+    """
+    store = session.store
+
+    visible_entities = [
+        e
+        for e in filter_entities(principal, store.entities.values())
+        if e.status.value == "active"
+    ]
+    by_type: dict[str, list[Entity]] = {}
+    for ent in visible_entities:
+        by_type.setdefault(ent.entity_type, []).append(ent)
+    entity_types = [
+        {
+            "type": etype,
+            "count": len(ents),
+            "samples": [
+                e.canonical_name
+                for e in ents[:_EXPLORE_SAMPLE_LIMIT]
+                if e.canonical_name
+            ],
+        }
+        for etype, ents in sorted(by_type.items(), key=lambda kv: -len(kv[1]))
+    ]
+
+    visible_raw = filter_raw_objects(principal, store.raw_objects.values())
+    domain_by_source: dict[str, str] = {}
+    for raw in visible_raw:
+        domain = next((t for t in raw.acl_tags if t.startswith("domain:")), "domain:unknown")
+        domain_by_source.setdefault(raw.source_system, domain)
+    source_names = sorted(domain_by_source)
+
+    # Field vocabulary is computed directly from ACL-visible raw payloads
+    # with DriftDetector's own key-extraction regex (_KEY_RE), rather than
+    # read from session.drift.baselines. Baselines are store-wide, not
+    # principal-scoped -- if a source_system name were ever reused across
+    # two different ACL domains, reading the shared baseline would leak
+    # the other domain's field names to a principal who can't see that
+    # domain's raw objects at all. Recomputing from visible_raw only keeps
+    # this endpoint's own ACL promise (see docstring) actually true. This
+    # also sidesteps DriftDetector's synthetic "has_*" pattern-trip tags
+    # (e.g. "has_revenue") entirely, since those never entered the regex
+    # extraction in the first place -- no separate filtering needed.
+    field_sets: dict[str, set[str]] = {}
+    for raw in visible_raw:
+        keys = {m.group(1).strip().lower() for m in _KEY_RE.finditer(raw.raw_payload)}
+        field_sets.setdefault(raw.source_system, set()).update(keys)
+    sources = [
+        {
+            "source_system": src,
+            "acl_domain": domain_by_source[src],
+            "object_count": sum(1 for r in visible_raw if r.source_system == src),
+            "observed_fields": sorted(field_sets.get(src, set())),
+        }
+        for src in source_names
+    ]
+
+    field_to_sources: dict[str, set[str]] = {}
+    for src in source_names:
+        for f in field_sets.get(src, set()):
+            field_to_sources.setdefault(f, set()).add(src)
+    shared_fields = [
+        {"field": f, "sources": sorted(srcs)}
+        for f, srcs in sorted(field_to_sources.items())
+        if len(srcs) > 1
+    ]
+
+    visible_facts = filter_facts(principal, store.facts.values())
+    pred_counts: dict[tuple[str, str], int] = {}
+    entity_type_by_id = {e.entity_id: e.entity_type for e in visible_entities}
+    for f in visible_facts:
+        etype = entity_type_by_id.get(f.subject_entity_id)
+        if not etype:
+            continue
+        key = (etype, f.predicate)
+        pred_counts[key] = pred_counts.get(key, 0) + 1
+    predicate_vocabulary = [
+        {"entity_type": etype, "predicate": pred, "fact_count": count}
+        for (etype, pred), count in sorted(
+            pred_counts.items(), key=lambda kv: (-kv[1], kv[0])
+        )
+    ]
+
+    for ent in visible_entities:
+        session.resolver.detect_scalar_conflicts(ent.entity_id)
+    visible_conflicts = filter_conflicts(
+        principal,
+        [c for c in store.conflicts.values() if c.status.value == "open"],
+        store.facts,
+    )
+
+    # Duplicate-name *groups*, not session.er.suggest_merges()'s full
+    # pairwise suggestion list. suggest_merges() is unscoped (would leak
+    # cross-domain entity existence through a raw count) and combinatorial
+    # -- a legitimately recurring name (e.g. the same LOINC-coded LabResult
+    # type appearing once per patient, by design) turns into
+    # C(n,2) "suggestions" for a single blocking bucket; on New Data's 120
+    # patients that alone is thousands of meaningless "duplicates" for one
+    # real lab-result type, expensive to compute on every GET besides.
+    # Counting distinct (type, normalized-name) buckets with 2+ ACL-visible
+    # members answers the only question Explore actually needs ("is
+    # anything here worth a second look?") without either problem.
+    name_buckets: dict[tuple[str, str], set[str]] = {}
+    for ent in visible_entities:
+        for name in [ent.canonical_name or ""] + list(ent.aliases):
+            if not name:
+                continue
+            key = (ent.entity_type, normalize_name(name))
+            name_buckets.setdefault(key, set()).add(ent.entity_id)
+    duplicate_group_count = sum(1 for ids in name_buckets.values() if len(ids) > 1)
+
+    return {
+        "entity_types": entity_types,
+        "sources": sources,
+        "shared_fields_across_sources": shared_fields,
+        "predicate_vocabulary": predicate_vocabulary,
+        "open_issues": {
+            "conflict_count": len(visible_conflicts),
+            "duplicate_name_group_count": duplicate_group_count,
+        },
     }
 
 
@@ -576,6 +727,10 @@ def make_handler(session: SynapseSession):
                 )
             if path == "/v1/er/suggestions":
                 return _json_response(self, 200, er.suggest_merges())
+            if path == "/v1/explore":
+                qs = parse_qs(urlparse(self.path).query)
+                principal = _principal_from_query(qs, session.store)
+                return _json_response(self, 200, _explore_summary(session, principal))
             if path == "/v1/graph":
                 snap = session.sync_graph()
                 qs = parse_qs(urlparse(self.path).query)

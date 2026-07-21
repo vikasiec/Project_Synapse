@@ -497,6 +497,18 @@
     .entity-chip.active { border-color: var(--blue); background: #eff6ff; color: var(--blue); }
 
     .empty-note { color: var(--muted); font-size: 0.88rem; padding: 0.5rem 0; }
+
+    .explore-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 0.75rem; margin-bottom: 1.1rem; }
+    .explore-card {
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 0.75rem 0.85rem;
+      background: #fff;
+    }
+    .explore-card h4 { margin: 0 0 0.3rem; font-size: 0.95rem; color: var(--navy); }
+    .explore-card .count { color: var(--muted); font-size: 0.78rem; margin-bottom: 0.4rem; }
+    .explore-section-title { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); margin: 1.1rem 0 0.5rem; }
+    .shared-field-badge { background: #ecfdf5; color: #047857; }
   </style>
 </head>
 <body>
@@ -584,6 +596,9 @@
 
       <label class="field" for="entity">What are we talking about?</label>
       <input type="text" id="entity" value="checkout-service" autocomplete="off" />
+      <p class="empty-note" style="margin-top:-0.3rem">
+        Not sure what to ask? <a href="#" id="lnkExploreFromAsk">Explore what's loaded →</a>
+      </p>
 
       <label class="field" for="question">Your question</label>
       <input type="text" id="question" value="What is going on with this service?" autocomplete="off" />
@@ -669,6 +684,7 @@
 
     <div class="sub-tabs">
       <button type="button" class="sub-tab active" data-sense="raw">RAW</button>
+      <button type="button" class="sub-tab" data-sense="explore">EXPLORE</button>
       <button type="button" class="sub-tab" data-sense="meaning">MEANING</button>
       <button type="button" class="sub-tab" data-sense="conflicts">CONFLICTS</button>
       <button type="button" class="sub-tab" data-sense="ask">ASK</button>
@@ -702,6 +718,16 @@
 
       <button type="button" class="big-btn ghost" id="btnRefreshRaw" style="margin-bottom:0.75rem">Refresh raw list</button>
       <div id="rawTableWrap"><p class="empty-note">No raw objects yet — seed a story or drop your own data.</p></div>
+    </section>
+
+    <!-- EXPLORE -->
+    <section class="sense-panel" id="senseExplore">
+      <h2 style="margin-top:0">What's actually in here</h2>
+      <p class="lead">
+        No entity name required — browse what's loaded, then click a sample to ask about it.
+      </p>
+      <button type="button" class="big-btn ghost" id="btnRefreshExplore" style="margin-bottom:0.75rem">Refresh</button>
+      <div id="exploreWrap"><p class="empty-note">No data loaded yet — land something in RAW, or seed a story.</p></div>
     </section>
 
     <!-- MEANING -->
@@ -1372,6 +1398,115 @@
     });
   }
 
+  async function loadSenseExplore() {
+    setBusy(true, "Loading explore view…");
+    try {
+      var d = await api("/v1/explore");
+      var wrap = $("exploreWrap");
+      wrap.innerHTML = "";
+
+      if (!d.entity_types.length && !d.sources.length) {
+        wrap.innerHTML = '<p class="empty-note">No data loaded yet — land something in RAW, or seed a story.</p>';
+        return;
+      }
+
+      var typesTitle = document.createElement("div");
+      typesTitle.className = "explore-section-title";
+      typesTitle.textContent = "What's here";
+      wrap.appendChild(typesTitle);
+
+      var typeGrid = document.createElement("div");
+      typeGrid.className = "explore-grid";
+      d.entity_types.forEach(function (t) {
+        var card = document.createElement("div");
+        card.className = "explore-card";
+        var chips = document.createElement("div");
+        chips.className = "entity-chip-row";
+        chips.style.marginBottom = "0";
+        (t.samples || []).forEach(function (name) {
+          var chip = document.createElement("button");
+          chip.type = "button";
+          chip.className = "entity-chip";
+          chip.textContent = name;
+          chip.title = "Ask about " + name;
+          chip.addEventListener("click", function () {
+            $("senseEntity").value = name;
+            goSense("ask");
+          });
+          chips.appendChild(chip);
+        });
+        card.innerHTML = "<h4>" + escapeHtml(t.type) + "</h4><div class='count'>" + t.count + " total</div>";
+        card.appendChild(chips);
+        typeGrid.appendChild(card);
+      });
+      wrap.appendChild(typeGrid);
+
+      var srcTitle = document.createElement("div");
+      srcTitle.className = "explore-section-title";
+      srcTitle.textContent = "Sources loaded";
+      wrap.appendChild(srcTitle);
+
+      if (!d.sources.length) {
+        var noSrc = document.createElement("p");
+        noSrc.className = "empty-note";
+        noSrc.textContent = "No sources visible to this principal.";
+        wrap.appendChild(noSrc);
+      } else {
+        var sharedFields = {};
+        (d.shared_fields_across_sources || []).forEach(function (f) { sharedFields[f.field] = f.sources; });
+
+        var srcTable = document.createElement("table");
+        srcTable.className = "sense-table";
+        var body = "<thead><tr><th>Source</th><th>Domain</th><th>Objects</th><th>Fields observed</th></tr></thead><tbody>";
+        d.sources.forEach(function (s) {
+          var fieldsHtml = (s.observed_fields || []).map(function (f) {
+            var cls = sharedFields[f] ? "badge shared-field-badge" : "badge";
+            var titleAttr = sharedFields[f] ? ' title="also in: ' + escapeHtml(sharedFields[f].join(", ")) + '"' : "";
+            return "<span class='" + cls + "'" + titleAttr + ">" + escapeHtml(f) + "</span>";
+          }).join(" ");
+          body += "<tr><td>" + escapeHtml(s.source_system) + "</td><td><code>" + escapeHtml(s.acl_domain) + "</code></td><td>" +
+            s.object_count + "</td><td>" + (fieldsHtml || "<span class='empty-note'>none observed</span>") + "</td></tr>";
+        });
+        srcTable.innerHTML = body + "</tbody>";
+        wrap.appendChild(srcTable);
+
+        if ((d.shared_fields_across_sources || []).length) {
+          var sharedNote = document.createElement("p");
+          sharedNote.style.fontSize = "0.8rem";
+          sharedNote.style.color = "var(--muted)";
+          sharedNote.style.marginTop = "0.5rem";
+          sharedNote.innerHTML = "<b>" + d.shared_fields_across_sources.length + "</b> field(s) appear in more than one source (highlighted green above) — hover a field for which sources share it.";
+          wrap.appendChild(sharedNote);
+        }
+      }
+
+      var issues = d.open_issues || {};
+      if (issues.conflict_count || issues.duplicate_name_group_count) {
+        var issuesTitle = document.createElement("div");
+        issuesTitle.className = "explore-section-title";
+        issuesTitle.textContent = "Worth a look";
+        wrap.appendChild(issuesTitle);
+        if (issues.conflict_count) {
+          var conflictLink = document.createElement("a");
+          conflictLink.href = "#";
+          conflictLink.style.display = "block";
+          conflictLink.style.fontSize = "0.85rem";
+          conflictLink.textContent = issues.conflict_count + " open conflict(s) — see the CONFLICTS tab →";
+          conflictLink.addEventListener("click", function (ev) { ev.preventDefault(); goSense("conflicts"); });
+          wrap.appendChild(conflictLink);
+        }
+        if (issues.duplicate_name_group_count) {
+          var dupNote = document.createElement("p");
+          dupNote.style.fontSize = "0.85rem";
+          dupNote.textContent = issues.duplicate_name_group_count + " name(s) shared by more than one entity of the same type — may be duplicates worth reviewing.";
+          wrap.appendChild(dupNote);
+        }
+      }
+    } catch (e) {
+      toast("Could not load explore view: " + (e.message || e));
+    } finally { setBusy(false); }
+  }
+
   async function loadSenseMeaning() {
     setBusy(true, "Loading meaning…");
     try {
@@ -1546,6 +1681,7 @@
       p.classList.toggle("active", p.id === "sense" + tab.charAt(0).toUpperCase() + tab.slice(1));
     });
     if (tab === "raw") loadSenseRaw();
+    else if (tab === "explore") loadSenseExplore();
     else if (tab === "meaning") loadSenseMeaning();
     else if (tab === "conflicts") loadSenseConflicts();
   }
@@ -1563,10 +1699,16 @@
   }
 
   $("btnModeToggle").addEventListener("click", toggleMode);
+  $("lnkExploreFromAsk").addEventListener("click", function (ev) {
+    ev.preventDefault();
+    if (!senseMode) toggleMode();
+    goSense("explore");
+  });
   document.querySelectorAll(".sub-tab").forEach(function (t) {
     t.addEventListener("click", function () { goSense(t.getAttribute("data-sense")); });
   });
   $("btnRefreshRaw").addEventListener("click", loadSenseRaw);
+  $("btnRefreshExplore").addEventListener("click", loadSenseExplore);
   $("btnRefreshMeaning").addEventListener("click", loadSenseMeaning);
   $("btnRefreshConflicts").addEventListener("click", loadSenseConflicts);
   $("btnDropJson").addEventListener("click", doDropJson);
