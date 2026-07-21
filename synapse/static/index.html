@@ -196,12 +196,6 @@
       display: grid;
       gap: 0.5rem;
     }
-    .choice-grid-label {
-      margin: 1rem 0 0.5rem;
-      font-size: 0.85rem;
-      color: var(--muted);
-      font-weight: 600;
-    }
 
     /* Result cards */
     .result {
@@ -547,7 +541,6 @@
 
       <div id="dynamicStoryWrap" style="display:none">
         <div class="choice-grid" id="dynamicStoryCard"></div>
-        <p class="choice-grid-label">Or try a sample story instead:</p>
       </div>
 
       <div class="choice-grid" id="cannedStoryGrid">
@@ -888,10 +881,19 @@
     var card = $("dynamicStoryCard");
     var cannedGrid = $("cannedStoryGrid");
     if (!story) {
+      // Empty store (first-time visitor bootstrap case) -- the canned
+      // demos are the only thing there is to click, so show them.
       wrap.style.display = "none";
+      cannedGrid.style.display = "";
       return;
     }
     wrap.style.display = "block";
+    // Real data is loaded -- the canned demos describe scenarios that
+    // are NOT in the store (a user correctly flagged that showing them
+    // alongside real data is misleading, not just lower-priority).
+    // Hide them entirely rather than demoting them; they come back the
+    // moment the store is actually empty again.
+    cannedGrid.style.display = "none";
     card.innerHTML =
       '<button type="button" class="big-btn success" id="btnUseLoadedData">' +
       escapeHtml(story.title) +
@@ -908,12 +910,6 @@
       refreshNavEnabled();
       toast("Loaded data ready — type an entity name to ask about");
       goStep(2);
-    });
-    // The loaded-data card is now the recommended path; demote the
-    // canned demos to secondary options rather than hiding them.
-    cannedGrid.querySelectorAll(".big-btn").forEach(function (btn) {
-      btn.classList.remove("primary");
-      btn.classList.add("ghost");
     });
   }
 
