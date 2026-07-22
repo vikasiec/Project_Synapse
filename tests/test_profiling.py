@@ -101,6 +101,33 @@ class TestSchemaProfiler(unittest.TestCase):
         self.assertEqual(profiles["identifier.value"].sample_count, 3)
         self.assertNotIn("identifier.0.value", profiles)
 
+    def test_hl7v2_payload_profiles_across_all_segments(self) -> None:
+        # F-003 follow-up: HL7's \r segment separators collapse to \n
+        # under Python's universal-newline text reads (and browser file
+        # uploads), so a naive "each line is a message" split only ever
+        # saw the MSH line -- PID/ORC/OBR/OBX segments were silently
+        # dropped. Two messages here, exercising the regroup-by-MSH logic.
+        store = SemanticStore()
+        msg1 = (
+            "MSH|^~\\&|LIS|CityLab|HIS|GeneralHospital|20230810083000||ORU^R01|MSG00001|P|2.5.1\n"
+            "PID|1||P001^^^HIS^MR||Williams^David||19550604|F\n"
+            "OBX|1|NM|HGB^Hemoglobin^L||14.2|g/dL|13.5-17.5|N\n"
+        )
+        msg2 = (
+            "MSH|^~\\&|LIS|CityLab|HIS|GeneralHospital|20230810091500||ORU^R01|MSG00002|P|2.5.1\n"
+            "PID|1||P002^^^HIS^MR||Chen^Amy||19620311|F\n"
+            "OBX|1|NM|HGB^Hemoglobin^L||13.1|g/dL|13.5-17.5|L\n"
+        )
+        store.put_raw(RawObject.create(source_system="HL7", payload=msg1, acl_tags=["domain:clinical", "clearance:l2"]))
+        store.put_raw(RawObject.create(source_system="HL7", payload=msg2, acl_tags=["domain:clinical", "clearance:l2"]))
+
+        profiles = SchemaProfiler(store).profile_source("HL7")
+        self.assertIn("PID.5", profiles)  # patient name field
+        self.assertIn("OBX.5", profiles)  # observation value field
+        self.assertEqual(profiles["PID.5"].sample_count, 2)
+        self.assertIn("MSH.10", profiles)
+        self.assertEqual(profiles["MSH.10"].entropy_score, 1.0)  # MSG00001 vs MSG00002, both unique
+
     def test_semantic_vectors_are_well_defined(self) -> None:
         from synapse.profiling import _hashing_vector
 

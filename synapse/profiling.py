@@ -53,17 +53,56 @@ def _flatten_json(obj: Any, prefix: str = "", out: Optional[dict[str, list[str]]
     return out
 
 
+def _extract_hl7_fields(payload: str) -> dict[str, list[str]]:
+    """Field-name -> observed-values extraction for HL7v2 pipe-delimited
+    payloads, reusing the existing generic tokenizer in synapse/hl7v2.py
+    (parse_hl7_message) rather than writing a second parser. Field names
+    are position-based ("PID.5", "OBX.5") -- the raw envelope structure
+    every HL7v2 message shares, not a semantic interpretation of what any
+    field means (that stays out of scope here, same boundary hl7v2.py's
+    own docstring already draws). One payload may contain multiple
+    messages (one per line); each contributes its own observed values to
+    the same field keys, the same way multiple CSV rows contribute
+    multiple values to one column."""
+    from synapse.hl7v2 import Hl7ParseError, looks_like_hl7, parse_hl7_message
+
+    field_values: dict[str, list[str]] = defaultdict(list)
+    # Universal newline translation (Python text-mode reads, and text
+    # pulled from a browser file upload) collapses HL7's \r segment
+    # separators down to \n right alongside the \n message separators --
+    # so a message's PID/ORC/OBR/OBX segments arrive as their own lines,
+    # not still attached to their MSH line. Regroup: a new message starts
+    # at each line beginning "MSH"; every line after it, up to the next
+    # MSH, belongs to that same message.
+    lines = [ln.strip() for ln in payload.replace("\r\n", "\n").replace("\r", "\n").split("\n") if ln.strip()]
+    messages: list[list[str]] = []
+    for line in lines:
+        if looks_like_hl7(line):
+            messages.append([line])
+        elif messages:
+            messages[-1].append(line)
+
+    for seg_lines in messages:
+        try:
+            msg = parse_hl7_message("\r".join(seg_lines))
+        except Hl7ParseError:
+            continue
+        for seg in msg.segments:
+            for idx, f in enumerate(seg.fields, start=1):
+                if f.raw:
+                    field_values[f"{seg.name}.{idx}"].append(f.raw)
+    return field_values
+
+
 def _extract_field_values(payload: str) -> dict[str, list[str]]:
-    """Field-name -> observed-values extraction, JSON-aware. Tries JSON
-    first (covers the FHIR/JSONL connectors, which land raw JSON text
-    as-is per synapse/connectors/fhir_file.py and file_jsonl.py); falls
+    """Field-name -> observed-values extraction. Tries JSON first (covers
+    the FHIR/JSONL connectors, which land raw JSON text as-is per
+    synapse/connectors/fhir_file.py and file_jsonl.py), then HL7v2
+    pipe-delimited messages (synapse/connectors/hl7_file.py), then falls
     back to the "key: value"-per-line convention the CSV connector
     actually emits (synapse/connectors/csv_drop.py) and that
     synapse/drift.py's _KEY_RE already relies on elsewhere in this
-    codebase. HL7v2 pipe-delimited payloads (synapse/connectors/hl7_file.py)
-    are not covered by either path -- segment-position-aware parsing would
-    require HL7-specific knowledge a domain-blind profiler shouldn't own;
-    left as a known residual rather than silently claimed to work."""
+    codebase."""
     stripped = payload.strip()
     if stripped[:1] in ("{", "["):
         try:
@@ -72,6 +111,11 @@ def _extract_field_values(payload: str) -> dict[str, list[str]]:
             parsed = None
         if parsed is not None:
             return _flatten_json(parsed)
+
+    if stripped.startswith("MSH"):
+        hl7_fields = _extract_hl7_fields(payload)
+        if hl7_fields:
+            return hl7_fields
 
     field_values: dict[str, list[str]] = defaultdict(list)
     for m in _KV_RE.finditer(payload):

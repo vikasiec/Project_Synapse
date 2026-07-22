@@ -400,3 +400,103 @@ Product choice: activate source compares against **every** other loaded source (
   - GF-014 still OPEN (uncommitted; dist may lag again after this polish)
   - GF-002/003/005/006 still OPEN/reinforced
 - **Attention:** Commit rows 53–54 + this reprocess/bundle polish together; consider multi-candidate list in drawer; scope reprocess if store grows.
+
+### 2026-07-22 ~14:00 +05:30 — Staged commit imminent; drawer alternates; dist rebuild
+
+- **Git:** HEAD still `5fcd916`; branch = origin/main. **All Explore/row53–54 work is staged** (index clean of unstaged code):
+  - api land-only CSV/JSONL, FileIngest reprocess + fail-forward, SourceGroupNode landscape, edge bundling, ExplanationDrawer **alternates** list, Active_File rows 53–54, this watch file (through prior entries).
+  - **No commit hash yet this fire** — porcelain = \"Changes to be committed\" only.
+- **New polish since last fire (~13:56–13:57):**
+  - `ExplanationDrawer` accepts `alternates` + `onSelectAlternate` — multi field-pair list when bundle edge clicked (closes residual noted under GF-013 WATCH).
+  - `ExploreView` wires `alternates={selectedGroup}`.
+  - **`ui/dist` rebuilt ~13:57** (`index-XIA-tJOu.js` / `index-BgjQenK4.css`) — static serve lag reduced for this batch (dist itself usually gitignored; rebuild is runtime evidence).
+- **Backend:** no mtime change since 13:48 land-only; tests skipped.
+- **Entity Graph-First PDF Steps 3–4:** still not in this stage set (Resolve/entity_matching untouched). GF-002/003/005 remain OPEN post-commit of field Explore polish.
+- **GF updates:**
+  - **GF-013** ? **CLOSED (field Explore)** for multi-pair collision: bundle edge + alternates picker.
+  - **GF-014** ? **PENDING CLOSE** once staged commit lands; watch for commit message covering landscape + land-only + reprocess button.
+  - **GF-016** PARTIAL (reprocess UI) / **GF-017** OPEN (store-wide) unchanged.
+  - Dual-layer glossary still GF-001 OPEN.
+- **Attention:** Expect Claude commit shortly; post-commit fire should record hash + re-verify HEAD. Entity residuals independent of this ship.
+
+### 2026-07-22 ~14:00 — Commit landed: `a7168b0`
+
+`Explore: auto-structure landscape, real folder-upload fixes, edge bundling`
+
+- GF-014 largely **RESOLVED** (committed + dist rebuilt)
+- GF-013 **RESOLVED** (bundling + alternates in drawer per prior fire)
+- GF-016 partial remains (land-only CSV + opt-in Extract for Resolve)
+- Entity Step 4 GF-002/003/005 still OPEN
+- Working tree: only watch file dirty vs origin
+
+### 2026-07-22 ~14:03 +05:30 — Confirm ship `a7168b0` (Explore landscape + land-only + GF-013/016 UX)
+
+- **HEAD:** `a7168b0` *Explore: auto-structure landscape, real folder-upload fixes, edge bundling* (AuthorDate 13:59 +0530).
+- **Remote:** `main` == `origin/main` at `a7168b0` (pushed / in sync).
+- **Working tree:** only this watch file dirty (post-commit log appends).
+- **Commit scope (rows 53–55):** SourceGroup landscape; FileIngest fail-forward + per-file sources; CSV/JSONL land-only extract skip; edge bundling + drawer alternates; reprocess button; ledger + prior watch snapshot.
+- **GF disposition after ship:**
+
+  | ID | Topic | Status post-`a7168b0` |
+  |----|--------|-------------------------|
+  | GF-013 | Multi-edge collision | **CLOSED** (bundle + alternates) |
+  | GF-014 | Uncommitted Explore UX | **CLOSED** (committed + dist rebuild claimed) |
+  | GF-015 | Fan-out analyze | **NOTE** accepted product |
+  | GF-016 | Land-only CSV / no entities | **PARTIAL** — UX button; still opt-in Step 2 |
+  | GF-017 | Store-wide reprocess | **OPEN** P3 |
+  | GF-002 | SAME_ENTITY_AS on entity merge | **OPEN as PDF residual** / **documented deliberate split** (row 55 / commit msg) — not a regression |
+  | GF-003 | Conflicts on Resolve | **OPEN** (not claimed fixed) |
+  | GF-005 | Dismiss not persisted | **OPEN as MVP scope** (row 52/55) |
+  | GF-006 | Graphiti not default | **OPEN** reinforced by land-only |
+  | GF-001 | Dual MG2 language | **OPEN** |
+  | GF-010/011 | ACL / additive arch | **HOLD positive** |
+
+- **PDF Steps 1–4 (entity pipeline):** Step 1 browser folder land **stronger**; Step 2 for CSV **opt-in reprocess**; Steps 3–4 still `5fcd916` entity_matching + Resolve with known gaps. Dual-layer architecture intact (Explore fields vs Resolve entities).
+- **Tests:** skipped this fire (no post-commit backend delta). Prior independent 9/9 still last measure for ingest/ER units.
+- **Idle risk:** field Explore ship complete; entity Graph-First residuals only if Claude returns to Step 4.
+
+### 2026-07-22 ~14:06 +05:30 — Heartbeat idle post-`a7168b0`
+
+- **Git:** HEAD `a7168b0`; `main...origin/main` clean for code; only dirty = this watch file.
+- **mtimes:** no synapse/ui/tests writes after ship (~13:48–13:57 sources). Active_File/ledger not extended past row 55.
+- **PDF dual-layer / GF-NNN:** frozen at post-ship disposition (GF-013/014 closed; GF-016 partial; entity GF-002/003/005 open-as-scope/residual).
+- **Tests:** skipped (idle, no backend delta).
+- **Phase:** field Explore polish complete; Graph-First entity Step 4 not active this interval.
+
+### 2026-07-22 ~14:09 +05:30 — Heartbeat idle
+
+- **Git:** HEAD `a7168b0`; origin in sync; dirty only this watch file.
+- **Code activity:** none under synapse/ui/tests since ship (~13:57). No new commits, no Active_File row 56+.
+- **GF / PDF:** disposition frozen (field Explore ship done; entity Step 4 residuals GF-002/003/005; GF-016 partial / GF-017 open).
+- **Tests:** skipped (idle).
+
+### 2026-07-22 ~14:11 +05:30 — Heartbeat idle (~12m post-ship)
+
+- **Git:** HEAD `a7168b0`; origin synced; only dirty = watch file.
+- **Activity:** none in synapse/ui/tests/Active_File since `a7168b0` sources (~13:57).
+- **GF / dual-layer:** frozen post-ship matrix (Explore field layer shipped; entity PDF Step 4 residuals GF-002/003/005; GF-016 partial).
+- **Tests:** skipped.
+
+### 2026-07-22 ~14:14 +05:30 — Heartbeat idle (~15m post-`a7168b0`)
+
+- **Git:** HEAD `a7168b0`; `main` = origin; dirty only this watch file.
+- **Source mtimes:** no ui/synapse/tests source changes post-ship. (`.pytest_cache` touched ~14:00 — possible local test run elsewhere; no new test files or backend edits to re-audit.)
+- **GF / PDF dual-layer:** frozen. Field Explore ship done; entity Step 4 residuals GF-002/003/005; GF-016 partial / GF-017 open.
+- **Tests:** not re-run this fire (no backend delta).
+- **Note:** sustained idle after Explore polish — monitor remains audit-ready if Claude returns to Graph-First entity gaps.
+
+### 2026-07-22 — Monitor STOPPED (user request)
+
+Continuous 3m Graph-First watch cancelled. Final HEAD at stop: see git log.
+
+**Shipped through stop:**
+- Graph-First entity ER layer + Resolve tab (`5fcd916`)
+- Explore landscape / SourceGroup / land-only CSV + Extract for Resolve / edge bundling (`a7168b0`)
+
+**Still open residuals (for later review):**
+- GF-002: entity merge does not write Ontology SAME_ENTITY_AS
+- GF-003: Conflicts not on Resolve canvas
+- GF-005: dismiss not persisted
+- GF-016/017: land-only CSV + store-wide reprocess opt-in
+
+Report remains: workspace_scratch/GROK_GRAPH_FIRST_ER_WATCH_2026-07-22.md

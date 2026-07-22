@@ -75,19 +75,21 @@ Follow `.agent_os/collaboration_model_V2.0.md` in full — lock discipline (`loc
 - Multiple `python -m synapse serve` processes fight for port 8787 — kill extras if "Failed to fetch".
 - Platform-maturity gaps still open, deliberately: multi-tenant ACLs, real SaaS OAuth CDC, real $ FinOps, production-grade fuzzy ER beyond what's built. See `management/master_plan.md` §6.
 
-## Known residuals in the Semantic Discovery subsystem (per Grok's independent review, row 48; updated rows 49-50)
+## Known residuals in the Semantic Discovery subsystem (per Grok's independent review, row 48; updated rows 49-56)
 
-Not blocking the demo, but real and worth knowing before treating rows 38-50 as finished:
+Not blocking the demo, but real and worth knowing:
 
-- **HL7v2 pipe-delimited payloads are still not profiled** (`synapse/profiling.py::_extract_field_values`): row 49 fixed the JSON-shaped case (FHIR/JSONL connectors, via a generic recursive flattener), so profiling now works for those sources — but HL7's segment/field-position format (`MSH|...`, `PID|...`) has no generic flattening equivalent without HL7-specific knowledge, which a domain-blind profiler shouldn't own. Profiling an HL7-sourced system currently still yields sparse/empty field profiles. Real, scoped-out, not silently claimed to work.
+- **CSV/JSONL uploads via `/v1/explore/ingest` skip entity extraction by design** (row 54, fixed a real timeout bug where per-row extraction made large files take minutes): those sources profile/field-match fine, but won't produce Resolve-tab merge candidates until `POST /v1/reprocess` runs — the "Extract entities (for Resolve)" button in the Explore UI (row 55) does this on demand.
+- **Entity merges (Resolve tab) don't write an Ontology Registry `SAME_ENTITY_AS` edge** (Grok's GF-002): merges use the existing `EntityResolutionService.merge()`/stable-ID-redirect mechanism directly, deliberately kept separate from the field-relationship Catalog, since they're two different referents (entities vs. schema fields). Documented split, not an oversight.
+- **Entity-pair "dismiss" (Resolve tab) is client-side only**, unlike field-relationship REJECT which persists (`is_pair_rejected`) — a dismissed entity pair will resurface on next load. Stated MVP scope cut (row 52), not yet closed.
 
-Closed this session, no longer residual: **F-021** (synonym-map false-positive risk) — `tests/test_matching.py` now proves `ValueOverlap`/`GraphProximity` correctly gate a strong-name-only match below the strict-drop threshold (row 50). **F-027** (relationships were process-memory-only, lost on restart) — `OntologyRegistry` now write-throughs to the store and rehydrates on `open_session()`; proven via a full close/reopen test (row 50).
+Closed, no longer residual: **F-021** (synonym-map false-positive risk, row 50). **F-027** (relationships were process-memory-only, now durable, row 50). **HL7v2 pipe-delimited payloads now profile correctly** (row 56) — reuses the existing `synapse/hl7v2.py` tokenizer, position-based field names (`PID.5`, `OBX.5`); the earlier "not profiled" residual is fixed, not just documented around.
 
 ## Currently open (as of this update — verify against `Active_File.md`)
 
-- Rows 1-50 all closed as of this update.
+- Rows 1-56 all closed as of this update.
 - **Not started, deliberately: Phase 2 of the new spec** (Major Goals 5-7 — semantic translation/CDM bridge, cross-system conflict routing, federated FHIR/BIAN/OpenAPI exports). The spec's own execution gate requires Vikas's explicit sign-off on Phase 1 before this begins — do not start it on the assumption that tests passing is sufficient.
-- The new `ui/` frontend covers Catalog + Explore only. It has not reached parity with the legacy Sense board's RAW/MEANING/CONFLICTS/ASK/EMIT panels, so `/` still serves the legacy UI by design — don't retire `synapse/static/index.html` until that parity is confirmed.
+- The new `ui/` frontend covers Explore + Resolve + Catalog. It has not reached parity with the legacy Sense board's RAW/MEANING/CONFLICTS/ASK/EMIT panels, so `/` still serves the legacy UI by design — don't retire `synapse/static/index.html` until that parity is confirmed.
 
 ## Key files
 
