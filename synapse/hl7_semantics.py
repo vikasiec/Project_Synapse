@@ -134,11 +134,14 @@ def _plain_field_name(segment_name: str, index: int) -> str:
     return canonical if canonical else str(index)
 
 
-def _emit_segment_field(
-    out: dict[str, dict[str, list[str]]], segment: Hl7Segment, message_id: Optional[str]
-) -> None:
+def _segment_to_row(segment: Hl7Segment, message_id: Optional[str]) -> dict[str, str]:
+    """One segment instance -> one {field_name: value} row, applying the
+    same canonical naming + CE/CX/XPN splitting as the column-oriented
+    path below. The single place both extract_hl7_by_segment (columns)
+    and extract_hl7_rows (rows) get their field semantics from, so the
+    two extraction shapes can never silently drift apart."""
     seg_name = segment.name
-    bucket = out.setdefault(seg_name, defaultdict(list))
+    row: dict[str, str] = {}
     for idx, f in enumerate(segment.fields, start=1):
         if not f.raw:
             continue
@@ -147,52 +150,54 @@ def _emit_segment_field(
             code_name, text_name, sys_name = CE_SPLIT[key]
             code, text, system = f.component(1), f.component(2), f.component(3)
             if code:
-                bucket[code_name].append(code)
+                row[code_name] = code
             if text:
-                bucket[text_name].append(text)
+                row[text_name] = text
             if system:
-                bucket[sys_name].append(system)
+                row[sys_name] = system
             continue
         if key in CX_SPLIT:
             id_name, auth_name = CX_SPLIT[key]
             id_val = f.component(1, repetition=0)
             authority = f.component(4, repetition=0)
             if id_val:
-                bucket[id_name].append(id_val)
+                row[id_name] = id_val
             if authority:
-                bucket[auth_name].append(authority)
+                row[auth_name] = authority
             continue
         if key in XPN_SPLIT:
             last_name, first_name = XPN_SPLIT[key]
             family, given = f.component(1), f.component(2)
             if family:
-                bucket[last_name].append(family)
+                row[last_name] = family
             if given:
-                bucket[first_name].append(given)
+                row[first_name] = given
             continue
-        bucket[_plain_field_name(seg_name, idx)].append(f.raw)
+        row[_plain_field_name(seg_name, idx)] = f.raw
 
     if seg_name != "MSH" and message_id:
-        bucket[_MESSAGE_ID_FIELD].append(message_id)
+        row[_MESSAGE_ID_FIELD] = message_id
+    return row
 
 
-def extract_hl7_by_segment(payload: str) -> dict[str, dict[str, list[str]]]:
-    """Field-name -> observed-values extraction, grouped by segment type.
+def _emit_segment_field(
+    out: dict[str, dict[str, list[str]]], segment: Hl7Segment, message_id: Optional[str]
+) -> None:
+    bucket = out.setdefault(segment.name, defaultdict(list))
+    for k, v in _segment_to_row(segment, message_id).items():
+        bucket[k].append(v)
 
-    One payload may contain multiple messages (one per regrouped line --
-    see the \\r/\\n collapse handling below, unchanged from the prior flat
-    extractor); each message's segments contribute to their own
-    segment-keyed sub-dict, not one shared flat namespace. This is what
-    lets a landed HL7 file present as several distinct, correctly-typed
-    virtual sources (MSH/PID/ORC/OBR/OBX) instead of one card with
-    positional field codes.
+
+def _parse_hl7_messages(payload: str) -> list:
+    """Regroups a payload's lines back into whole HL7 messages and parses
+    each -- shared by both the column-oriented and row-oriented
+    extractors below.
+
+    Universal newline translation collapses HL7's \\r segment separators
+    down to \\n right alongside the \\n message separators -- regroup: a
+    new message starts at each line beginning "MSH"; every line after it,
+    up to the next MSH, belongs to that same message.
     """
-    out: dict[str, dict[str, list[str]]] = {}
-
-    # Universal newline translation collapses HL7's \r segment separators
-    # down to \n right alongside the \n message separators -- regroup: a
-    # new message starts at each line beginning "MSH"; every line after
-    # it, up to the next MSH, belongs to that same message.
     lines = [ln.strip() for ln in payload.replace("\r\n", "\n").replace("\r", "\n").split("\n") if ln.strip()]
     messages: list[list[str]] = []
     for line in lines:
@@ -201,17 +206,51 @@ def extract_hl7_by_segment(payload: str) -> dict[str, dict[str, list[str]]]:
         elif messages:
             messages[-1].append(line)
 
+    parsed = []
     for seg_lines in messages:
         try:
-            msg = parse_hl7_message("\r".join(seg_lines))
+            parsed.append(parse_hl7_message("\r".join(seg_lines)))
         except Hl7ParseError:
             continue
+    return parsed
+
+
+def extract_hl7_by_segment(payload: str) -> dict[str, dict[str, list[str]]]:
+    """Field-name -> observed-values extraction, grouped by segment type.
+
+    One payload may contain multiple messages; each message's segments
+    contribute to their own segment-keyed sub-dict, not one shared flat
+    namespace. This is what lets a landed HL7 file present as several
+    distinct, correctly-typed virtual sources (MSH/PID/ORC/OBR/OBX)
+    instead of one card with positional field codes.
+    """
+    out: dict[str, dict[str, list[str]]] = {}
+    for msg in _parse_hl7_messages(payload):
         msh = msg.first("MSH")
         message_id = msh.value(10) if msh else None
         for seg in msg.segments:
             _emit_segment_field(out, seg, message_id)
-
     return {seg: dict(fields) for seg, fields in out.items()}
+
+
+def extract_hl7_rows(payload: str) -> dict[str, list[dict[str, str]]]:
+    """Row-oriented counterpart to extract_hl7_by_segment: one dict per
+    segment *instance* (not one shared column-list per field), so a
+    record's fields stay correlated -- e.g. one OBX's own
+    observation_value/units/hl7_message_id stay together as one row,
+    rather than fanned out across every OBX in the file. Schema profiling
+    intentionally discards this (column-oriented is the right shape for
+    field-level stats); star-schema materialization needs it back to
+    build real fact/dimension rows."""
+    out: dict[str, list[dict[str, str]]] = defaultdict(list)
+    for msg in _parse_hl7_messages(payload):
+        msh = msg.first("MSH")
+        message_id = msh.value(10) if msh else None
+        for seg in msg.segments:
+            row = _segment_to_row(seg, message_id)
+            if row:
+                out[seg.name].append(row)
+    return dict(out)
 
 
 def list_hl7_segments(payload: str) -> list[str]:

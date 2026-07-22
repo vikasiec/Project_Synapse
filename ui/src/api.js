@@ -72,6 +72,13 @@ export const api = {
     }),
   computeSuperSchema: (workspaceIds, principal = DEFAULT_PRINCIPAL) =>
     request('/v1/super-schema', { method: 'POST', body: { workspace_ids: workspaceIds, principal } }),
+  previewStarSchema: (workspaceIds, principal = DEFAULT_PRINCIPAL) =>
+    request('/v1/materialize/star-schema/preview', { method: 'POST', body: { workspace_ids: workspaceIds, principal } }),
+  executeStarSchema: (workspaceIds, targetDbPath, principal = DEFAULT_PRINCIPAL) =>
+    request('/v1/materialize/star-schema/execute', {
+      method: 'POST',
+      body: { workspace_ids: workspaceIds, target_db_path: targetDbPath, principal },
+    }),
   getLayout: (workspaceId) =>
     request(workspaceId ? `/v1/schema/layout?workspace_id=${encodeURIComponent(workspaceId)}` : '/v1/schema/layout'),
   saveLayoutPosition: (sourceSystem, x, y, principal = DEFAULT_PRINCIPAL) =>

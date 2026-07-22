@@ -98,6 +98,51 @@ def _is_fhir_bundle(parsed: Any) -> bool:
     return isinstance(parsed, dict) and parsed.get("resourceType") == "Bundle" and isinstance(parsed.get("entry"), list)
 
 
+def extract_fhir_rows_by_type(payload: str) -> dict[str, list[dict[str, str]]]:
+    """Row-oriented counterpart to _flatten_fhir_bundle_by_type: one dict
+    per resource entry (not one shared column-list per field), so a
+    resource's fields stay correlated as one record. Schema profiling
+    intentionally discards this (column-oriented is the right shape for
+    field-level stats); star-schema materialization needs it back to
+    build real fact/dimension rows. Where a field legitimately has
+    multiple values (a real JSON array), takes the first -- rows need a
+    scalar per column, unlike the profiling path which keeps every
+    observed value for entropy/pattern stats."""
+    stripped = payload.strip()
+    if stripped[:1] not in ("{", "["):
+        return {}
+    try:
+        parsed = json.loads(stripped)
+    except json.JSONDecodeError:
+        return {}
+    if not _is_fhir_bundle(parsed):
+        return {}
+
+    out: dict[str, list[dict[str, str]]] = defaultdict(list)
+    top_level = {k: v for k, v in parsed.items() if k != "entry"}
+    bundle_row = {k: v[0] for k, v in _flatten_json(top_level).items() if v}
+    if bundle_row:
+        out["Bundle"].append(bundle_row)
+    bundle_id = parsed.get("id")
+
+    for entry in parsed.get("entry", []):
+        if not isinstance(entry, dict):
+            continue
+        resource = entry.get("resource")
+        if not isinstance(resource, dict):
+            continue
+        resource_type = resource.get("resourceType") or "Unknown"
+        row = {k: v[0] for k, v in _flatten_json(resource).items() if v}
+        full_url = entry.get("fullUrl")
+        if full_url:
+            row["fullUrl"] = str(full_url)
+        if bundle_id:
+            row["bundle_id"] = str(bundle_id)
+        out[resource_type].append(row)
+
+    return dict(out)
+
+
 def list_virtual_sources(payload: str) -> list[str]:
     """Segment/resourceType names present in a payload -- e.g.
     ["MSH","OBR","OBX","ORC","PID"] for an HL7 message, ["Bundle",

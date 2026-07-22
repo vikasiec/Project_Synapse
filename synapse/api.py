@@ -1219,6 +1219,50 @@ def make_handler(session: SynapseSession):
                 )
                 return _json_response(self, 200, result)
 
+            if path == "/v1/materialize/star-schema/preview":
+                from synapse.profiling import SchemaProfiler
+                from synapse.star_schema import preview_star_schema
+
+                principal = _principal_from_body(body, session.store)
+                if not _require_role(self, principal, "operator"):
+                    return None
+                workspace_ids = body.get("workspace_ids") or []
+                if not isinstance(workspace_ids, list) or len(workspace_ids) < 1:
+                    return _json_response(self, 400, {"error": "workspace_ids must be a non-empty list"})
+                unknown = [w for w in workspace_ids if w not in session.store.workspaces]
+                if unknown:
+                    return _json_response(self, 400, {"error": f"unknown workspace_ids: {unknown}"})
+                profiler = SchemaProfiler(session.store)
+                result = preview_star_schema(
+                    session.store, session.ontology, profiler, workspace_ids, principal=principal
+                )
+                return _json_response(self, 200, result)
+
+            if path == "/v1/materialize/star-schema/execute":
+                import re as _re
+
+                from synapse.profiling import SchemaProfiler
+                from synapse.star_schema import execute_star_schema
+
+                principal = _principal_from_body(body, session.store)
+                if not _require_role(self, principal, "operator"):
+                    return None
+                workspace_ids = body.get("workspace_ids") or []
+                if not isinstance(workspace_ids, list) or len(workspace_ids) < 1:
+                    return _json_response(self, 400, {"error": "workspace_ids must be a non-empty list"})
+                unknown = [w for w in workspace_ids if w not in session.store.workspaces]
+                if unknown:
+                    return _json_response(self, 400, {"error": f"unknown workspace_ids: {unknown}"})
+                target_db_path = body.get("target_db_path")
+                if not target_db_path:
+                    label = "_".join(_re.sub(r"[^A-Za-z0-9]+", "-", w) for w in workspace_ids)
+                    target_db_path = f".data/warehouse_{label}.db"
+                profiler = SchemaProfiler(session.store)
+                result = execute_star_schema(
+                    session.store, session.ontology, profiler, workspace_ids, target_db_path, principal=principal
+                )
+                return _json_response(self, 200, result)
+
             if path == "/v1/explore/ingest":
                 # Explore journey step 1 for real use, not just already-
                 # landed demo sources: the browser reads a picked file's

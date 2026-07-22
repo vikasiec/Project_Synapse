@@ -1,0 +1,85 @@
+.warehouse-shell {
+  overflow-y: auto;
+}
+
+.warehouse-body {
+  padding: 16px;
+}
+
+.warehouse-preview {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.warehouse-preview h3 {
+  margin: 0 0 10px;
+  font-size: 13px;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.warehouse-plan-card {
+  background: var(--panel-2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 14px;
+  margin-bottom: 10px;
+}
+
+.warehouse-plan-card-title {
+  font-weight: 700;
+  color: var(--text);
+  font-size: 14px;
+}
+
+.warehouse-plan-card-source {
+  font-weight: 400;
+  color: var(--text-dim);
+  font-size: 11px;
+}
+
+.warehouse-plan-row {
+  font-size: 12px;
+  color: var(--text-dim);
+  margin-top: 4px;
+}
+
+.warehouse-plan-row code {
+  color: var(--accent);
+}
+
+.warehouse-plan-columns {
+  font-family: monospace;
+  word-break: break-word;
+}
+
+.warehouse-guess-flag {
+  color: #f59e0b;
+}
+
+.warehouse-result-title {
+  font-size: 13px;
+  color: var(--text);
+  margin-bottom: 12px;
+}
+
+.warehouse-table {
+  border-collapse: collapse;
+  width: 100%;
+  max-width: 640px;
+}
+
+.warehouse-table th,
+.warehouse-table td {
+  text-align: left;
+  padding: 6px 12px;
+  border-bottom: 1px solid var(--border);
+  font-size: 13px;
+}
+
+.warehouse-table th {
+  color: var(--text-dim);
+  font-weight: 600;
+}

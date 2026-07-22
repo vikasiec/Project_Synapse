@@ -5,6 +5,7 @@ import ExploreView from './views/ExploreView'
 import ResolveView from './views/ResolveView'
 import SchemaView from './views/SchemaView'
 import SuperSchemaView from './views/SuperSchemaView'
+import WarehouseView from './views/WarehouseView'
 import './App.css'
 
 const TABS = [
@@ -13,6 +14,7 @@ const TABS = [
   { id: 'schema', label: 'Schema' },
   { id: 'catalog', label: 'Catalog' },
   { id: 'super-schema', label: 'Super Schema' },
+  { id: 'warehouse', label: 'Warehouse' },
 ]
 
 const LAST_WORKSPACE_KEY = 'synapse.lastWorkspaceId'
@@ -186,6 +188,7 @@ function App() {
         {tab === 'schema' && <SchemaView workspaceId={workspaceId} />}
         {tab === 'catalog' && <CatalogView workspaceId={workspaceId} refreshKey={catalogVersion} />}
         {tab === 'super-schema' && <SuperSchemaView />}
+        {tab === 'warehouse' && <WarehouseView />}
       </main>
     </div>
   )
