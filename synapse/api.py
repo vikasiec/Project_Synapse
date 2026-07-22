@@ -790,6 +790,25 @@ def make_handler(session: SynapseSession):
                     200,
                     {"source": source, "fields": [p.to_dict() for p in profiles.values()]},
                 )
+            if path == "/v1/explore/samples":
+                # Curation-support read path: a bounded, ACL-scoped peek at
+                # a field's actual observed values, so a human reviewing a
+                # candidate match (node double-click, edge double-click) has
+                # something concrete to look at. Deliberately not part of
+                # SchemaFieldProfile -- that type never carries raw values
+                # at all, this is a separate, on-demand, small (<=20) read.
+                from synapse.profiling import SchemaProfiler
+
+                qs = parse_qs(urlparse(self.path).query)
+                principal = _principal_from_query(qs, session.store)
+                source = qs.get("source", [None])[0]
+                field = qs.get("field", [None])[0]
+                if not source or not field:
+                    return _json_response(self, 400, {"error": "source and field query params required"})
+                limit = min(int(qs.get("limit", ["5"])[0]), 20)
+                profiler = SchemaProfiler(session.store)
+                values = profiler.sample_values(source, field, principal=principal, limit=limit)
+                return _json_response(self, 200, {"source": source, "field": field, "values": values})
             if path == "/v1/graph":
                 snap = session.sync_graph()
                 qs = parse_qs(urlparse(self.path).query)

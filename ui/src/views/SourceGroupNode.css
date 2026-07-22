@@ -5,6 +5,13 @@
   overflow: hidden;
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
   cursor: default;
+  /* Fill whatever width/height ReactFlow gives the node (default: sizes
+     to content; after a NodeResizer drag, an explicit px height/width) so
+     a stretched card's field list actually expands instead of staying
+     capped at a fixed height. */
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 .source-node.active {
@@ -13,20 +20,48 @@
 }
 
 .source-node-header {
+  flex: 0 0 auto;
   width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--panel-2);
+  border-bottom: 1px solid var(--border);
+  padding: 4px 4px 4px 0;
+}
+
+.source-node-header-btn {
+  flex: 1;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 8px;
-  background: var(--panel-2);
+  background: none;
   border: none;
-  border-bottom: 1px solid var(--border);
-  padding: 8px 12px;
+  padding: 4px 8px;
   cursor: pointer;
   text-align: left;
+  min-width: 0;
 }
-.source-node-header:hover {
+.source-node-header-btn:hover {
   background: #1e2330;
+}
+
+.source-node-props-btn {
+  flex: 0 0 auto;
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  color: var(--text-dim);
+  width: 20px;
+  height: 20px;
+  line-height: 1;
+  font-size: 12px;
+  cursor: pointer;
+}
+.source-node-props-btn:hover {
+  color: var(--accent);
+  border-color: var(--accent);
 }
 
 .source-node-name {
@@ -45,8 +80,9 @@
 }
 
 .source-node-fields {
+  flex: 1 1 auto;
+  min-height: 0;
   padding: 4px 0;
-  max-height: 260px;
   overflow-y: auto;
 }
 

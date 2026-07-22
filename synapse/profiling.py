@@ -308,6 +308,35 @@ class SchemaProfiler:
             )
         return profiles
 
+    def sample_values(
+        self,
+        source_system: str,
+        field_name: str,
+        *,
+        principal: Optional[Principal] = None,
+        limit: int = 5,
+    ) -> list[str]:
+        """A small, bounded set of distinct observed values for one field,
+        computed fresh from ACL-visible raw text and never persisted --
+        distinct from SchemaFieldProfile, which deliberately keeps no raw
+        values at all (per the module's "without storing raw sensitive
+        values" contract). This exists only to give a human curator
+        something concrete to eyeball during an ACCEPT/REJECT decision;
+        it is not part of the profile/scoring pipeline and the API layer
+        must gate it behind the same role check as other mutation-review
+        actions, not leave it open to any reader."""
+        seen: list[str] = []
+        for raw in self._visible_raw_for_source(source_system, principal):
+            for key, values in _extract_field_values(raw.raw_payload).items():
+                if key != field_name:
+                    continue
+                for v in values:
+                    if v not in seen:
+                        seen.append(v)
+                    if len(seen) >= limit:
+                        return seen
+        return seen
+
     def known_sources(self, principal: Optional[Principal] = None) -> list[str]:
         raws = list(self.store.raw_objects.values())
         if principal is not None:

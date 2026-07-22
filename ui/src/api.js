@@ -31,6 +31,10 @@ export const api = {
     }),
   profile: (source, principal = DEFAULT_PRINCIPAL) =>
     request(`/v1/explore/profile?source=${encodeURIComponent(source)}&principal=${encodeURIComponent(principal)}`),
+  samples: (source, field, limit = 5, principal = DEFAULT_PRINCIPAL) =>
+    request(
+      `/v1/explore/samples?source=${encodeURIComponent(source)}&field=${encodeURIComponent(field)}&limit=${limit}&principal=${encodeURIComponent(principal)}`,
+    ),
   analyze: (sourceA, sourceB, principal = DEFAULT_PRINCIPAL) =>
     request('/v1/explore/analyze', {
       method: 'POST',

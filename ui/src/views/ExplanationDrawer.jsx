@@ -7,7 +7,19 @@ const PREDICATES = ['SAME_ENTITY_AS', 'FOREIGN_KEY_TO', 'DERIVED_FROM']
 // the ACCEPT / REJECT / RELABEL curation micro-actions. When multiple
 // field pairs matched between the same two sources, `alternates` lets the
 // user switch which one they're looking at without closing the drawer.
-export default function ExplanationDrawer({ candidate, alternates = [], onSelectAlternate, busy, onClose, onDecide }) {
+// `samples` ({a, b} arrays of actual observed values, only fetched on an
+// edge double-click, not every single-click) gives the reviewer something
+// concrete to eyeball alongside the recommendation.
+export default function ExplanationDrawer({
+  candidate,
+  alternates = [],
+  onSelectAlternate,
+  samples,
+  samplesLoading,
+  busy,
+  onClose,
+  onDecide,
+}) {
   const [predicate, setPredicate] = useState('SAME_ENTITY_AS')
 
   return (
@@ -53,6 +65,33 @@ export default function ExplanationDrawer({ candidate, alternates = [], onSelect
       <div className="drawer-score">
         score {candidate.similarity_score.toFixed(2)} · {candidate.status}
       </div>
+
+      {(samplesLoading || samples) && (
+        <div className="drawer-section">
+          <div className="drawer-section-title">Sample data (double-click a match to load)</div>
+          {samplesLoading && <div className="drawer-samples-loading">Loading samples…</div>}
+          {samples && (
+            <div className="drawer-samples">
+              <div className="drawer-samples-col">
+                {samples.a.length === 0 && <div className="drawer-samples-empty">no samples</div>}
+                {samples.a.map((v, i) => (
+                  <div key={i} className="drawer-sample-value">
+                    {v}
+                  </div>
+                ))}
+              </div>
+              <div className="drawer-samples-col">
+                {samples.b.length === 0 && <div className="drawer-samples-empty">no samples</div>}
+                {samples.b.map((v, i) => (
+                  <div key={i} className="drawer-sample-value">
+                    {v}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
 
       <div className="drawer-section">
         <div className="drawer-section-title">Why SYNAPSE suggested this</div>

@@ -1,9 +1,10 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import ReactFlow, { Background, Controls, MarkerType } from 'reactflow'
+import ReactFlow, { Background, Controls, MarkerType, applyNodeChanges } from 'reactflow'
 import 'reactflow/dist/style.css'
 import { api } from '../api'
 import ExplanationDrawer from './ExplanationDrawer'
 import FileIngest from './FileIngest'
+import SourcePropertiesPanel from './SourcePropertiesPanel'
 import SourceGroupNode from './SourceGroupNode'
 import './ExploreView.css'
 
@@ -23,11 +24,10 @@ const NODE_TYPES = { sourceGroup: SourceGroupNode }
 
 // Every landed source gets rendered as its own structural cluster
 // (header + field:type rows) the moment it's known -- no dropdown pick
-// required to see "what's here." Clicking a cluster's header is what
-// triggers relation discovery (compares that source's fields against
-// every OTHER currently-loaded source), not a prerequisite to seeing
-// the data at all.
-function buildStructureNodes(sources, profilesBySource, activeSource, onActivate) {
+// required to see "what's here." Single-click a header to find its
+// relations to everything else; double-click (or the header's own
+// dedicated button) opens the full properties panel for that source.
+function buildStructureNodes(sources, profilesBySource, activeSource, onActivate, onOpenProperties) {
   const heights = sources.map((s) => {
     const fields = profilesBySource[s.source_system] || []
     return HEADER_H + Math.max(fields.length, 1) * ROW_H + 16
@@ -53,6 +53,7 @@ function buildStructureNodes(sources, profilesBySource, activeSource, onActivate
         fields: profilesBySource[s.source_system] || null,
         active: activeSource === s.source_system,
         onActivate: () => onActivate(s.source_system),
+        onOpenProperties: () => onOpenProperties(s.source_system),
       },
       style: { width: CARD_W },
     }
@@ -113,9 +114,19 @@ export default function ExploreView({ onCommitted }) {
   const [candidates, setCandidates] = useState([])
   const [selected, setSelected] = useState(null)
   const [selectedGroup, setSelectedGroup] = useState([])
+  const [samples, setSamples] = useState(null) // { a: [...], b: [...] } | null
+  const [samplesLoading, setSamplesLoading] = useState(false)
+  const [propertiesSource, setPropertiesSource] = useState(null)
   const [committed, setCommitted] = useState(new Set())
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState(null)
+  // Nodes are real controlled state (not a plain derived value) so that
+  // manual drag/resize survives re-renders -- previously `nodes` was
+  // recomputed fresh via useMemo on every state change (e.g. clicking a
+  // header to activate a source), silently discarding any position/size
+  // the user had just set. onNodesChange + applyNodeChanges is the
+  // standard ReactFlow pattern for this.
+  const [nodes, setNodes] = useState([])
 
   const loadLandscape = useCallback(async () => {
     let list = []
@@ -170,16 +181,67 @@ export default function ExploreView({ onCommitted }) {
     [sources],
   )
 
-  const nodes = useMemo(
-    () => buildStructureNodes(sources, profilesBySource, activeSource, activateSource),
-    [sources, profilesBySource, activeSource, activateSource],
-  )
+  // Recompute the base layout when sources/profiles/active change, but
+  // preserve any position/size the user already dragged or resized on an
+  // existing node instead of snapping it back to the computed default.
+  useEffect(() => {
+    setNodes((prev) => {
+      const prevById = new Map(prev.map((n) => [n.id, n]))
+      const base = buildStructureNodes(sources, profilesBySource, activeSource, activateSource, setPropertiesSource)
+      return base.map((n) => {
+        const existing = prevById.get(n.id)
+        if (!existing) return n
+        return {
+          ...n,
+          position: existing.position,
+          style: { ...n.style, ...existing.style },
+          width: existing.width ?? n.width,
+          height: existing.height ?? n.height,
+        }
+      })
+    })
+  }, [sources, profilesBySource, activeSource, activateSource])
+
+  const onNodesChange = useCallback((changes) => {
+    setNodes((nds) => applyNodeChanges(changes, nds))
+  }, [])
+
   const edges = useMemo(() => buildEdges(candidates, committed), [candidates, committed])
 
-  const onEdgeClick = useCallback((_evt, edge) => {
+  const openMatch = useCallback((edge) => {
     const group = edge.data?.candidates || []
     setSelected(group[0] || null)
     setSelectedGroup(group)
+    setSamples(null)
+  }, [])
+
+  const onEdgeClick = useCallback((_evt, edge) => openMatch(edge), [openMatch])
+
+  const onEdgeDoubleClick = useCallback(
+    async (_evt, edge) => {
+      openMatch(edge)
+      const group = edge.data?.candidates || []
+      const top = group[0]
+      if (!top) return
+      setSamplesLoading(true)
+      try {
+        const [a, b] = await Promise.all([
+          api.samples(top.source_a.source_system, top.source_a.field_name),
+          api.samples(top.source_b.source_system, top.source_b.field_name),
+        ])
+        setSamples({ a: a.values || [], b: b.values || [] })
+      } catch (e) {
+        setError(e.message)
+      } finally {
+        setSamplesLoading(false)
+      }
+    },
+    [openMatch],
+  )
+
+  const onSelectAlternate = useCallback((candidate) => {
+    setSelected(candidate)
+    setSamples(null)
   }, [])
 
   const handleDecide = useCallback(
@@ -209,8 +271,9 @@ export default function ExploreView({ onCommitted }) {
         <FileIngest onLanded={handleLanded} />
         {sources.length > 0 && (
           <span className="explore-hint">
-            {sources.length} source{sources.length === 1 ? '' : 's'} loaded — click a source's header below to
-            find its relations to everything else.
+            {sources.length} source{sources.length === 1 ? '' : 's'} loaded — click a source's header to
+            find its relations, double-click for full properties. Double-click a relation line for sample
+            data + recommendation.
           </span>
         )}
         {busy && <span className="explore-hint busy">Analyzing…</span>}
@@ -228,7 +291,9 @@ export default function ExploreView({ onCommitted }) {
             nodes={nodes}
             edges={edges}
             nodeTypes={NODE_TYPES}
+            onNodesChange={onNodesChange}
             onEdgeClick={onEdgeClick}
+            onEdgeDoubleClick={onEdgeDoubleClick}
             fitView
             proOptions={{ hideAttribution: true }}
           >
@@ -238,15 +303,26 @@ export default function ExploreView({ onCommitted }) {
         )}
       </div>
 
+      {propertiesSource && (
+        <SourcePropertiesPanel
+          sourceSystem={propertiesSource}
+          fields={profilesBySource[propertiesSource] || []}
+          onClose={() => setPropertiesSource(null)}
+        />
+      )}
+
       {selected && (
         <ExplanationDrawer
           candidate={selected}
           alternates={selectedGroup}
-          onSelectAlternate={setSelected}
+          onSelectAlternate={onSelectAlternate}
+          samples={samples}
+          samplesLoading={samplesLoading}
           busy={busy}
           onClose={() => {
             setSelected(null)
             setSelectedGroup([])
+            setSamples(null)
           }}
           onDecide={handleDecide}
         />

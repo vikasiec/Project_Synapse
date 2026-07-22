@@ -1,21 +1,34 @@
-import { Handle, Position } from 'reactflow'
+import { Handle, NodeResizer, Position } from 'reactflow'
 import './SourceGroupNode.css'
 
 // Renders one landed source as a self-contained structure card: header +
 // every observed field with its derived data_type. This is what shows up
-// on the canvas automatically for each source -- clicking the header is
-// what triggers relation discovery against every other loaded source.
-export default function SourceGroupNode({ data }) {
-  const { sourceSystem, fields, active, onActivate } = data
+// on the canvas automatically for each source. Single-click the header to
+// trigger relation discovery against every other loaded source;
+// double-click the card (or its "Properties" button) for the full field
+// detail (entropy, regex matches, sample count). Resizable via the
+// corner/edge handles so a source with many fields can be stretched
+// taller instead of scrolling a tiny fixed box.
+export default function SourceGroupNode({ id, data, selected }) {
+  const { sourceSystem, fields, active, onActivate, onOpenProperties } = data
 
   return (
-    <div className={`source-node ${active ? 'active' : ''}`}>
+    <div
+      className={`source-node ${active ? 'active' : ''}`}
+      onDoubleClick={() => onOpenProperties?.()}
+    >
+      <NodeResizer minWidth={200} minHeight={90} isVisible={selected} lineStyle={{ borderColor: '#5b8cff' }} handleStyle={{ background: '#5b8cff', width: 8, height: 8 }} />
       <Handle type="source" position={Position.Right} style={{ opacity: 0 }} />
       <Handle type="target" position={Position.Left} style={{ opacity: 0 }} />
-      <button className="source-node-header" onClick={onActivate}>
-        <span className="source-node-name">{sourceSystem}</span>
-        <span className="source-node-count">{fields ? fields.length : '…'} fields</span>
-      </button>
+      <div className="source-node-header">
+        <button className="source-node-header-btn" onClick={onActivate} title="Find relations to every other loaded source">
+          <span className="source-node-name">{sourceSystem}</span>
+          <span className="source-node-count">{fields ? fields.length : '…'} fields</span>
+        </button>
+        <button className="source-node-props-btn" onClick={() => onOpenProperties?.()} title="Full properties">
+          ⓘ
+        </button>
+      </div>
       <div className="source-node-fields">
         {fields === null && <div className="source-node-loading">Loading structure…</div>}
         {fields && fields.length === 0 && <div className="source-node-loading">No fields detected</div>}
