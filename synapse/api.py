@@ -191,7 +191,37 @@ def _explore_summary(
     for raw in visible_raw:
         domain = next((t for t in raw.acl_tags if t.startswith("domain:")), "domain:unknown")
         domain_by_source.setdefault(raw.source_system, domain)
-    source_names = sorted(domain_by_source)
+
+    # An HL7/FHIR source decomposes into virtual sub-sources (one per
+    # segment/resourceType -- synapse/hl7_semantics.py, profiling.py's
+    # list_virtual_sources) so Explore/Schema View show e.g. "MSH"/"PID"/
+    # "OBR"/"OBX" as separate, correctly-typed cards instead of one flat
+    # blob with positional field codes. Every other source (CSV, plain
+    # JSON, KV-text) is unaffected -- list_virtual_sources returns [] for
+    # anything that isn't decomposable, so it's listed by its real name.
+    from synapse.profiling import list_virtual_sources
+
+    raws_by_base: dict[str, list] = {}
+    for raw in visible_raw:
+        raws_by_base.setdefault(raw.source_system, []).append(raw)
+    source_names: list[str] = []
+    virtual_domain: dict[str, str] = {}
+    virtual_count: dict[str, int] = {}
+    for base, raws in raws_by_base.items():
+        sub_types: set[str] = set()
+        for raw in raws:
+            sub_types.update(list_virtual_sources(raw.raw_payload))
+        if sub_types:
+            for sub in sub_types:
+                name = f"{base}::{sub}"
+                source_names.append(name)
+                virtual_domain[name] = domain_by_source[base]
+                virtual_count[name] = len(raws)
+        else:
+            source_names.append(base)
+            virtual_domain[base] = domain_by_source[base]
+            virtual_count[base] = len(raws)
+    source_names.sort()
 
     # Field vocabulary is computed directly from ACL-visible raw payloads
     # with DriftDetector's own key-extraction regex (_KEY_RE), rather than
@@ -211,8 +241,8 @@ def _explore_summary(
     sources = [
         {
             "source_system": src,
-            "acl_domain": domain_by_source[src],
-            "object_count": sum(1 for r in visible_raw if r.source_system == src),
+            "acl_domain": virtual_domain[src],
+            "object_count": virtual_count[src],
             "observed_fields": sorted(field_sets.get(src, set())),
         }
         for src in source_names
@@ -1182,6 +1212,16 @@ def make_handler(session: SynapseSession):
                         if not result.dropped:
                             session.dual_path.extract(result.episode, result.raw)
                         landed = 1
+                        if content.lstrip().startswith("MSH"):
+                            # HL7's segments (PID/ORC/OBR/OBX) are true
+                            # structural facts of the message, not inferred
+                            # candidates -- auto-confirm them so Explore/
+                            # Schema View show the file already connected
+                            # instead of requiring a click on something
+                            # that was never actually in question.
+                            from synapse.hl7_semantics import auto_link_structure
+
+                            auto_link_structure(session.store, session.ontology, source_system)
                 session.sync_graph()
                 return _json_response(
                     self,

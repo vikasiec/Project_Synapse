@@ -94,6 +94,33 @@ class TestSqliteStore(unittest.TestCase):
             self.assertEqual(reloaded.source_b["field_name"], "client_num")
             session2.close()
 
+    def test_legacy_hl7_field_names_migrated_on_session_open(self):
+        # open_session() runs hl7_semantics.migrate_legacy_field_names()
+        # every startup -- a RelationshipEdge confirmed before HL7
+        # profiling became segment-aware (old flat "OBX.5" naming) must
+        # come back rewritten to the new virtual source + real field name
+        # on the very next session open, not stay dangling.
+        with tempfile.TemporaryDirectory() as tmp:
+            db = Path(tmp) / "synapse_legacy_hl7.db"
+
+            session1 = open_session(db_path=str(db))
+            edge = session1.ontology.accept_relationship(
+                candidate_id="cand-legacy",
+                source_a={"source_system": "new_data_hl7_v2_oru_r01", "field_name": "OBX.5"},
+                source_b={"source_system": "new_data_mw_results", "field_name": "numericvalue"},
+                predicate="SAME_ENTITY_AS",
+            )
+            relationship_id = edge.relationship_id
+            session1.close()
+
+            session2 = open_session(db_path=str(db))
+            updated = session2.ontology.relationships[relationship_id]
+            self.assertEqual(
+                updated.source_a,
+                {"source_system": "new_data_hl7_v2_oru_r01::OBX", "field_name": "observation_value"},
+            )
+            session2.close()
+
     def test_schema_layout_survives_restart(self):
         # Schema View: a deliberately-arranged canvas position must look
         # the same on the next visit, not reset to auto-layout.

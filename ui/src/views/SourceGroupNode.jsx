@@ -9,8 +9,20 @@ import './SourceGroupNode.css'
 // detail (entropy, regex matches, sample count). Resizable via the
 // corner/edge handles so a source with many fields can be stretched
 // taller instead of scrolling a tiny fixed box.
+// An HL7/FHIR source decomposes into virtual sub-sources named
+// "base::SEGMENT" (e.g. "new_data_hl7_v2_oru_r01::OBX") -- shown as the
+// segment/resourceType name up front (what the card actually is) with the
+// base filename as a smaller subtitle, instead of the full string
+// truncating illegibly.
+function splitVirtualName(sourceSystem) {
+  const idx = sourceSystem.indexOf('::')
+  if (idx === -1) return { primary: sourceSystem, secondary: null }
+  return { primary: sourceSystem.slice(idx + 2), secondary: sourceSystem.slice(0, idx) }
+}
+
 export default function SourceGroupNode({ id, data, selected }) {
   const { sourceSystem, fields, active, onActivate, onOpenProperties, fieldHandles } = data
+  const { primary, secondary } = splitVirtualName(sourceSystem)
 
   return (
     <div
@@ -25,8 +37,11 @@ export default function SourceGroupNode({ id, data, selected }) {
         </>
       )}
       <div className="source-node-header">
-        <button className="source-node-header-btn" onClick={onActivate} title="Find relations to every other loaded source">
-          <span className="source-node-name">{sourceSystem}</span>
+        <button className="source-node-header-btn" onClick={onActivate} title={`Find relations to every other loaded source\n${sourceSystem}`}>
+          <span className="source-node-title">
+            <span className="source-node-name">{primary}</span>
+            {secondary && <span className="source-node-subtitle">{secondary}</span>}
+          </span>
           <span className="source-node-count">{fields ? fields.length : '…'} fields</span>
         </button>
         <button className="source-node-props-btn" onClick={() => onOpenProperties?.()} title="Full properties">

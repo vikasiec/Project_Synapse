@@ -64,10 +64,26 @@
   border-color: var(--accent);
 }
 
+.source-node-title {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  gap: 1px;
+}
+
 .source-node-name {
   font-weight: 700;
   font-size: 13px;
   color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.source-node-subtitle {
+  font-size: 10px;
+  font-weight: 400;
+  color: var(--text-dim);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;

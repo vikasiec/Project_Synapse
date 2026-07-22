@@ -101,12 +101,17 @@ class TestSchemaProfiler(unittest.TestCase):
         self.assertEqual(profiles["identifier.value"].sample_count, 3)
         self.assertNotIn("identifier.0.value", profiles)
 
-    def test_hl7v2_payload_profiles_across_all_segments(self) -> None:
+    def test_hl7v2_payload_profiles_as_virtual_segment_sources(self) -> None:
         # F-003 follow-up: HL7's \r segment separators collapse to \n
         # under Python's universal-newline text reads (and browser file
         # uploads), so a naive "each line is a message" split only ever
         # saw the MSH line -- PID/ORC/OBR/OBX segments were silently
         # dropped. Two messages here, exercising the regroup-by-MSH logic.
+        #
+        # Superseded the old flat "PID.5"/"OBX.5"/"MSH.10" positional-code
+        # assertions: HL7 now decomposes into virtual per-segment sources
+        # (synapse/hl7_semantics.py) with real semantic field names, not a
+        # single source with meaningless positional field codes.
         store = SemanticStore()
         msg1 = (
             "MSH|^~\\&|LIS|CityLab|HIS|GeneralHospital|20230810083000||ORU^R01|MSG00001|P|2.5.1\n"
@@ -121,12 +126,58 @@ class TestSchemaProfiler(unittest.TestCase):
         store.put_raw(RawObject.create(source_system="HL7", payload=msg1, acl_tags=["domain:clinical", "clearance:l2"]))
         store.put_raw(RawObject.create(source_system="HL7", payload=msg2, acl_tags=["domain:clinical", "clearance:l2"]))
 
-        profiles = SchemaProfiler(store).profile_source("HL7")
-        self.assertIn("PID.5", profiles)  # patient name field
-        self.assertIn("OBX.5", profiles)  # observation value field
-        self.assertEqual(profiles["PID.5"].sample_count, 2)
-        self.assertIn("MSH.10", profiles)
-        self.assertEqual(profiles["MSH.10"].entropy_score, 1.0)  # MSG00001 vs MSG00002, both unique
+        profiler = SchemaProfiler(store)
+        self.assertEqual(profiler.known_sources(), ["HL7::MSH", "HL7::OBX", "HL7::PID"])
+
+        pid_profiles = profiler.profile_source("HL7::PID")
+        self.assertIn("patient_last_name", pid_profiles)
+        self.assertEqual(pid_profiles["patient_last_name"].sample_count, 2)
+
+        obx_profiles = profiler.profile_source("HL7::OBX")
+        self.assertIn("observation_value", obx_profiles)
+
+        msh_profiles = profiler.profile_source("HL7::MSH")
+        self.assertIn("message_control_id", msh_profiles)
+        self.assertEqual(msh_profiles["message_control_id"].entropy_score, 1.0)  # MSG00001 vs MSG00002, both unique
+
+    def test_fhir_bundle_profiles_per_resource_type_not_merged(self) -> None:
+        # A Bundle mixing Patient + Observation resources must not blend
+        # their unrelated fields into one shared namespace -- verified
+        # against the real single-resourceType new_data/fhir_observations.json
+        # already worked by construction; this proves the actual gap (a
+        # mixed bundle) is handled too.
+        store = SemanticStore()
+        bundle = json.dumps(
+            {
+                "resourceType": "Bundle",
+                "id": "mixed",
+                "type": "collection",
+                "entry": [
+                    {"fullUrl": "urn:1", "resource": {"resourceType": "Patient", "id": "P1", "name": [{"family": "Doe"}]}},
+                    {
+                        "fullUrl": "urn:2",
+                        "resource": {
+                            "resourceType": "Observation",
+                            "id": "O1",
+                            "status": "final",
+                            "valueQuantity": {"value": 5.0},
+                        },
+                    },
+                ],
+            }
+        )
+        store.put_raw(RawObject.create(source_system="FHIR", payload=bundle, acl_tags=["domain:clinical", "clearance:l2"]))
+
+        profiler = SchemaProfiler(store)
+        self.assertEqual(profiler.known_sources(), ["FHIR::Bundle", "FHIR::Observation", "FHIR::Patient"])
+
+        patient_profiles = profiler.profile_source("FHIR::Patient")
+        self.assertIn("name.family", patient_profiles)
+        self.assertNotIn("valueQuantity.value", patient_profiles)
+
+        obs_profiles = profiler.profile_source("FHIR::Observation")
+        self.assertIn("valueQuantity.value", obs_profiles)
+        self.assertNotIn("name.family", obs_profiles)
 
     def test_semantic_vectors_are_well_defined(self) -> None:
         from synapse.profiling import _hashing_vector

@@ -25,6 +25,7 @@ from collections import defaultdict
 from dataclasses import dataclass
 from typing import Any, Optional
 
+from synapse.hl7_semantics import extract_hl7_by_segment, list_hl7_segments
 from synapse.models import utc_now_iso
 from synapse.security import Principal, filter_raw_objects
 from synapse.store import SemanticStore
@@ -53,48 +54,71 @@ def _flatten_json(obj: Any, prefix: str = "", out: Optional[dict[str, list[str]]
     return out
 
 
-def _extract_hl7_fields(payload: str) -> dict[str, list[str]]:
-    """Field-name -> observed-values extraction for HL7v2 pipe-delimited
-    payloads, reusing the existing generic tokenizer in synapse/hl7v2.py
-    (parse_hl7_message) rather than writing a second parser. Field names
-    are position-based ("PID.5", "OBX.5") -- the raw envelope structure
-    every HL7v2 message shares, not a semantic interpretation of what any
-    field means (that stays out of scope here, same boundary hl7v2.py's
-    own docstring already draws). One payload may contain multiple
-    messages (one per line); each contributes its own observed values to
-    the same field keys, the same way multiple CSV rows contribute
-    multiple values to one column."""
-    from synapse.hl7v2 import Hl7ParseError, looks_like_hl7, parse_hl7_message
+def _flatten_fhir_bundle_by_type(parsed: dict) -> dict[str, dict[str, list[str]]]:
+    """Groups a FHIR Bundle's entries by resource.resourceType before
+    flattening -- a Bundle mixing e.g. Patient and Observation resources
+    profiles as two distinct virtual sources with their own clean field
+    namespace ("code.coding.code", "valueQuantity.value", ...), instead of
+    every entry's fields merging into one shared "entry.resource.*"
+    namespace regardless of what kind of resource they came from. Bundle-
+    level metadata (id/type/timestamp) gets its own "Bundle" bucket, same
+    treatment as HL7's MSH envelope -- kept and labeled, not merged into
+    the resources it carries."""
+    by_type: dict[str, dict[str, list[str]]] = defaultdict(lambda: defaultdict(list))
 
-    field_values: dict[str, list[str]] = defaultdict(list)
-    # Universal newline translation (Python text-mode reads, and text
-    # pulled from a browser file upload) collapses HL7's \r segment
-    # separators down to \n right alongside the \n message separators --
-    # so a message's PID/ORC/OBR/OBX segments arrive as their own lines,
-    # not still attached to their MSH line. Regroup: a new message starts
-    # at each line beginning "MSH"; every line after it, up to the next
-    # MSH, belongs to that same message.
-    lines = [ln.strip() for ln in payload.replace("\r\n", "\n").replace("\r", "\n").split("\n") if ln.strip()]
-    messages: list[list[str]] = []
-    for line in lines:
-        if looks_like_hl7(line):
-            messages.append([line])
-        elif messages:
-            messages[-1].append(line)
+    top_level = {k: v for k, v in parsed.items() if k != "entry"}
+    for k, v in _flatten_json(top_level).items():
+        by_type["Bundle"][k].extend(v)
 
-    for seg_lines in messages:
-        try:
-            msg = parse_hl7_message("\r".join(seg_lines))
-        except Hl7ParseError:
+    for entry in parsed.get("entry", []):
+        if not isinstance(entry, dict):
             continue
-        for seg in msg.segments:
-            for idx, f in enumerate(seg.fields, start=1):
-                if f.raw:
-                    field_values[f"{seg.name}.{idx}"].append(f.raw)
-    return field_values
+        resource = entry.get("resource")
+        if not isinstance(resource, dict):
+            continue
+        resource_type = resource.get("resourceType") or "Unknown"
+        for k, v in _flatten_json(resource).items():
+            by_type[resource_type][k].extend(v)
+        full_url = entry.get("fullUrl")
+        if full_url:
+            by_type[resource_type]["fullUrl"].append(str(full_url))
+
+    return {rt: dict(fields) for rt, fields in by_type.items()}
 
 
-def _extract_field_values(payload: str) -> dict[str, list[str]]:
+def _is_fhir_bundle(parsed: Any) -> bool:
+    return isinstance(parsed, dict) and parsed.get("resourceType") == "Bundle" and isinstance(parsed.get("entry"), list)
+
+
+def list_virtual_sources(payload: str) -> list[str]:
+    """Segment/resourceType names present in a payload -- e.g.
+    ["MSH","OBR","OBX","ORC","PID"] for an HL7 message, ["Bundle",
+    "Observation"] for a FHIR Bundle -- or [] if the payload isn't
+    decomposable (every other connector: CSV, plain JSON, KV-text). Used
+    to decide whether a source should be listed/profiled as several
+    virtual sub-sources instead of one flat one."""
+    stripped = payload.strip()
+    if stripped[:1] in ("{", "["):
+        try:
+            parsed = json.loads(stripped)
+        except json.JSONDecodeError:
+            return []
+        if _is_fhir_bundle(parsed):
+            return sorted(_flatten_fhir_bundle_by_type(parsed).keys())
+        return []
+    return list_hl7_segments(payload)
+
+
+def list_virtual_sources_for_raws(raws: list) -> list[str]:
+    """Union of virtual sub-source suffixes across a source's raw objects,
+    or [] if none of them decompose."""
+    types: set[str] = set()
+    for raw in raws:
+        types.update(list_virtual_sources(raw.raw_payload))
+    return sorted(types)
+
+
+def _extract_field_values(payload: str, type_filter: Optional[str] = None) -> dict[str, list[str]]:
     """Field-name -> observed-values extraction. Tries JSON first (covers
     the FHIR/JSONL connectors, which land raw JSON text as-is per
     synapse/connectors/fhir_file.py and file_jsonl.py), then HL7v2
@@ -102,20 +126,31 @@ def _extract_field_values(payload: str) -> dict[str, list[str]]:
     back to the "key: value"-per-line convention the CSV connector
     actually emits (synapse/connectors/csv_drop.py) and that
     synapse/drift.py's _KEY_RE already relies on elsewhere in this
-    codebase."""
+    codebase.
+
+    A FHIR Bundle or HL7 message decomposes into several virtual
+    sub-sources (one per resourceType/segment -- see list_virtual_sources);
+    type_filter scopes extraction to just one of them. Requesting
+    decomposable content with no type_filter returns {} rather than a
+    merged view -- different resourceTypes/segments reuse field names
+    ("id", "set_id", ...) for different things, so an unscoped merge would
+    silently collide them instead of failing visibly."""
     stripped = payload.strip()
     if stripped[:1] in ("{", "["):
         try:
             parsed = json.loads(stripped)
         except json.JSONDecodeError:
             parsed = None
+        if _is_fhir_bundle(parsed):
+            by_type = _flatten_fhir_bundle_by_type(parsed)
+            return by_type.get(type_filter, {}) if type_filter else {}
         if parsed is not None:
             return _flatten_json(parsed)
 
     if stripped.startswith("MSH"):
-        hl7_fields = _extract_hl7_fields(payload)
-        if hl7_fields:
-            return hl7_fields
+        by_segment = extract_hl7_by_segment(payload)
+        if by_segment:
+            return by_segment.get(type_filter, {}) if type_filter else {}
 
     field_values: dict[str, list[str]] = defaultdict(list)
     for m in _KV_RE.finditer(payload):
@@ -285,12 +320,25 @@ class SchemaProfiler:
             raws = filter_raw_objects(principal, raws)
         return raws
 
+    @staticmethod
+    def _split_virtual(source_system: str) -> tuple[str, Optional[str]]:
+        """"base::TYPE" -> (base, TYPE); a plain name -> (name, None). A
+        virtual sub-source (one HL7 segment / one FHIR resourceType) is
+        never itself a stored source_system -- it's resolved back to its
+        real base source_system for raw-object lookup, then re-labeled
+        with the requested (virtual) name on the resulting profiles."""
+        if "::" in source_system:
+            base, sub = source_system.split("::", 1)
+            return base, sub
+        return source_system, None
+
     def profile_source(
         self, source_system: str, principal: Optional[Principal] = None
     ) -> dict[str, SchemaFieldProfile]:
+        base, sub = self._split_virtual(source_system)
         field_values: dict[str, list[str]] = defaultdict(list)
-        for raw in self._visible_raw_for_source(source_system, principal):
-            for key, values in _extract_field_values(raw.raw_payload).items():
+        for raw in self._visible_raw_for_source(base, principal):
+            for key, values in _extract_field_values(raw.raw_payload, type_filter=sub).items():
                 field_values[key].extend(values)
 
         profiles: dict[str, SchemaFieldProfile] = {}
@@ -325,9 +373,10 @@ class SchemaProfiler:
         it is not part of the profile/scoring pipeline and the API layer
         must gate it behind the same role check as other mutation-review
         actions, not leave it open to any reader."""
+        base, sub = self._split_virtual(source_system)
         seen: list[str] = []
-        for raw in self._visible_raw_for_source(source_system, principal):
-            for key, values in _extract_field_values(raw.raw_payload).items():
+        for raw in self._visible_raw_for_source(base, principal):
+            for key, values in _extract_field_values(raw.raw_payload, type_filter=sub).items():
                 if key != field_name:
                     continue
                 for v in values:
@@ -338,10 +387,24 @@ class SchemaProfiler:
         return seen
 
     def known_sources(self, principal: Optional[Principal] = None) -> list[str]:
+        """Real base source_system names plus any HL7/FHIR source's
+        virtual sub-source names ("base::SEGMENT" / "base::resourceType")
+        -- a decomposable source is listed only by its sub-sources, not
+        also as a redundant flat blob."""
         raws = list(self.store.raw_objects.values())
         if principal is not None:
             raws = filter_raw_objects(principal, raws)
-        return sorted({r.source_system for r in raws})
+        by_base: dict[str, list] = defaultdict(list)
+        for r in raws:
+            by_base[r.source_system].append(r)
+        names: set[str] = set()
+        for base, base_raws in by_base.items():
+            subs = list_virtual_sources_for_raws(base_raws)
+            if subs:
+                names.update(f"{base}::{s}" for s in subs)
+            else:
+                names.add(base)
+        return sorted(names)
 
     def profile_all_sources(
         self, principal: Optional[Principal] = None

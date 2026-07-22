@@ -586,6 +586,20 @@ class OntologyRegistry:
             }
         )
 
+    def find_relationship_by_pair(
+        self, source_a: dict[str, str], source_b: dict[str, str]
+    ) -> Optional[RelationshipEdge]:
+        """Order-independent lookup by field identity, not candidate_id --
+        lets a caller (e.g. HL7 structural auto-linking) check "is this
+        pair already confirmed" before creating a duplicate, the same
+        identity notion dedupe_relationships() already groups by via
+        _pair_key()."""
+        key = frozenset({tuple(sorted(source_a.items())), tuple(sorted(source_b.items()))})
+        for r in self.relationships.values():
+            if self._pair_key(r) == key:
+                return r
+        return None
+
     def dedupe_relationships(self) -> dict[str, Any]:
         """One-time cleanup for a real bug this session found: before
         callers threaded relationship_id through ACCEPT/RELABEL correctly

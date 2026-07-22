@@ -88,6 +88,42 @@ class TestExploreIngest(unittest.TestCase):
         names = [s["source_system"] for s in data["sources"]]
         self.assertIn("UploadedOrders", names)
 
+    def test_hl7_upload_lands_as_segment_sources_with_structural_relationships_confirmed(self):
+        # The point of hl7_semantics.auto_link_structure() firing on
+        # ingest: PID/ORC/OBR/OBX are true structural facts of the
+        # message, not inferred guesses -- they should already be
+        # confirmed in the Catalog with zero ACCEPT calls.
+        hl7_content = (
+            "MSH|^~\\&|LIS|CityLab|HIS|GeneralHospital|20230810083000||ORU^R01|MSGX001|P|2.5.1\n"
+            "PID|1||PX001^^^HIS^MR||Doe^Jane||19800101|F\n"
+            "ORC|RE|ORDX001|||||^^^20230810083000\n"
+            "OBR|1|ORDX001|LABX001|CBC^Complete Blood Count^L|||20230810080000\n"
+            "OBX|1|NM|HGB^Hemoglobin^L||14.2|g/dL|13.5-17.5|N\n"
+        )
+        status, body = self._post(
+            "/v1/explore/ingest",
+            {"filename": "sample.hl7", "content": hl7_content, "source_system": "UploadedHL7", "principal": "l2"},
+        )
+        self.assertEqual(status, 200)
+        self.assertEqual(body["objects_landed"], 1)
+
+        with urllib.request.urlopen(self._url("/v1/explore?principal=l2")) as resp:
+            data = json.loads(resp.read().decode())
+        names = {s["source_system"] for s in data["sources"]}
+        for seg in ("MSH", "PID", "ORC", "OBR", "OBX"):
+            self.assertIn(f"UploadedHL7::{seg}", names)
+        self.assertNotIn("UploadedHL7", names)  # replaced by its sub-sources, not also listed flat
+
+        with urllib.request.urlopen(self._url("/v1/ontology")) as resp:
+            ontology = json.loads(resp.read().decode())
+        pairs = {
+            frozenset({r["source_a"]["source_system"], r["source_b"]["source_system"]})
+            for r in ontology["relationships"]
+        }
+        self.assertIn(frozenset({"UploadedHL7::OBR", "UploadedHL7::OBX"}), pairs)
+        self.assertIn(frozenset({"UploadedHL7::ORC", "UploadedHL7::OBR"}), pairs)
+        self.assertIn(frozenset({"UploadedHL7::PID", "UploadedHL7::MSH"}), pairs)
+
 
 if __name__ == "__main__":
     unittest.main()

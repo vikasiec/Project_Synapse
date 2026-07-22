@@ -129,6 +129,12 @@ def open_session(
     # empty every restart even under a SQLite-backed store, since
     # OntologyRegistry itself is reconstructed fresh every open_session().
     ontology.load_from_store(store)
+    # One-time correction for relationships confirmed before HL7/FHIR
+    # profiling became segment/resourceType-aware -- see
+    # hl7_semantics.LEGACY_FIELD_RENAME. Idempotent, cheap no-op once done.
+    from synapse.hl7_semantics import migrate_legacy_field_names
+
+    migrate_legacy_field_names(store, ontology)
     prep_pipeline = OperatorPipeline()
     ingestion = IngestionService(store, domain=domain, pipeline=prep_pipeline)
     extractor = RuleExtractor(store, ontology=ontology)
