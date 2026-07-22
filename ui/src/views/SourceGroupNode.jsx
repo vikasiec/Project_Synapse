@@ -10,7 +10,7 @@ import './SourceGroupNode.css'
 // corner/edge handles so a source with many fields can be stretched
 // taller instead of scrolling a tiny fixed box.
 export default function SourceGroupNode({ id, data, selected }) {
-  const { sourceSystem, fields, active, onActivate, onOpenProperties } = data
+  const { sourceSystem, fields, active, onActivate, onOpenProperties, fieldHandles } = data
 
   return (
     <div
@@ -18,8 +18,12 @@ export default function SourceGroupNode({ id, data, selected }) {
       onDoubleClick={() => onOpenProperties?.()}
     >
       <NodeResizer minWidth={200} minHeight={90} isVisible={selected} lineStyle={{ borderColor: '#5b8cff' }} handleStyle={{ background: '#5b8cff', width: 8, height: 8 }} />
-      <Handle type="source" position={Position.Right} style={{ opacity: 0 }} />
-      <Handle type="target" position={Position.Left} style={{ opacity: 0 }} />
+      {!fieldHandles && (
+        <>
+          <Handle type="source" position={Position.Right} style={{ opacity: 0 }} />
+          <Handle type="target" position={Position.Left} style={{ opacity: 0 }} />
+        </>
+      )}
       <div className="source-node-header">
         <button className="source-node-header-btn" onClick={onActivate} title="Find relations to every other loaded source">
           <span className="source-node-name">{sourceSystem}</span>
@@ -34,7 +38,23 @@ export default function SourceGroupNode({ id, data, selected }) {
         {fields && fields.length === 0 && <div className="source-node-loading">No fields detected</div>}
         {fields &&
           fields.map((f) => (
-            <div key={f.field_name} className="source-node-row">
+            <div key={f.field_name} className="source-node-row" style={fieldHandles ? { position: 'relative' } : undefined}>
+              {fieldHandles && (
+                <>
+                  <Handle
+                    type="target"
+                    position={Position.Left}
+                    id={`in-${f.field_name}`}
+                    style={{ top: '50%', background: '#5b8cff' }}
+                  />
+                  <Handle
+                    type="source"
+                    position={Position.Right}
+                    id={`out-${f.field_name}`}
+                    style={{ top: '50%', background: '#5b8cff' }}
+                  />
+                </>
+              )}
               <span className="source-node-field">{f.field_name}</span>
               <span className="source-node-type">{f.data_type}</span>
             </div>

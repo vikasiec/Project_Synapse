@@ -691,6 +691,8 @@ def make_handler(session: SynapseSession):
                 return _json_response(self, 200, session.engines.describe())
             if path == "/v1/ontology":
                 return _json_response(self, 200, session.ontology.describe())
+            if path == "/v1/schema/layout":
+                return _json_response(self, 200, {"positions": list(session.store.schema_layout.values())})
             if path == "/v1/capability":
                 from synapse.capability_matrix import capability_matrix
 
@@ -1065,18 +1067,34 @@ def make_handler(session: SynapseSession):
                 # Major Goal 2 -- distinct from GET /v1/explore (row 37's
                 # query-free Sense-board aggregation view). This endpoint
                 # scores candidate field-pair matches between two sources.
-                from synapse.matching import analyze_sources, transitive_candidates
+                from synapse.matching import analyze_sources, score_pair, transitive_candidates
                 from synapse.profiling import SchemaProfiler
 
                 principal = _principal_from_body(body, session.store)
                 source_a = body.get("source_a")
                 source_b = body.get("source_b")
+                field_a = body.get("field_a")
+                field_b = body.get("field_b")
                 if not source_a:
                     return _json_response(self, 400, {"error": "source_a is required"})
                 profiler = SchemaProfiler(session.store)
                 profiles_a = profiler.profile_source(source_a, principal=principal)
 
-                if source_b:
+                if source_b and field_a and field_b:
+                    # Schema View: the user drew a connection between two
+                    # specific fields directly, rather than picking from a
+                    # scored all-pairs sweep -- score just that one pair,
+                    # bypassing the normal strict-drop floor (they already
+                    # decided by drawing the line; a low score is
+                    # informational, not a reason to refuse them a drawer).
+                    profiles_b = profiler.profile_source(source_b, principal=principal)
+                    profile_a = profiles_a.get(field_a)
+                    profile_b = profiles_b.get(field_b)
+                    if profile_a is None or profile_b is None:
+                        return _json_response(self, 404, {"error": "field not found in profiled source"})
+                    edge = score_pair(session.store, session.ontology, profile_a, profile_b, force=True)
+                    candidates = [edge] if edge is not None else []
+                elif source_b:
                     profiles_b = profiler.profile_source(source_b, principal=principal)
                     candidates = analyze_sources(session.store, session.ontology, profiles_a, profiles_b)
                 else:
@@ -1183,6 +1201,18 @@ def make_handler(session: SynapseSession):
                     return None
                 result = session.ontology.dedupe_relationships()
                 return _json_response(self, 200, result)
+
+            if path == "/v1/schema/layout":
+                principal = _principal_from_body(body, session.store)
+                if not _require_role(self, principal, "operator"):
+                    return None
+                source_system = body.get("source_system")
+                x = body.get("x")
+                y = body.get("y")
+                if not source_system or x is None or y is None:
+                    return _json_response(self, 400, {"error": "source_system, x, y are required"})
+                entry = session.store.put_layout_position(source_system, float(x), float(y))
+                return _json_response(self, 200, entry)
 
             if path == "/v1/ontology/relationships":
                 # Major Goal 4, task 1 (Ontology Write-Back) -- curation

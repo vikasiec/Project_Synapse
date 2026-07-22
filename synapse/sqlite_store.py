@@ -100,6 +100,10 @@ class SqliteSemanticStore(SemanticStore):
                     id TEXT PRIMARY KEY,
                     data TEXT NOT NULL
                 );
+                CREATE TABLE IF NOT EXISTS schema_layout (
+                    id TEXT PRIMARY KEY,
+                    data TEXT NOT NULL
+                );
                 """
             )
             self._conn.commit()
@@ -126,6 +130,7 @@ class SqliteSemanticStore(SemanticStore):
             )
             rows_rel = list(self._conn.execute("SELECT data FROM relationship_edges"))
             rows_rej = list(self._conn.execute("SELECT data FROM rejected_candidates"))
+            rows_layout = list(self._conn.execute("SELECT data FROM schema_layout"))
         for row in rows_raw:
             super().put_raw(_raw_from_dict(json.loads(row["data"])))
         for row in rows_ep:
@@ -142,6 +147,9 @@ class SqliteSemanticStore(SemanticStore):
             super().put_relationship_edge(_relationship_edge_from_dict(json.loads(row["data"])))
         for row in rows_rej:
             super().put_rejected_candidate(_rejected_candidate_from_dict(json.loads(row["data"])))
+        for row in rows_layout:
+            d = json.loads(row["data"])
+            super().put_layout_position(d["source_system"], d["x"], d["y"])
         for row in rows_audit:
             from synapse.audit import AuditEvent
 
@@ -201,6 +209,11 @@ class SqliteSemanticStore(SemanticStore):
         super().put_rejected_candidate(rejected)
         self._upsert("rejected_candidates", rejected.rejection_id, rejected.to_dict())
         return rejected
+
+    def put_layout_position(self, source_system: str, x: float, y: float) -> dict:
+        entry = super().put_layout_position(source_system, x, y)
+        self._upsert("schema_layout", source_system, entry)
+        return entry
 
     def persist_audit_tail(self) -> None:
         """Flush any in-memory audit events not yet written."""

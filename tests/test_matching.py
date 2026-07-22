@@ -41,6 +41,50 @@ class TestMatchingNegative(unittest.TestCase):
         edge = score_pair(store, OntologyRegistry.default(), profile_a, profile_b)
         self.assertIsNone(edge, f"expected strict-drop (None), got {edge}")
 
+    def test_force_true_returns_manual_candidate_below_threshold(self) -> None:
+        # Schema View: user drew a connection between two fields the
+        # scorer alone would strict-drop. force=True must still return a
+        # real CandidateEdge (not None) so the curation drawer has
+        # something to show, tagged status="manual" with an explicit
+        # below-threshold reason rather than silently pretending it
+        # scored normally.
+        store = SemanticStore()
+        acl = ["domain:sre", "clearance:l2"]
+        for val in ("A1001", "A1002", "A1003"):
+            store.put_raw(RawObject.create(source_system="Orders", payload=f"account_id: {val}", acl_tags=acl))
+        for val in ("Z9001", "Z9002", "Z9003"):
+            store.put_raw(RawObject.create(source_system="Loyalty", payload=f"customer_number: {val}", acl_tags=acl))
+
+        profiler = SchemaProfiler(store)
+        profile_a = profiler.profile_source("Orders")["account_id"]
+        profile_b = profiler.profile_source("Loyalty")["customer_number"]
+
+        edge = score_pair(store, OntologyRegistry.default(), profile_a, profile_b, force=True)
+        self.assertIsNotNone(edge)
+        self.assertEqual(edge.status, "manual")
+        self.assertTrue(any("Manually connected" in r for r in edge.match_reasons))
+
+    def test_force_true_above_threshold_keeps_normal_status(self) -> None:
+        # force=True must not change the status for a pair that would
+        # have cleared the threshold anyway -- only the below-threshold
+        # path gets the "manual" treatment.
+        store = SemanticStore()
+        acl = ["domain:sre", "clearance:l2"]
+        shared_ids = ("84920112", "10293847", "55512309")
+        for val in shared_ids:
+            store.put_raw(RawObject.create(source_system="TableA", payload=f"cust_id: {val}", acl_tags=acl))
+        for val in shared_ids:
+            store.put_raw(RawObject.create(source_system="TableB", payload=f"client_num: {val}", acl_tags=acl))
+
+        profiler = SchemaProfiler(store)
+        profile_a = profiler.profile_source("TableA")["cust_id"]
+        profile_b = profiler.profile_source("TableB")["client_num"]
+
+        edge = score_pair(store, OntologyRegistry.default(), profile_a, profile_b, force=True)
+        self.assertIsNotNone(edge)
+        self.assertIn(edge.status, ("candidate", "high_confidence"))
+        self.assertFalse(any("Manually connected" in r for r in edge.match_reasons))
+
 
 if __name__ == "__main__":
     unittest.main()

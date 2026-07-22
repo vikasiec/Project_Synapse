@@ -2,36 +2,24 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import ReactFlow, { Background, Controls, MarkerType, applyNodeChanges } from 'reactflow'
 import 'reactflow/dist/style.css'
 import { api } from '../api'
+import {
+  CARD_W,
+  COLUMNS,
+  CONFIRMED_COLOR,
+  CORRECTED_COLOR,
+  STATUS_COLOR,
+  estimateCardHeight,
+  masonryPosition,
+  relationshipKey,
+  sourceNodeId,
+} from '../schemaShared'
 import ExplanationDrawer from './ExplanationDrawer'
 import FileIngest from './FileIngest'
 import SourcePropertiesPanel from './SourcePropertiesPanel'
 import SourceGroupNode from './SourceGroupNode'
 import './ExploreView.css'
 
-const STATUS_COLOR = {
-  high_confidence: '#34d399',
-  candidate: '#5b8cff',
-}
-const CONFIRMED_COLOR = '#22c55e' // solid green -- accepted as-is (SAME_ENTITY_AS)
-const CORRECTED_COLOR = '#f59e0b' // amber -- accepted with a relabeled predicate
-
-const ROW_H = 26
-const HEADER_H = 34
-const CARD_W = 240
-const GAP_X = 60
-const GAP_Y = 40
-const COLUMNS = 3
-
 const NODE_TYPES = { sourceGroup: SourceGroupNode }
-
-// A field pair's identity is (source_system, field_name) on each side,
-// order-independent -- NOT candidate_id, which is a fresh UUID minted by
-// every /v1/explore/analyze call and therefore useless for recognizing
-// "this is the same relationship I already confirmed" across re-analyzes
-// or page reloads. This key is what actually persists.
-function relationshipKey(a, b) {
-  return [`${a.source_system}::${a.field_name}`, `${b.source_system}::${b.field_name}`].sort().join('|')
-}
 
 // Every landed source gets rendered as its own structural cluster
 // (header + field:type rows) the moment it's known -- no dropdown pick
@@ -39,23 +27,12 @@ function relationshipKey(a, b) {
 // relations to everything else; double-click (or the header's own
 // dedicated button) opens the full properties panel for that source.
 function buildStructureNodes(sources, profilesBySource, activeSource, onActivate, onOpenProperties) {
-  const heights = sources.map((s) => {
-    const fields = profilesBySource[s.source_system] || []
-    return HEADER_H + Math.max(fields.length, 1) * ROW_H + 16
-  })
+  const heights = sources.map((s) => estimateCardHeight((profilesBySource[s.source_system] || []).length))
   const colHeights = new Array(COLUMNS).fill(0)
   return sources.map((s, i) => {
-    const col = i % COLUMNS
-    // Simple masonry: put each card under whichever column is currently shortest.
-    let target = 0
-    for (let c = 1; c < COLUMNS; c++) {
-      if (colHeights[c] < colHeights[target]) target = c
-    }
-    const x = target * (CARD_W + GAP_X) + 20
-    const y = colHeights[target] + 20
-    colHeights[target] += heights[i] + GAP_Y
+    const { x, y } = masonryPosition(i, heights, colHeights)
     return {
-      id: `src:${s.source_system}`,
+      id: sourceNodeId(s.source_system),
       type: 'sourceGroup',
       position: { x, y },
       draggable: true,
@@ -71,9 +48,7 @@ function buildStructureNodes(sources, profilesBySource, activeSource, onActivate
   })
 }
 
-function fieldNodeId(sourceSystem) {
-  return `src:${sourceSystem}`
-}
+const fieldNodeId = sourceNodeId
 
 // Multiple CandidateEdges can exist between the same two sources (one per
 // matched field pair). Rendering one ReactFlow edge per candidate made

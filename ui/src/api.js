@@ -58,4 +58,15 @@ export const api = {
     request('/v1/reprocess', { method: 'POST', body: { principal, actor: 'ui:explore-reprocess' } }),
   dedupeRelationships: (principal = DEFAULT_PRINCIPAL) =>
     request('/v1/ontology/relationships/dedupe', { method: 'POST', body: { principal } }),
+  analyzePair: (sourceA, fieldA, sourceB, fieldB, principal = DEFAULT_PRINCIPAL) =>
+    request('/v1/explore/analyze', {
+      method: 'POST',
+      body: { source_a: sourceA, field_a: fieldA, source_b: sourceB, field_b: fieldB, principal },
+    }),
+  getLayout: () => request('/v1/schema/layout'),
+  saveLayoutPosition: (sourceSystem, x, y, principal = DEFAULT_PRINCIPAL) =>
+    request('/v1/schema/layout', {
+      method: 'POST',
+      body: { source_system: sourceSystem, x, y, principal },
+    }),
 }

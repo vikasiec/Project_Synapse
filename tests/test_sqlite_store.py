@@ -94,6 +94,23 @@ class TestSqliteStore(unittest.TestCase):
             self.assertEqual(reloaded.source_b["field_name"], "client_num")
             session2.close()
 
+    def test_schema_layout_survives_restart(self):
+        # Schema View: a deliberately-arranged canvas position must look
+        # the same on the next visit, not reset to auto-layout.
+        with tempfile.TemporaryDirectory() as tmp:
+            db = Path(tmp) / "synapse_layout.db"
+
+            session1 = open_session(db_path=str(db))
+            session1.store.put_layout_position("TableA", 123.5, 456.0)
+            session1.close()
+
+            session2 = open_session(db_path=str(db))
+            self.assertIn("TableA", session2.store.schema_layout)
+            entry = session2.store.schema_layout["TableA"]
+            self.assertEqual(entry["x"], 123.5)
+            self.assertEqual(entry["y"], 456.0)
+            session2.close()
+
 
 if __name__ == "__main__":
     unittest.main()

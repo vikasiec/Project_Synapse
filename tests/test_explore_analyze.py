@@ -90,6 +90,37 @@ class TestExploreAnalyze(unittest.TestCase):
         self.assertEqual(status, 200)
         self.assertEqual(body["candidates"], [])
 
+    def test_explicit_field_pair_returns_single_forced_candidate(self):
+        # Schema View: drawing a connection between two specific fields
+        # scores exactly that pair, bypassing the all-pairs sweep.
+        status, body = self._post(
+            "/v1/explore/analyze",
+            {"source_a": "TableA", "field_a": "cust_id", "source_b": "TableB", "field_b": "client_num", "principal": "l2"},
+        )
+        self.assertEqual(status, 200)
+        self.assertEqual(len(body["candidates"]), 1)
+        self.assertEqual(body["candidates"][0]["source_a"]["field_name"], "cust_id")
+        self.assertEqual(body["candidates"][0]["source_b"]["field_name"], "client_num")
+
+    def test_explicit_field_pair_below_threshold_still_returns_manual_candidate(self):
+        self.session.store.put_raw(
+            RawObject.create(source_system="TableC", payload="unrelated_note: hello world", acl_tags=["domain:sre", "clearance:l2"])
+        )
+        status, body = self._post(
+            "/v1/explore/analyze",
+            {"source_a": "TableA", "field_a": "cust_id", "source_b": "TableC", "field_b": "unrelated_note", "principal": "l2"},
+        )
+        self.assertEqual(status, 200)
+        self.assertEqual(len(body["candidates"]), 1)
+        self.assertEqual(body["candidates"][0]["status"], "manual")
+
+    def test_explicit_field_pair_unknown_field_is_404(self):
+        status, body = self._post(
+            "/v1/explore/analyze",
+            {"source_a": "TableA", "field_a": "cust_id", "source_b": "TableB", "field_b": "no_such_field", "principal": "l2"},
+        )
+        self.assertEqual(status, 404)
+
 
 if __name__ == "__main__":
     unittest.main()

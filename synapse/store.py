@@ -25,6 +25,10 @@ class SemanticStore:
     # under a SQLite-backed store instead of resetting every session.
     relationship_edges: dict[str, RelationshipEdge] = field(default_factory=dict)
     rejected_candidates: dict[str, RejectedCandidate] = field(default_factory=dict)
+    # Schema View: durable canvas position per source_system, so a
+    # deliberately-arranged schema diagram looks the same every visit
+    # instead of resetting to a fresh auto-layout each time.
+    schema_layout: dict[str, dict] = field(default_factory=dict)
     # external_id key "system:id" -> entity_id
     entity_index: dict[str, str] = field(default_factory=dict)
     # canonical_name lower -> entity_id (same type preference handled by caller)
@@ -124,6 +128,11 @@ class SemanticStore:
     def put_rejected_candidate(self, rejected: RejectedCandidate) -> RejectedCandidate:
         self.rejected_candidates[rejected.rejection_id] = rejected
         return rejected
+
+    def put_layout_position(self, source_system: str, x: float, y: float) -> dict:
+        entry = {"source_system": source_system, "x": x, "y": y}
+        self.schema_layout[source_system] = entry
+        return entry
 
     def get_entity_by_name(self, name: str) -> Optional[Entity]:
         eid = self.name_index.get(name.lower())

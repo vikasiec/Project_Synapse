@@ -112,8 +112,17 @@ def score_pair(
     ontology: OntologyRegistry,
     profile_a: SchemaFieldProfile,
     profile_b: SchemaFieldProfile,
+    *,
+    force: bool = False,
 ) -> Optional[CandidateEdge]:
-    """Returns None (strict drop) when S_total < 0.50, per spec Task 3."""
+    """Returns None (strict drop) when S_total < 0.50, per spec Task 3 --
+    unless force=True (Schema View's manual "user drew this connection"
+    path): the user isn't relying on the score to decide, they already
+    decided by drawing the line, so a low score is informational, not a
+    reason to silently refuse to show them a drawer at all. Forced
+    below-threshold results get status="manual" (distinct from the
+    machine-recommended "candidate"/"high_confidence") and an explicit
+    reason noting the score didn't clear the normal bar."""
     vsim = vector_sim(profile_a, profile_b)
     voverlap = value_overlap(profile_a, profile_b)
     gprox = graph_proximity(store, ontology, profile_a.source_system, profile_b.source_system)
@@ -121,16 +130,24 @@ def score_pair(
     s_total = round(
         VECTOR_WEIGHT * vsim + VALUE_OVERLAP_WEIGHT * voverlap + GRAPH_PROXIMITY_WEIGHT * gprox, 4
     )
-    if s_total < CANDIDATE_THRESHOLD:
+    if s_total < CANDIDATE_THRESHOLD and not force:
         return None
 
-    status = "high_confidence" if s_total >= HIGH_CONFIDENCE_THRESHOLD else "candidate"
+    reasons = _match_reasons(vsim, voverlap, gprox, profile_a, profile_b)
+    if s_total < CANDIDATE_THRESHOLD:
+        status = "manual"
+        reasons = reasons + ["Manually connected by user (score below the usual candidate threshold)"]
+    elif s_total >= HIGH_CONFIDENCE_THRESHOLD:
+        status = "high_confidence"
+    else:
+        status = "candidate"
+
     return CandidateEdge(
         candidate_id=str(uuid4()),
         source_a={"source_system": profile_a.source_system, "field_name": profile_a.field_name},
         source_b={"source_system": profile_b.source_system, "field_name": profile_b.field_name},
         similarity_score=s_total,
-        match_reasons=_match_reasons(vsim, voverlap, gprox, profile_a, profile_b),
+        match_reasons=reasons,
         status=status,
     )
 

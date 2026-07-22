@@ -2,11 +2,13 @@ import { useState } from 'react'
 import CatalogView from './views/CatalogView'
 import ExploreView from './views/ExploreView'
 import ResolveView from './views/ResolveView'
+import SchemaView from './views/SchemaView'
 import './App.css'
 
 const TABS = [
   { id: 'explore', label: 'Explore' },
   { id: 'resolve', label: 'Resolve' },
+  { id: 'schema', label: 'Schema' },
   { id: 'catalog', label: 'Catalog' },
 ]
 
@@ -35,6 +37,7 @@ function App() {
       <main className="content">
         {tab === 'explore' && <ExploreView onCommitted={() => setCatalogVersion((v) => v + 1)} />}
         {tab === 'resolve' && <ResolveView />}
+        {tab === 'schema' && <SchemaView />}
         {tab === 'catalog' && <CatalogView refreshKey={catalogVersion} />}
       </main>
     </div>
