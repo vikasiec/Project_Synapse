@@ -7,6 +7,7 @@ from typing import Optional
 
 from synapse.audit import AuditLog
 from synapse.models import Claim, Conflict, Entity, Episode, Fact, RawObject
+from synapse.ontology import RejectedCandidate, RelationshipEdge
 
 
 @dataclass
@@ -19,6 +20,11 @@ class SemanticStore:
     facts: dict[str, Fact] = field(default_factory=dict)
     conflicts: dict[str, Conflict] = field(default_factory=dict)
     claims: dict[str, Claim] = field(default_factory=dict)
+    # Major Goal 4 / F-027: durable home for OntologyRegistry's curated
+    # relationship edges + rejection log, so the Catalog survives a restart
+    # under a SQLite-backed store instead of resetting every session.
+    relationship_edges: dict[str, RelationshipEdge] = field(default_factory=dict)
+    rejected_candidates: dict[str, RejectedCandidate] = field(default_factory=dict)
     # external_id key "system:id" -> entity_id
     entity_index: dict[str, str] = field(default_factory=dict)
     # canonical_name lower -> entity_id (same type preference handled by caller)
@@ -107,6 +113,14 @@ class SemanticStore:
     def put_claim(self, claim: Claim) -> Claim:
         self.claims[claim.claim_id] = claim
         return claim
+
+    def put_relationship_edge(self, edge: RelationshipEdge) -> RelationshipEdge:
+        self.relationship_edges[edge.relationship_id] = edge
+        return edge
+
+    def put_rejected_candidate(self, rejected: RejectedCandidate) -> RejectedCandidate:
+        self.rejected_candidates[rejected.rejection_id] = rejected
+        return rejected
 
     def get_entity_by_name(self, name: str) -> Optional[Entity]:
         eid = self.name_index.get(name.lower())

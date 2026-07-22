@@ -24,6 +24,7 @@ from synapse.models import (
     Fact,
     RawObject,
 )
+from synapse.ontology import RejectedCandidate, RelationshipEdge
 from synapse.store import SemanticStore
 
 PathLike = Union[str, Path]
@@ -91,6 +92,14 @@ class SqliteSemanticStore(SemanticStore):
                     id TEXT PRIMARY KEY,
                     data TEXT NOT NULL
                 );
+                CREATE TABLE IF NOT EXISTS relationship_edges (
+                    id TEXT PRIMARY KEY,
+                    data TEXT NOT NULL
+                );
+                CREATE TABLE IF NOT EXISTS rejected_candidates (
+                    id TEXT PRIMARY KEY,
+                    data TEXT NOT NULL
+                );
                 """
             )
             self._conn.commit()
@@ -115,6 +124,8 @@ class SqliteSemanticStore(SemanticStore):
             rows_audit = list(
                 self._conn.execute("SELECT data FROM audit_events ORDER BY rowid")
             )
+            rows_rel = list(self._conn.execute("SELECT data FROM relationship_edges"))
+            rows_rej = list(self._conn.execute("SELECT data FROM rejected_candidates"))
         for row in rows_raw:
             super().put_raw(_raw_from_dict(json.loads(row["data"])))
         for row in rows_ep:
@@ -127,6 +138,10 @@ class SqliteSemanticStore(SemanticStore):
             super().put_conflict(_conflict_from_dict(json.loads(row["data"])))
         for row in rows_claim:
             super().put_claim(_claim_from_dict(json.loads(row["data"])))
+        for row in rows_rel:
+            super().put_relationship_edge(_relationship_edge_from_dict(json.loads(row["data"])))
+        for row in rows_rej:
+            super().put_rejected_candidate(_rejected_candidate_from_dict(json.loads(row["data"])))
         for row in rows_audit:
             from synapse.audit import AuditEvent
 
@@ -170,6 +185,16 @@ class SqliteSemanticStore(SemanticStore):
         super().put_claim(claim)
         self._upsert("claims", claim.claim_id, claim.to_dict())
         return claim
+
+    def put_relationship_edge(self, edge: RelationshipEdge) -> RelationshipEdge:
+        super().put_relationship_edge(edge)
+        self._upsert("relationship_edges", edge.relationship_id, edge.to_dict())
+        return edge
+
+    def put_rejected_candidate(self, rejected: RejectedCandidate) -> RejectedCandidate:
+        super().put_rejected_candidate(rejected)
+        self._upsert("rejected_candidates", rejected.rejection_id, rejected.to_dict())
+        return rejected
 
     def persist_audit_tail(self) -> None:
         """Flush any in-memory audit events not yet written."""
@@ -266,6 +291,31 @@ def _conflict_from_dict(d: dict[str, Any]) -> Conflict:
         competing_fact_ids=list(d["competing_fact_ids"]),
         status=ConflictStatus(d.get("status", "open")),
         resolution=res,
+    )
+
+
+def _relationship_edge_from_dict(d: dict[str, Any]) -> RelationshipEdge:
+    return RelationshipEdge(
+        relationship_id=d["relationship_id"],
+        source_a=dict(d["source_a"]),
+        source_b=dict(d["source_b"]),
+        predicate=d["predicate"],
+        tier=d.get("tier", "L1"),
+        candidate_id=d.get("candidate_id"),
+        match_reasons=tuple(d.get("match_reasons") or ()),
+        similarity_score=d.get("similarity_score"),
+        accepted_at=d.get("accepted_at", ""),
+    )
+
+
+def _rejected_candidate_from_dict(d: dict[str, Any]) -> RejectedCandidate:
+    return RejectedCandidate(
+        candidate_id=d["candidate_id"],
+        source_a=dict(d["source_a"]),
+        source_b=dict(d["source_b"]),
+        reason=d.get("reason", ""),
+        rejected_at=d.get("rejected_at", ""),
+        rejection_id=d.get("rejection_id", d["candidate_id"]),
     )
 
 

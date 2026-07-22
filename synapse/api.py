@@ -39,7 +39,7 @@ from typing import Any, Optional
 from urllib.parse import parse_qs, urlparse
 
 from synapse.drift import _KEY_RE
-from synapse.entity_resolution import EntityResolutionService, normalize_name
+from synapse.entity_resolution import normalize_name
 from synapse.models import Entity
 from synapse.scenarios.billing_customer import BillingCustomerScenario
 from synapse.scenarios.checkout_incident import CheckoutIncidentScenario
@@ -57,6 +57,10 @@ from synapse.store import SemanticStore
 
 _PIN_RE = re.compile(r"^/v1/conflicts/([^/]+)/pin$")
 STATIC_DIR = Path(__file__).resolve().parent / "static"
+# New Vite/React UI (Catalog/Explore full-canvas journey, row 43). Served
+# alongside the legacy static/index.html at "/" until it reaches panel
+# parity (RAW/MEANING/CONFLICTS/ASK/EMIT) -- see Active_File.md row 43.
+UI_DIST_DIR = Path(__file__).resolve().parent.parent / "ui" / "dist"
 
 # Human labels for the domain ACL tags actually in use across this proof's
 # scenarios/connectors. A domain with no entry here still gets a readable
@@ -478,7 +482,13 @@ def _require_role(handler: BaseHTTPRequestHandler, principal: Principal, role: s
 
 
 def make_handler(session: SynapseSession):
-    er = EntityResolutionService(session.store)
+    # Use the session's own EntityResolutionService rather than a fresh
+    # throwaway instance -- a prior version constructed a second, separate
+    # er here (without session.ontology either), so state written by one
+    # route (e.g. link_schema_fields on ACCEPT) was invisible to anything
+    # reading session.er elsewhere (cli.py's merge path). One ER instance
+    # per session, consistently.
+    er = session.er
 
     class Handler(BaseHTTPRequestHandler):
         def log_message(self, fmt: str, *args: Any) -> None:
@@ -497,6 +507,21 @@ def make_handler(session: SynapseSession):
                 fpath = (STATIC_DIR / rel).resolve()
                 if not str(fpath).startswith(str(STATIC_DIR.resolve())) or not fpath.is_file():
                     return _json_response(self, 404, {"error": "not_found"})
+                ctype = mimetypes.guess_type(str(fpath))[0] or "application/octet-stream"
+                return _bytes_response(self, 200, fpath.read_bytes(), ctype)
+
+            if path == "/app" or path.startswith("/app/"):
+                if not UI_DIST_DIR.is_dir():
+                    return _json_response(
+                        self, 404, {"error": "ui_not_built", "hint": "cd ui && npm run build"}
+                    )
+                rel = path[len("/app/") :] if path.startswith("/app/") else ""
+                fpath = (UI_DIST_DIR / rel).resolve() if rel else UI_DIST_DIR / "index.html"
+                if not str(fpath).startswith(str(UI_DIST_DIR.resolve())):
+                    return _json_response(self, 404, {"error": "not_found"})
+                if not fpath.is_file():
+                    # SPA client-side routing fallback.
+                    fpath = UI_DIST_DIR / "index.html"
                 ctype = mimetypes.guess_type(str(fpath))[0] or "application/octet-stream"
                 return _bytes_response(self, 200, fpath.read_bytes(), ctype)
 
@@ -731,6 +756,25 @@ def make_handler(session: SynapseSession):
                 qs = parse_qs(urlparse(self.path).query)
                 principal = _principal_from_query(qs, session.store)
                 return _json_response(self, 200, _explore_summary(session, principal))
+            if path == "/v1/explore/profile":
+                # Major Goal 1 read path -- lets the Explore UI show computed
+                # field profiles for a picked source before/alongside
+                # scoring (spec journey step 2), rather than jumping
+                # straight from source-select to the candidate graph.
+                from synapse.profiling import SchemaProfiler
+
+                qs = parse_qs(urlparse(self.path).query)
+                principal = _principal_from_query(qs, session.store)
+                source = qs.get("source", [None])[0]
+                if not source:
+                    return _json_response(self, 400, {"error": "source query param required"})
+                profiler = SchemaProfiler(session.store)
+                profiles = profiler.profile_source(source, principal=principal)
+                return _json_response(
+                    self,
+                    200,
+                    {"source": source, "fields": [p.to_dict() for p in profiles.values()]},
+                )
             if path == "/v1/graph":
                 snap = session.sync_graph()
                 qs = parse_qs(urlparse(self.path).query)
@@ -982,6 +1026,124 @@ def make_handler(session: SynapseSession):
                 except Exception as exc:
                     return _json_response(self, 400, {"error": str(exc)})
                 return _json_response(self, 200, pin.conflict.to_dict())
+
+            if path == "/v1/explore/analyze":
+                # Major Goal 2 -- distinct from GET /v1/explore (row 37's
+                # query-free Sense-board aggregation view). This endpoint
+                # scores candidate field-pair matches between two sources.
+                from synapse.matching import analyze_sources, transitive_candidates
+                from synapse.profiling import SchemaProfiler
+
+                principal = _principal_from_body(body, session.store)
+                source_a = body.get("source_a")
+                source_b = body.get("source_b")
+                if not source_a:
+                    return _json_response(self, 400, {"error": "source_a is required"})
+                profiler = SchemaProfiler(session.store)
+                profiles_a = profiler.profile_source(source_a, principal=principal)
+
+                if source_b:
+                    profiles_b = profiler.profile_source(source_b, principal=principal)
+                    candidates = analyze_sources(session.store, session.ontology, profiles_a, profiles_b)
+                else:
+                    # Major Goal 4, task 3: no source_b given -- treat
+                    # source_a as a newly-ingested Source C and evaluate it
+                    # transitively against the ontology registry's already
+                    # SAME_ENTITY_AS-linked sources.
+                    candidates = transitive_candidates(
+                        session.store, session.ontology, profiler, source_a, profiles_a, principal=principal
+                    )
+                session.candidate_cache.put_all(candidates)
+                return _json_response(
+                    self,
+                    200,
+                    {
+                        "source_a": source_a,
+                        "source_b": source_b,
+                        "candidates": [c.to_dict() for c in candidates],
+                    },
+                )
+
+            if path == "/v1/ontology/relationships":
+                # Major Goal 4, task 1 (Ontology Write-Back) -- curation
+                # canvas ACCEPT/REJECT/RELABEL actions land here.
+                principal = _principal_from_body(body, session.store)
+                if not _require_role(self, principal, "operator"):
+                    return None
+                action = (body.get("action") or "").upper()
+                candidate_id = body.get("candidate_id")
+                if action in ("ACCEPT", "RELABEL") and not candidate_id and not body.get("relationship_id"):
+                    return _json_response(self, 400, {"error": "candidate_id required"})
+
+                if action == "ACCEPT":
+                    existing = session.ontology.find_relationship_by_candidate_id(candidate_id)
+                    if existing is not None:
+                        # Already accepted -- return the existing edge rather
+                        # than minting a duplicate catalog entry (F-029).
+                        return _json_response(self, 200, existing.to_dict())
+                    candidate = session.candidate_cache.get(candidate_id)
+                    if candidate is None:
+                        return _json_response(self, 404, {"error": "unknown_candidate_id"})
+                    try:
+                        edge = session.ontology.accept_relationship(
+                            candidate_id=candidate.candidate_id,
+                            source_a=candidate.source_a,
+                            source_b=candidate.source_b,
+                            predicate=body.get("predicate", "SAME_ENTITY_AS"),
+                            match_reasons=candidate.match_reasons,
+                            similarity_score=candidate.similarity_score,
+                        )
+                    except ValueError as exc:
+                        return _json_response(self, 400, {"error": str(exc)})
+                    # Major Goal 4, task 2: instantly widen ER blocking for a
+                    # confirmed SAME_ENTITY_AS field-level relationship.
+                    if edge.predicate == "SAME_ENTITY_AS":
+                        er.link_schema_fields(edge.source_a, edge.source_b)
+                    return _json_response(self, 200, edge.to_dict())
+
+                if action == "REJECT":
+                    candidate = session.candidate_cache.get(candidate_id)
+                    source_a = candidate.source_a if candidate else body.get("source_a", {})
+                    source_b = candidate.source_b if candidate else body.get("source_b", {})
+                    rejected = session.ontology.reject_relationship(
+                        candidate_id=candidate_id or "",
+                        source_a=source_a,
+                        source_b=source_b,
+                        reason=body.get("reason", ""),
+                    )
+                    return _json_response(self, 200, rejected.to_dict())
+
+                if action == "RELABEL":
+                    relationship_id = body.get("relationship_id")
+                    new_predicate = body.get("predicate")
+                    if not new_predicate:
+                        return _json_response(self, 400, {"error": "predicate required"})
+                    if not relationship_id:
+                        existing = session.ontology.find_relationship_by_candidate_id(candidate_id)
+                        if existing is not None:
+                            relationship_id = existing.relationship_id
+                    if relationship_id:
+                        updated = session.ontology.relabel_relationship(relationship_id, new_predicate)
+                        if updated is None:
+                            return _json_response(self, 404, {"error": "unknown_relationship_id"})
+                        return _json_response(self, 200, updated.to_dict())
+                    candidate = session.candidate_cache.get(candidate_id)
+                    if candidate is None:
+                        return _json_response(self, 404, {"error": "unknown_candidate_id"})
+                    try:
+                        edge = session.ontology.accept_relationship(
+                            candidate_id=candidate.candidate_id,
+                            source_a=candidate.source_a,
+                            source_b=candidate.source_b,
+                            predicate=new_predicate,
+                            match_reasons=candidate.match_reasons,
+                            similarity_score=candidate.similarity_score,
+                        )
+                    except ValueError as exc:
+                        return _json_response(self, 400, {"error": str(exc)})
+                    return _json_response(self, 200, edge.to_dict())
+
+                return _json_response(self, 400, {"error": "action must be ACCEPT, REJECT, or RELABEL"})
 
             if path == "/v1/eval":
                 from synapse.eval_runner import evaluate_pack

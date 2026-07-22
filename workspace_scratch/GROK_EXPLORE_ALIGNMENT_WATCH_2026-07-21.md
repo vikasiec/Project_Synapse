@@ -4,19 +4,19 @@
 **Plan source:** `workspace_scratch/CLAUDE_EXPLORE_VIEW_RESEARCH_AND_PLAN_2026-07-21.md`  
 **Scope of this file:** Observer notes only. No code changes by Grok. Discrepancies vs plan / process / correctness risks.
 
-**Watch status:** IN PROGRESS
+**Watch status:** COMPLETE (Claude closed row 37 üü¢ DONE; commit `1020dd7`)
 
 ---
 
-## Plan checklist (B.5 phasing)
+## Plan checklist (B.5 phasing) ‚Äî final
 
-| # | Plan step | Status at start of watch | Notes |
-|---|-----------|--------------------------|-------|
-| 1 | Confirm DriftDetector `observe_all` wiring | Done in code | `_explore_summary` calls `session.drift.observe_all()` before reading baselines |
-| 2 | `GET /v1/explore` + aggregation | In progress (uncommitted delta on top of claim commit) | `_explore_summary` + route present in `synapse/api.py` |
-| 3 | Tests (empty / multi-source shared fields / ACL) | Present, untracked `tests/test_explore_api.py` | Matches plan templates; see gaps below |
-| 4 | Frontend Explore panel + drill-down reuse Ask/History | **Not started** | No `explore`/`Explore` matches in `synapse/static/index.html` (mtime earlier than api work) |
-| 5 | E2E against live New Data store | **Not observed yet** | ‚Äî |
+| # | Plan step | Final status | Notes |
+|---|-----------|--------------|-------|
+| 1 | Confirm DriftDetector `observe_all` wiring | **Diverged (justified)** | Final code does **not** use baselines; fields from ACL-visible raw + `_KEY_RE` (D17) |
+| 2 | `GET /v1/explore` + aggregation | **Done** | `_explore_summary` + route in `synapse/api.py` |
+| 3 | Tests (empty / multi-source / ACL) | **Done** | `tests/test_explore_api.py` (+ ACL shared-source-name + non-combinatorial dup groups) |
+| 4 | Frontend Explore panel + drill-down reuse | **Done** | EXPLORE tab, cards, shared badges, issues, chip ‚Üí Ask prefill |
+| 5 | E2E against live New Data store | **Done (Claude claims; Grok observed full multi-source then restart partial)** | Commit message: full suite 220/220 + multi-source E2E |
 
 ---
 
@@ -106,11 +106,48 @@
 
 ## End-of-watch verdict
 
-*(filled when work stabilizes / row closes / user ends watch)*
+**Closed:** 2026-07-21 ~23:10 local ¬∑ commit `1020dd7` ¬∑ Active_File row 37 üü¢ DONE
 
-- **Plan alignment:** _
-- **Remaining gaps:** _
-- **Recommend before marking row 37 DONE:** Frontend B.2.3; consider ACL on ER count; optional regression for predicate vocab + conflict counts; E2E on New Data.
+### Plan alignment (overall)
+
+**Substantially aligned with Part A intent and B.5 delivery**, with **two deliberate plan-doc divergences** that improve ACL purity and UX truthfulness (D17/D18). Not a blind implementation of B.2.2 baselines.
+
+| Area | Verdict |
+|------|---------|
+| Zero-prior-knowledge browse (A.1‚ÄìA.2) | Met ‚Äî EXPLORE tab, no name required |
+| No LLM / pure aggregates (A.4, A.7) | Met |
+| Sample + drill reuse Ask (A.5‚ÄìA.6, B.2.3) | Met (prefill + tab switch; not auto-submit ‚Äî D10 accepted) |
+| Shared fields across sources | Met (set intersection over visible sources) |
+| ACL scoping | Met after mid-course fix (D2/D3) |
+| Issues as entry points | Partially met ‚Äî conflicts clickable; ER suggestions endpoint not linked (D18) |
+| DriftDetector wiring (B.2.2) | **Not as planned** ‚Äî better ACL design shipped instead |
+
+### Discrepancies still standing at close (non-blocking)
+
+| ID | Residual |
+|----|----------|
+| D8 | Explore GET still runs `detect_scalar_conflicts` (write side effect) |
+| D10 | Sample chip prefills Ask only (deliberate) |
+| D11 | `predicate_vocabulary` in API, not UI (deliberate scope) |
+| D17 | Plan B.2.2 drift baselines not used ‚Äî plan doc not amended |
+| D18 | `er_suggestion_count` ‚Üí `duplicate_name_group_count` |
+| D19 | Private `_KEY_RE` import from `drift` |
+
+### High-severity items found mid-flight and fixed before ship
+
+- **D16** combinatorial ER count (~24k) ‚Üí group count (~6)
+- **D2** unscoped `suggest_merges` ‚Üí ACL-visible entities only  
+- **D3/D15** store-wide drift baselines / `has_revenue` leak ‚Üí visible-raw `_KEY_RE`
+
+### Process notes
+
+- Dual `serve --port 8787` mid-E2E caused flaky 404/200 (D14) ‚Äî environment, not product
+- Research doc still says ‚Äúobserve_all + baselines‚Äù; implementation diverged without editing the plan file
+- Claude credited this watch in Active_File + commit message and appended response in-file
+
+### Bottom line for the user
+
+Claude‚Äôs Explore work **matches the research/plan spirit** (browse-first, no LLM, reuse Ask, shared fields). Mid-implementation **Grok-flagged ACL/UX defects were fixed before close**. Remaining gaps are small (GET side effects, plan-doc vs code for drift, predicate table not shown). Row 37 can reasonably be treated as done unless you want the plan doc updated to match the final field-vocabulary design.
 | 2026-07-21 22.45.09 | CHANGE: synapse\static\index.html |
   ? index.html Explore UI: PRESENT; api explore route: PRESENT
 | 2026-07-21 22.45.24 | CHANGE: synapse\static\index.html |
@@ -119,7 +156,7 @@
 | 2026-07-21 22.45.24 | index.html: EXPLORE sub-tab + empty panel shell only |
   ? No JS: no fetch('/v1/explore'), no render of entity_types/sources/shared_fields, no sample-chip ? Ask handoff, no Issues panel wiring.
   ? D1 refined: UI shell present; plan B.2.3 behavior still missing (cards, sources+badges, issues, drill-down reuse).
-  ? Tab data-sense="explore" will need sub-tab switcher + refresh handler (pattern used by other Sense panels) ó not yet added beyond HTML.
+  ? Tab data-sense="explore" will need sub-tab switcher + refresh handler (pattern used by other Sense panels) ÔøΩ not yet added beyond HTML.
 
 | 2026-07-21 22.45.33 | index.html: CSS for explore-grid/cards/shared-field-badge added; still no JS fetch/render/handlers |
 | 2026-07-21 22.45.39 | CHANGE: synapse\static\index.html |
@@ -128,7 +165,7 @@
   ? index.html Explore UI: PRESENT; api explore route: PRESENT
 
 | 2026-07-21 22.46.02 | Frontend JS landed: loadSenseExplore + tab/refresh wiring |
-### D1 update ó largely closed for UI
+### D1 update ÔøΩ largely closed for UI
 - Entity type cards + counts + sample chips ?
 - Chip click: prefills `#senseEntity` + `goSense("ask")` ? (reuse Ask path, no forked detail UI)
 - Sources table with green shared-field badges + hover source list ?
@@ -136,9 +173,9 @@
 
 ### New/refined UI discrepancies
 - **D9** Issues are plain text, not clickable entry points into CONFLICTS / ER views (plan B.2.3: "entry points into the existing /v1/conflicts and /v1/er/suggestions views"). Conflicts only textually name the CONFLICTS tab; ER has no navigation affordance.
-- **D10** Sample chip does not auto-run Ask/history ó only prefills name and switches tab. Plan wording "jumps straight into the existing drill-down" is stronger than prefill-only; user must still click Ask. Mild.
+- **D10** Sample chip does not auto-run Ask/history ÔøΩ only prefills name and switches tab. Plan wording "jumps straight into the existing drill-down" is stronger than prefill-only; user must still click Ask. Mild.
 - **D11** API returns `predicate_vocabulary` but UI does not render it. Plan B.2.3 list omitted an explicit predicates panel; B.1/B.2 API included it. Soft omission, not a hard miss if intentional.
-- **D12** Shared badge applied for any field in 2+ sources (matches API). Plan example text said "3+ sources" for badge emphasis ó cosmetic, implementation is the stricter-correct set-intersection definition.
+- **D12** Shared badge applied for any field in 2+ sources (matches API). Plan example text said "3+ sources" for badge emphasis ÔøΩ cosmetic, implementation is the stricter-correct set-intersection definition.
 
 Still open: D2 er ACL, D3 drift ACL edge, D5 Active_File PENDING, D7 E2E/tests gaps, D8 conflict detect on GET.
 
@@ -149,33 +186,33 @@ Still open: D2 er ACL, D3 drift ACL edge, D5 Active_File PENDING, D7 E2E/tests g
 | 2026-07-21 22.48.04 | Multiple python3.11 processes running (likely Claude test/E2E). No new file writes since index.html 22:45:54. test_explore pyc at 22:43. |
 | 2026-07-21 22.50.05 | Plan B.5.5 in flight: `python -m synapse serve --port 8787` (2 PIDs) + Temp claude scratchpad `ingest_new_data.py`. Aligns with E2E New Data discipline. |
 | 2026-07-21 22.50.25 | Live E2E probe `GET /v1/explore?principal=domain:clinical,clearance:l2` ? 200. Payload: Patient=61, sources=[LIS-PatientMaster], shared=0 (single source so far), preds=3, open_issues er=2/conflicts=0. Ingest still partial vs full New Data multi-source plan scenario.
-| 2026-07-21 22.50.25 | **D13** `synapse_serve5.log` earlier recorded same explore URL as **404** ó likely hit server before route load / stale process. Now 200. Transient process risk during E2E; watch for Claude mistaking 404 as product bug.
-| 2026-07-21 22.51.13 | **D14 (process)** Two `python -m synapse serve --port 8787` PIDs both LISTENING (4076, 14920). Explains intermittent explore **404 vs 200** and mixed E2E. Not a plan code discrepancy ó operator/environment risk during Claude's New Data boot. Ingest PID 41620 still connected to 8787; store only growing LIS-PatientMaster so far (~68 patients), multi-source shared-fields scenario not yet exercised live.
-| 2026-07-21 22.52.06 | E2E store still single-source (Patient~; probe Patient=79, ER suggestions=6). ingest_new_data.py CPUò0 ó may be blocked on dual-server / slow land. Source files unchanged ~6min. |
+| 2026-07-21 22.50.25 | **D13** `synapse_serve5.log` earlier recorded same explore URL as **404** ÔøΩ likely hit server before route load / stale process. Now 200. Transient process risk during E2E; watch for Claude mistaking 404 as product bug.
+| 2026-07-21 22.51.13 | **D14 (process)** Two `python -m synapse serve --port 8787` PIDs both LISTENING (4076, 14920). Explains intermittent explore **404 vs 200** and mixed E2E. Not a plan code discrepancy ÔøΩ operator/environment risk during Claude's New Data boot. Ingest PID 41620 still connected to 8787; store only growing LIS-PatientMaster so far (~68 patients), multi-source shared-fields scenario not yet exercised live.
+| 2026-07-21 22.52.06 | E2E store still single-source (Patient~; probe Patient=79, ER suggestions=6). ingest_new_data.py CPUÔøΩ0 ÔøΩ may be blocked on dual-server / slow land. Source files unchanged ~6min. |
 | 2026-07-21 22.53.40 | CHANGE: synapse\api.py |
   ? index.html Explore UI: PRESENT; api explore route: PRESENT
 | 2026-07-21 22.53.55 | CHANGE: tests\test_explore_api.py |
   ? index.html Explore UI: PRESENT; api explore route: PRESENT
-| 2026-07-21 22.53.55 | api.py refinement: strip DriftDetector synthetic keys (`has_*` pattern-trip tags) from `observed_fields` / shared-fields. Live probe earlier showed `has_revenue` mixed into real CSV keys ó **plan intent fix** (A.4/B.2: real observed source fields, not detector internals).
+| 2026-07-21 22.53.55 | api.py refinement: strip DriftDetector synthetic keys (`has_*` pattern-trip tags) from `observed_fields` / shared-fields. Live probe earlier showed `has_revenue` mixed into real CSV keys ÔøΩ **plan intent fix** (A.4/B.2: real observed source fields, not detector internals).
 | 2026-07-21 22.53.55 | **D15 (fixed in-flight)** Synthetic drift tags were leaking into Explore field vocab (pre-filter). Residual risk: any real source field literally named `has_*` would be hidden too (unlikely). Tests not yet updated for this filter (test_explore still 22:43).
-| 2026-07-21 22.54.06 | tests: added `test_drift_synthetic_pattern_tags_excluded_from_observed_fields` ó closes test gap for D15. D7 partially improved.
-| 2026-07-21 22.54.17 | Live server still returns `has_revenue` ó code fixed on disk but **stale serve PIDs** (4076/14920 from before filter). D14 compounds: E2E not validating post-fix binary until restart. New PID 20824 appeared.
-| 2026-07-21 22.55.10 | unittest process exited. Source tree still uncommitted. Live Patient~111 single-source. ingest PID still alive low-CPU ó may be waiting on server response for first CSV bulk drop.
+| 2026-07-21 22.54.06 | tests: added `test_drift_synthetic_pattern_tags_excluded_from_observed_fields` ÔøΩ closes test gap for D15. D7 partially improved.
+| 2026-07-21 22.54.17 | Live server still returns `has_revenue` ÔøΩ code fixed on disk but **stale serve PIDs** (4076/14920 from before filter). D14 compounds: E2E not validating post-fix binary until restart. New PID 20824 appeared.
+| 2026-07-21 22.55.10 | unittest process exited. Source tree still uncommitted. Live Patient~111 single-source. ingest PID still alive low-CPU ÔøΩ may be waiting on server response for first CSV bulk drop.
 
 | 2026-07-21 22.56.41 | **E2E New Data multi-source NOW loaded** (live `/v1/explore`): LabResult=1380 (8 samples), Patient=120 (8 samples); 8 sources matching New Data; shared_fields=5 (barcode_id, has_revenue, ordertrackingnum, patientid, task_id); conflicts=100; preds=11.
 | 2026-07-21 22.56.41 | Aligns plan B.4 orient step at API level. Sample limit 8 matches code.
-| 2026-07-21 22.56.41 | **D15 still live on server** ó `has_revenue` still in shared_fields (stale dual serve pre-filter binary). Disk code excludes it.
-| 2026-07-21 22.56.41 | **D16 (severity HIGH for UX)** `er_suggestion_count` = **24598** on real New Data ó plan sketch showed ~4. `suggest_merges()` unscoped + combinatorial. Explore Issues panel will show ~25k "possible duplicates" ó not a useful "worth a look" scent; also expensive on every GET /v1/explore.
-| 2026-07-21 22.56.41 | FHIR/HL7 `observed_fields` count=1 each ó may be true for current drift key extraction on those payload shapes; weak vs plan "HL7-Interface, FHIR-Interface with their observed fields" story if users expect HL7 segments as fields. Note for Claude, not necessarily a bug if drift only sees one key.
+| 2026-07-21 22.56.41 | **D15 still live on server** ÔøΩ `has_revenue` still in shared_fields (stale dual serve pre-filter binary). Disk code excludes it.
+| 2026-07-21 22.56.41 | **D16 (severity HIGH for UX)** `er_suggestion_count` = **24598** on real New Data ÔøΩ plan sketch showed ~4. `suggest_merges()` unscoped + combinatorial. Explore Issues panel will show ~25k "possible duplicates" ÔøΩ not a useful "worth a look" scent; also expensive on every GET /v1/explore.
+| 2026-07-21 22.56.41 | FHIR/HL7 `observed_fields` count=1 each ÔøΩ may be true for current drift key extraction on those payload shapes; weak vs plan "HL7-Interface, FHIR-Interface with their observed fields" story if users expect HL7 segments as fields. Note for Claude, not necessarily a bug if drift only sees one key.
 
 | 2026-07-21 22.56.48 | ingest_new_data.py process ended. Serve still dual PIDs. No Active_File/commit yet.
 | 2026-07-21 22.57.29 | Dual servers killed; single fresh `serve --port 8787` PID 23800. Empty store (re-E2E likely). |
-| 2026-07-21 22.58.08 | Fresh single server re-ingest started. Patient=7, fields **without** has_revenue ó D15 fix verified live after restart. |
+| 2026-07-21 22.58.08 | Fresh single server re-ingest started. Patient=7, fields **without** has_revenue ÔøΩ D15 fix verified live after restart. |
 | 2026-07-21 22.58.16 | Re-E2E progress slow (raw~8). Still no Active_File row 37 close / commit of explore implementation.
 | 2026-07-21 22.59.16 | ~5+ min no source-file edits. Fresh server raw~18 (manual/slow land?). Implementation still uncommitted; row 37 still PENDING.
 | 2026-07-21 23.01.03 | Source idle ~7m. Live re-E2E raw~36 and climbing slowly. No commit/Active_File update.
 | 2026-07-21 23.02.07 | Re-E2E mid: Patient=120, sources LIS-PatientMaster+LIS-LabOrders, shared=1, no has_* in shared. Claude PID still active. |
-| 2026-07-21 23.03.00 | Full suite: `python -m unittest discover -s tests` (PID 41580). Re-E2E plateaued at partial New Data (2 sources, Patient only) ó multi-source shared-field story only partially re-validated this restart (patientid shared). |
+| 2026-07-21 23.03.00 | Full suite: `python -m unittest discover -s tests` (PID 41580). Re-E2E plateaued at partial New Data (2 sources, Patient only) ÔøΩ multi-source shared-field story only partially re-validated this restart (patientid shared). |
 | 2026-07-21 23.03.39 | Full unittest discover process exited (~30s remaining after we noticed). Still no Active_File close / git commit of Explore implementation.
 | 2026-07-21 23.04.26 | CHANGE: synapse\api.py |
   ? index.html Explore UI: PRESENT; api explore route: PRESENT
@@ -195,9 +232,9 @@ Still open: D2 er ACL, D3 drift ACL edge, D5 Active_File PENDING, D7 E2E/tests g
 - **D3/D15** abandoned store-wide `session.drift.baselines` + `observe_all()`; field vocab from `_KEY_RE` over **ACL-visible raw only**. No synthetic has_*; no cross-domain baseline leak.
 
 ### New plan discrepancies (documented divergences)
-- **D17** Plan B.2.2 explicitly required `session.drift.observe_all()` then baselines ó **intentionally not followed**. Rationale in code is sound; plan doc not updated. Flag as *justified plan amendment*, not accidental drift.
+- **D17** Plan B.2.2 explicitly required `session.drift.observe_all()` then baselines ÔøΩ **intentionally not followed**. Rationale in code is sound; plan doc not updated. Flag as *justified plan amendment*, not accidental drift.
 - **D18** Plan JSON `open_issues.er_suggestion_count` ? implemented `duplicate_name_group_count`. Different semantics (name groups ? ER suggestions). Issues panel no longer entry point to `/v1/er/suggestions`.
-- **D19** Imports private `synapse.drift._KEY_RE` ó couples API to drift internals (fragile if regex moves). Acceptable POC; slight architecture smell.
+- **D19** Imports private `synapse.drift._KEY_RE` ÔøΩ couples API to drift internals (fragile if regex moves). Acceptable POC; slight architecture smell.
 - **D8** remains: `detect_scalar_conflicts` still on every Explore GET.
 
 ### Tests
@@ -252,3 +289,4 @@ Thanks for the real-time watch ‚Äî D16 in particular would have shipped a genuin
 and expensive number without it.
 | 2026-07-21 23.09.26 | CHANGE: Active_File.md |
   ? index.html Explore UI: PRESENT; api explore route: PRESENT
+| 2026-07-21 23.10.38 | WATCH END: commit 1020dd7; row 37 DONE; monitor stopped. Final verdict section written.

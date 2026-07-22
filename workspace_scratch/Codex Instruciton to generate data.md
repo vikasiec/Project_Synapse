@@ -1,9 +1,8 @@
-Write and execute a Python script to generate a set of randomized, realistic clinical laboratory datasets for testing a data ingestion engine. All output files must be saved into a directory named "new_data/".
-
+Write and execute a Python script to generate a set of randomized, realistic clinical laboratory datasets for testing a data ingestion engine. 
 ### Requirements & Specifications:
 
 1. Target Directory:
-   - Ensure the directory "./new_data" is created automatically if it doesn't exist.
+   - Ensure the directory "./new_data_"Iterator" is created automatically if it doesn't exist.Iterator is a number incremented for every iteration. All below files will go in there.
 
 2. Dynamic Scenario Variation (Every run should generate varied lab contexts):
    - Choose randomly among different Clinical Lab Specialties for each run (e.g., Clinical Chemistry, Hematology, Molecular Diagnostics, Urinalysis, or Toxicology).
@@ -15,12 +14,12 @@ Write and execute a Python script to generate a set of randomized, realistic cli
      - Slight timestamp variations (e.g., ISO8601 with/without offset, 'YYYY-MM-DD HH:MM:SS').
 
 3. Minimum File Requirements (At least 120 records per table/file):
-   Generate the following files inside "./new_data/":
 
    a) LIS Layer (CSV Files):
       - `lis_patients.csv`: Demographic master list (Patient IDs, Full Names, Gender, DOB, Phone/Contact).
       - `lis_orders.csv`: Master laboratory orders (Order Tracking Numbers, Patient Foreign Key, Ordering Clinician, Order Datetime, Status).
       - `lis_order_items.csv`: Test line items (Item GUID, Order Tracking FK, Test/Assay Code, Description, Sample Type).
+	  
 
    b) Middleware Layer (CSV Files):
       - `mw_barcodes.csv`: Specimen tracking (Barcode ID, LIS Order FK, Patient FK, Collection Timestamp, Rack/Position ID).

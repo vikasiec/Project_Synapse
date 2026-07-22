@@ -16,6 +16,9 @@ from __future__ import annotations
 
 from dataclasses import asdict, dataclass, field
 from typing import Any, Optional
+from uuid import uuid4
+
+from synapse.models import utc_now_iso
 
 
 @dataclass(frozen=True)
@@ -368,6 +371,49 @@ _STORAGE_ALIASES: dict[str, str] = {
 }
 
 
+
+# Major Goal 4 -- accepted predicates for a curated schema-field relationship
+# edge (distinct from OntologyType.predicates, which are fact predicates).
+RELATIONSHIP_PREDICATES = ("SAME_ENTITY_AS", "FOREIGN_KEY_TO", "DERIVED_FROM")
+
+
+@dataclass(frozen=True)
+class RelationshipEdge:
+    """A human-confirmed relationship between two schema fields, persisted
+    into the Ontology Registry on ACCEPT (Major Goal 4, task 1)."""
+
+    relationship_id: str
+    source_a: dict[str, str]
+    source_b: dict[str, str]
+    predicate: str
+    tier: str  # L1 (governed) | L2 (team-soft)
+    candidate_id: Optional[str] = None
+    match_reasons: tuple[str, ...] = ()
+    similarity_score: Optional[float] = None
+    accepted_at: str = ""
+
+    def to_dict(self) -> dict[str, Any]:
+        d = asdict(self)
+        d["match_reasons"] = list(self.match_reasons)
+        return d
+
+
+@dataclass(frozen=True)
+class RejectedCandidate:
+    """Negative feedback signal from a REJECT action -- prevents the same
+    pair from being silently re-surfaced as a false positive."""
+
+    candidate_id: str
+    source_a: dict[str, str]
+    source_b: dict[str, str]
+    reason: str
+    rejected_at: str
+    rejection_id: str = field(default_factory=lambda: str(uuid4()))
+
+    def to_dict(self) -> dict[str, Any]:
+        return asdict(self)
+
+
 @dataclass
 class OntologyRegistry:
     """Governed type catalog; L2 extensions can be registered soft."""
@@ -377,6 +423,25 @@ class OntologyRegistry:
     source_boosts: dict[str, dict[str, float]] = field(
         default_factory=lambda: {k: dict(v) for k, v in PREDICATE_SOURCE_BOOST.items()}
     )
+    relationships: dict[str, RelationshipEdge] = field(default_factory=dict)
+    rejected_candidates: list[RejectedCandidate] = field(default_factory=list)
+    # Optional write-through target (a SemanticStore/SqliteSemanticStore).
+    # Untyped (Any-like, via duck typing) rather than importing
+    # synapse.store here to avoid a store<->ontology import cycle -- store.py
+    # already imports RelationshipEdge/RejectedCandidate from this module.
+    store: Optional[object] = None
+
+    def load_from_store(self, store: object) -> None:
+        """Rehydrate relationships/rejected_candidates from a durable store
+        on session open (F-027) -- OntologyRegistry itself is reconstructed
+        fresh every open_session() call, so without this the Catalog would
+        silently reset to empty on every restart even with a SQLite-backed
+        store."""
+        self.store = store
+        for edge in getattr(store, "relationship_edges", {}).values():
+            self.relationships[edge.relationship_id] = edge
+        for rejected in getattr(store, "rejected_candidates", {}).values():
+            self.rejected_candidates.append(rejected)
 
     @classmethod
     def default(cls) -> "OntologyRegistry":
@@ -422,6 +487,95 @@ class OntologyRegistry:
             description=t.description + " (promoted)",
         )
         return True
+
+    # -- Major Goal 4: relationship write-back (Curation Canvas ACCEPT/REJECT/RELABEL) --
+
+    def accept_relationship(
+        self,
+        *,
+        candidate_id: str,
+        source_a: dict[str, str],
+        source_b: dict[str, str],
+        predicate: str = "SAME_ENTITY_AS",
+        match_reasons: list[str] | None = None,
+        similarity_score: float | None = None,
+        tier: str = "L1",
+    ) -> RelationshipEdge:
+        if predicate not in RELATIONSHIP_PREDICATES:
+            raise ValueError(f"predicate must be one of {RELATIONSHIP_PREDICATES}")
+        edge = RelationshipEdge(
+            relationship_id=str(uuid4()),
+            source_a=dict(source_a),
+            source_b=dict(source_b),
+            predicate=predicate,
+            tier=tier,
+            candidate_id=candidate_id,
+            match_reasons=tuple(match_reasons or ()),
+            similarity_score=similarity_score,
+            accepted_at=utc_now_iso(),
+        )
+        self.relationships[edge.relationship_id] = edge
+        if self.store is not None:
+            self.store.put_relationship_edge(edge)
+        return edge
+
+    def reject_relationship(
+        self, *, candidate_id: str, source_a: dict[str, str], source_b: dict[str, str], reason: str = ""
+    ) -> RejectedCandidate:
+        rejected = RejectedCandidate(
+            candidate_id=candidate_id,
+            source_a=dict(source_a),
+            source_b=dict(source_b),
+            reason=reason,
+            rejected_at=utc_now_iso(),
+        )
+        self.rejected_candidates.append(rejected)
+        if self.store is not None:
+            self.store.put_rejected_candidate(rejected)
+        return rejected
+
+    def relabel_relationship(self, relationship_id: str, new_predicate: str) -> Optional[RelationshipEdge]:
+        existing = self.relationships.get(relationship_id)
+        if not existing:
+            return None
+        if new_predicate not in RELATIONSHIP_PREDICATES:
+            raise ValueError(f"predicate must be one of {RELATIONSHIP_PREDICATES}")
+        updated = RelationshipEdge(
+            relationship_id=existing.relationship_id,
+            source_a=existing.source_a,
+            source_b=existing.source_b,
+            predicate=new_predicate,
+            tier=existing.tier,
+            candidate_id=existing.candidate_id,
+            match_reasons=existing.match_reasons,
+            similarity_score=existing.similarity_score,
+            accepted_at=existing.accepted_at,
+        )
+        self.relationships[relationship_id] = updated
+        if self.store is not None:
+            self.store.put_relationship_edge(updated)
+        return updated
+
+    def is_pair_rejected(self, source_a: dict[str, str], source_b: dict[str, str]) -> bool:
+        key = {tuple(sorted(source_a.items())), tuple(sorted(source_b.items()))}
+        for r in self.rejected_candidates:
+            rkey = {tuple(sorted(r.source_a.items())), tuple(sorted(r.source_b.items()))}
+            if key == rkey:
+                return True
+        return False
+
+    def list_relationships(self) -> list[dict[str, Any]]:
+        return [r.to_dict() for r in self.relationships.values()]
+
+    def find_relationship_by_candidate_id(self, candidate_id: str) -> Optional[RelationshipEdge]:
+        """Guards against ACCEPT/RELABEL being called twice on the same
+        candidate_id and silently creating two catalog entries for one
+        decision -- callers should relabel the existing edge in place
+        rather than re-calling accept_relationship."""
+        for r in self.relationships.values():
+            if r.candidate_id == candidate_id:
+                return r
+        return None
 
     def map_entity_type(self, entity_type: str) -> OntologyType:
         """Map extractor entity_type strings to ontology types (L0 default)."""
@@ -691,4 +845,7 @@ class OntologyRegistry:
             "predicate_source_boosts": {
                 k: dict(v) for k, v in self.source_boosts.items()
             },
+            "relationships": self.list_relationships(),
+            "relationship_count": len(self.relationships),
+            "rejected_candidate_count": len(self.rejected_candidates),
         }

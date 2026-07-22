@@ -114,3 +114,29 @@ itself never changed.)
 `test_hl7_extract.py`, `test_fhir.py`, `test_fhir_extract.py`,
 `test_query_generic_narration.py`, `test_principal_from_body.py` (row 12),
 `test_temporal_generic.py` (row 14) — full suite at 158/158 as of row 14's fix.
+
+---
+
+## New platform capability (not a domain pack): Semantic Discovery & Curation
+
+**Status:** Added 2026-07-22, `Active_File.md` rows 38-46. Unlike everything
+above, this is core platform infrastructure, not a per-vertical pack — it
+implements Major Goals 1-4 of `docs/Master Architectural Specification &
+Implementation Roadmap.md` (a separate, uncommitted spec).
+
+| Capability | File | Notes |
+|---|---|---|
+| Schema field profiling | `synapse/profiling.py` | `data_type`/`entropy_score`/`regex_pattern_match`/`min_hash_sketch` per observed field, plus a stdlib char-trigram hashing-trick semantic vector (no embedding library installed) with a small synonym-canonicalization step (classical COMA/Cupid-style schema-matching technique, e.g. `cust`/`client`→`customer`, `id`/`num`→`identifier`) |
+| Hybrid candidate scoring | `synapse/matching.py`, `POST /v1/explore/analyze` | Exact spec formula: `S_total = 0.45·VectorSim + 0.40·ValueOverlap + 0.15·GraphProximity`; thresholds 0.85 high-confidence / 0.50 candidate / drop below |
+| Ontology relationship registry | `synapse/ontology.py` (`RelationshipEdge`), `POST /v1/ontology/relationships` | ACCEPT/REJECT/RELABEL curation actions; ACCEPT wires into `entity_resolution.py::link_schema_fields` as new ER blocking metadata |
+| Transitive learning | `synapse/matching.py::transitive_candidates` | A newly-profiled source is auto-evaluated against already-linked sources in the registry |
+| New Vite/React UI | `ui/`, served at `/app` | Catalog (browse confirmed relationships) + Explore (guided journey: pick source → analyze → full-canvas node-link graph via `reactflow` → explanation drawer → curate). Legacy Sense board stays at `/` until panel parity is reached. |
+
+VnV: all 4 of the spec's own VnV Layer scenarios pass as named tests (see
+`tests/test_profiling.py`, `test_explore_analyze.py`,
+`test_ontology_relationships_api.py`). Full suite: 232/232.
+
+**Not built (Phase 2 of that spec, gated):** semantic translation/CDM
+bridge, cross-system conflict routing beyond what already exists above,
+FHIR/BIAN/OpenAPI federated exports. Gated on Vikas's explicit Phase 1
+sign-off per the spec's own execution gate — not started.

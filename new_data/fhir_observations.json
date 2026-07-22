@@ -1,0 +1,5558 @@
+{
+  "resourceType": "Bundle",
+  "id": "synapse-lab-bundle",
+  "type": "collection",
+  "timestamp": "2026-07-21T16:17:59.406789+00:00",
+  "entry": [
+    {
+      "fullUrl": "urn:uuid:RES-00001-3YW7E",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "RES-00001-3YW7E",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "1742-6",
+              "display": "Alanine aminotransferase"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/P000001"
+        },
+        "effectiveDateTime": "2026-01-01T11:13:00+05:30",
+        "valueQuantity": {
+          "value": 166.908,
+          "unit": "U/L",
+          "system": "http://unitsofmeasure.org",
+          "code": "U/L"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:RES-00002-IDVPU",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "RES-00002-IDVPU",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "2345-7",
+              "display": "Glucose"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/P000002"
+        },
+        "effectiveDateTime": "2026-01-01T14:33:00+05:30",
+        "valueQuantity": {
+          "value": 113.523,
+          "unit": "mg/dL",
+          "system": "http://unitsofmeasure.org",
+          "code": "mg/dL"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:RES-00003-ARK29",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "RES-00003-ARK29",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "1742-6",
+              "display": "Alanine aminotransferase"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/P000003"
+        },
+        "effectiveDateTime": "2026-01-01T17:26:00+05:30",
+        "valueQuantity": {
+          "value": 5.14,
+          "unit": "U/L",
+          "system": "http://unitsofmeasure.org",
+          "code": "U/L"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:RES-00004-KOCAP",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "RES-00004-KOCAP",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "3016-3",
+              "display": "Thyroid stimulating hormone"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/P000004"
+        },
+        "effectiveDateTime": "2026-01-01T20:12:00+05:30",
+        "valueQuantity": {
+          "value": 0.465,
+          "unit": "mIU/L",
+          "system": "http://unitsofmeasure.org",
+          "code": "mIU/L"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:RES-00005-ZOW31",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "RES-00005-ZOW31",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "1742-6",
+              "display": "Alanine aminotransferase"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/P000005"
+        },
+        "effectiveDateTime": "2026-01-01T23:29:00+05:30",
+        "valueQuantity": {
+          "value": 66.627,
+          "unit": "U/L",
+          "system": "http://unitsofmeasure.org",
+          "code": "U/L"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:RES-00006-54JDA",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "RES-00006-54JDA",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "2160-0",
+              "display": "Creatinine"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/P000006"
+        },
+        "effectiveDateTime": "2026-01-02T02:52:00+05:30",
+        "valueQuantity": {
+          "value": 0.944,
+          "unit": "mg/dL",
+          "system": "http://unitsofmeasure.org",
+          "code": "mg/dL"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:RES-00007-1AQPU",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "RES-00007-1AQPU",
+        "status": "amended",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "1742-6",
+              "display": "Alanine aminotransferase"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/P000007"
+        },
+        "effectiveDateTime": "2026-01-02T05:33:00+05:30",
+        "valueQuantity": {
+          "value": 181.537,
+          "unit": "U/L",
+          "system": "http://unitsofmeasure.org",
+          "code": "U/L"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "LOW"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:RES-00008-LRH7D",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "RES-00008-LRH7D",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "3016-3",
+              "display": "Thyroid stimulating hormone"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/P000008"
+        },
+        "effectiveDateTime": "2026-01-02T08:52:00+05:30",
+        "valueQuantity": {
+          "value": 10.534,
+          "unit": "mIU/L",
+          "system": "http://unitsofmeasure.org",
+          "code": "mIU/L"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:RES-00009-JX46R",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "RES-00009-JX46R",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "3016-3",
+              "display": "Thyroid stimulating hormone"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/P000009"
+        },
+        "effectiveDateTime": "2026-01-02T11:30:00+05:30",
+        "valueQuantity": {
+          "value": 7.485,
+          "unit": "mIU/L",
+          "system": "http://unitsofmeasure.org",
+          "code": "mIU/L"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:RES-00010-M7DYW",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "RES-00010-M7DYW",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "2160-0",
+              "display": "Creatinine"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/P000010"
+        },
+        "effectiveDateTime": "2026-01-02T14:09:00+05:30",
+        "valueQuantity": {
+          "value": 3.087,
+          "unit": "mg/dL",
+          "system": "http://unitsofmeasure.org",
+          "code": "mg/dL"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:RES-00011-S7C2D",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "RES-00011-S7C2D",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "2160-0",
+              "display": "Creatinine"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/P000011"
+        },
+        "effectiveDateTime": "2026-01-02T17:41:00+05:30",
+        "valueQuantity": {
+          "value": 0.503,
+          "unit": "mg/dL",
+          "system": "http://unitsofmeasure.org",
+          "code": "mg/dL"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:RES-00012-CU0T4",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "RES-00012-CU0T4",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "3016-3",
+              "display": "Thyroid stimulating hormone"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/P000012"
+        },
+        "effectiveDateTime": "2026-01-02T20:37:00+05:30",
+        "valueQuantity": {
+          "value": 5.969,
+          "unit": "mIU/L",
+          "system": "http://unitsofmeasure.org",
+          "code": "mIU/L"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:RES-00013-TUWN7",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "RES-00013-TUWN7",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "2345-7",
+              "display": "Glucose"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/P000013"
+        },
+        "effectiveDateTime": "2026-01-02T23:17:00+05:30",
+        "valueQuantity": {
+          "value": 83.624,
+          "unit": "mg/dL",
+          "system": "http://unitsofmeasure.org",
+          "code": "mg/dL"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:RES-00014-O0E5M",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "RES-00014-O0E5M",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "3016-3",
+              "display": "Thyroid stimulating hormone"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/P000014"
+        },
+        "effectiveDateTime": "2026-01-03T02:14:00+05:30",
+        "valueQuantity": {
+          "value": 9.858,
+          "unit": "mIU/L",
+          "system": "http://unitsofmeasure.org",
+          "code": "mIU/L"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:RES-00015-8O9VR",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "RES-00015-8O9VR",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "3016-3",
+              "display": "Thyroid stimulating hormone"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/P000015"
+        },
+        "effectiveDateTime": "2026-01-03T05:12:00+05:30",
+        "valueQuantity": {
+          "value": 3.71,
+          "unit": "mIU/L",
+          "system": "http://unitsofmeasure.org",
+          "code": "mIU/L"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:RES-00016-OELGO",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "RES-00016-OELGO",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "2160-0",
+              "display": "Creatinine"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/P000016"
+        },
+        "effectiveDateTime": "2026-01-03T08:52:00+05:30",
+        "valueQuantity": {
+          "value": 2.76,
+          "unit": "mg/dL",
+          "system": "http://unitsofmeasure.org",
+          "code": "mg/dL"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:RES-00017-OWDWW",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "RES-00017-OWDWW",
+        "status": "amended",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "2345-7",
+              "display": "Glucose"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/P000017"
+        },
+        "effectiveDateTime": "2026-01-03T11:58:00+05:30",
+        "valueQuantity": {
+          "value": 89.797,
+          "unit": "mg/dL",
+          "system": "http://unitsofmeasure.org",
+          "code": "mg/dL"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "ABNORMAL"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:RES-00018-H3YAE",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "RES-00018-H3YAE",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "1742-6",
+              "display": "Alanine aminotransferase"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/P000018"
+        },
+        "effectiveDateTime": "2026-01-03T14:28:00+05:30",
+        "valueQuantity": {
+          "value": 61.895,
+          "unit": "U/L",
+          "system": "http://unitsofmeasure.org",
+          "code": "U/L"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:RES-00019-B9K6X",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "RES-00019-B9K6X",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "2160-0",
+              "display": "Creatinine"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/P000019"
+        },
+        "effectiveDateTime": "2026-01-03T17:30:00+05:30",
+        "valueQuantity": {
+          "value": 2.181,
+          "unit": "mg/dL",
+          "system": "http://unitsofmeasure.org",
+          "code": "mg/dL"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:RES-00020-18HBM",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "RES-00020-18HBM",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "1742-6",
+              "display": "Alanine aminotransferase"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/P000020"
+        },
+        "effectiveDateTime": "2026-01-03T20:39:00+05:30",
+        "valueQuantity": {
+          "value": 100.826,
+          "unit": "U/L",
+          "system": "http://unitsofmeasure.org",
+          "code": "U/L"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:RES-00021-4ACPS",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "RES-00021-4ACPS",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "1742-6",
+              "display": "Alanine aminotransferase"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/P000021"
+        },
+        "effectiveDateTime": "2026-01-03T23:46:00+05:30",
+        "valueQuantity": {
+          "value": 31.475,
+          "unit": "U/L",
+          "system": "http://unitsofmeasure.org",
+          "code": "U/L"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:RES-00022-SFEXC",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "RES-00022-SFEXC",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "3016-3",
+              "display": "Thyroid stimulating hormone"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/P000022"
+        },
+        "effectiveDateTime": "2026-01-04T02:14:00+05:30",
+        "valueQuantity": {
+          "value": 7.347,
+          "unit": "mIU/L",
+          "system": "http://unitsofmeasure.org",
+          "code": "mIU/L"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:RES-00023-6YRR6",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "RES-00023-6YRR6",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "1742-6",
+              "display": "Alanine aminotransferase"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/P000023"
+        },
+        "effectiveDateTime": "2026-01-04T05:20:00+05:30",
+        "valueQuantity": {
+          "value": 131.776,
+          "unit": "U/L",
+          "system": "http://unitsofmeasure.org",
+          "code": "U/L"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:RES-00024-B5IK2",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "RES-00024-B5IK2",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "1742-6",
+              "display": "Alanine aminotransferase"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/P000024"
+        },
+        "effectiveDateTime": "2026-01-04T08:17:00+05:30",
+        "valueQuantity": {
+          "value": 199.603,
+          "unit": "U/L",
+          "system": "http://unitsofmeasure.org",
+          "code": "U/L"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:RES-00025-ZDLU2",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "RES-00025-ZDLU2",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "2345-7",
+              "display": "Glucose"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/P000025"
+        },
+        "effectiveDateTime": "2026-01-04T11:19:00+05:30",
+        "valueQuantity": {
+          "value": 174.113,
+          "unit": "mg/dL",
+          "system": "http://unitsofmeasure.org",
+          "code": "mg/dL"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:RES-00026-JMFO6",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "RES-00026-JMFO6",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "1742-6",
+              "display": "Alanine aminotransferase"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/P000026"
+        },
+        "effectiveDateTime": "2026-01-04T14:16:00+05:30",
+        "valueQuantity": {
+          "value": 110.837,
+          "unit": "U/L",
+          "system": "http://unitsofmeasure.org",
+          "code": "U/L"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:RES-00027-KW40Z",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "RES-00027-KW40Z",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "2345-7",
+              "display": "Glucose"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/P000027"
+        },
+        "effectiveDateTime": "2026-01-04T17:53:00+05:30",
+        "valueQuantity": {
+          "value": 145.956,
+          "unit": "mg/dL",
+          "system": "http://unitsofmeasure.org",
+          "code": "mg/dL"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:RES-00028-5ENCL",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "RES-00028-5ENCL",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "2345-7",
+              "display": "Glucose"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/P000028"
+        },
+        "effectiveDateTime": "2026-01-04T20:00:00+05:30",
+        "valueQuantity": {
+          "value": 122.937,
+          "unit": "mg/dL",
+          "system": "http://unitsofmeasure.org",
+          "code": "mg/dL"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:RES-00029-YDXQM",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "RES-00029-YDXQM",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "3016-3",
+              "display": "Thyroid stimulating hormone"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/P000029"
+        },
+        "effectiveDateTime": "2026-01-04T23:49:00+05:30",
+        "valueQuantity": {
+          "value": 13.411,
+          "unit": "mIU/L",
+          "system": "http://unitsofmeasure.org",
+          "code": "mIU/L"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:RES-00030-B285V",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "RES-00030-B285V",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "2160-0",
+              "display": "Creatinine"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/P000030"
+        },
+        "effectiveDateTime": "2026-01-05T02:10:00+05:30",
+        "valueQuantity": {
+          "value": 2.445,
+          "unit": "mg/dL",
+          "system": "http://unitsofmeasure.org",
+          "code": "mg/dL"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:RES-00031-YBVVX",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "RES-00031-YBVVX",
+        "status": "amended",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "3016-3",
+              "display": "Thyroid stimulating hormone"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/P000031"
+        },
+        "effectiveDateTime": "2026-01-05T05:18:00+05:30",
+        "valueQuantity": {
+          "value": 10.994,
+          "unit": "mIU/L",
+          "system": "http://unitsofmeasure.org",
+          "code": "mIU/L"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "LOW"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:RES-00032-P1KFG",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "RES-00032-P1KFG",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "2345-7",
+              "display": "Glucose"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/P000032"
+        },
+        "effectiveDateTime": "2026-01-05T08:54:00+05:30",
+        "valueQuantity": {
+          "value": 97.436,
+          "unit": "mg/dL",
+          "system": "http://unitsofmeasure.org",
+          "code": "mg/dL"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:RES-00033-UKT54",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "RES-00033-UKT54",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "2160-0",
+              "display": "Creatinine"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/P000033"
+        },
+        "effectiveDateTime": "2026-01-05T11:15:00+05:30",
+        "valueQuantity": {
+          "value": 3.486,
+          "unit": "mg/dL",
+          "system": "http://unitsofmeasure.org",
+          "code": "mg/dL"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:RES-00034-674JY",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "RES-00034-674JY",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "3016-3",
+              "display": "Thyroid stimulating hormone"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/P000034"
+        },
+        "effectiveDateTime": "2026-01-05T14:08:00+05:30",
+        "valueQuantity": {
+          "value": 12.949,
+          "unit": "mIU/L",
+          "system": "http://unitsofmeasure.org",
+          "code": "mIU/L"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:RES-00035-2WP56",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "RES-00035-2WP56",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "2345-7",
+              "display": "Glucose"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/P000035"
+        },
+        "effectiveDateTime": "2026-01-05T17:35:00+05:30",
+        "valueQuantity": {
+          "value": 139.457,
+          "unit": "mg/dL",
+          "system": "http://unitsofmeasure.org",
+          "code": "mg/dL"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:RES-00036-FXQS7",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "RES-00036-FXQS7",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "3016-3",
+              "display": "Thyroid stimulating hormone"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/P000036"
+        },
+        "effectiveDateTime": "2026-01-05T20:48:00+05:30",
+        "valueQuantity": {
+          "value": 3.562,
+          "unit": "mIU/L",
+          "system": "http://unitsofmeasure.org",
+          "code": "mIU/L"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:RES-00037-SCY4C",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "RES-00037-SCY4C",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "3016-3",
+              "display": "Thyroid stimulating hormone"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/P000037"
+        },
+        "effectiveDateTime": "2026-01-05T23:16:00+05:30",
+        "valueQuantity": {
+          "value": 12.301,
+          "unit": "mIU/L",
+          "system": "http://unitsofmeasure.org",
+          "code": "mIU/L"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:RES-00038-CJ1AB",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "RES-00038-CJ1AB",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "1742-6",
+              "display": "Alanine aminotransferase"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/P000038"
+        },
+        "effectiveDateTime": "2026-01-06T02:50:00+05:30",
+        "valueQuantity": {
+          "value": 5.238,
+          "unit": "U/L",
+          "system": "http://unitsofmeasure.org",
+          "code": "U/L"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:RES-00039-SQU27",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "RES-00039-SQU27",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "2345-7",
+              "display": "Glucose"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/P000039"
+        },
+        "effectiveDateTime": "2026-01-06T05:52:00+05:30",
+        "valueQuantity": {
+          "value": 128.789,
+          "unit": "mg/dL",
+          "system": "http://unitsofmeasure.org",
+          "code": "mg/dL"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:RES-00040-W2KVY",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "RES-00040-W2KVY",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "3016-3",
+              "display": "Thyroid stimulating hormone"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/P000040"
+        },
+        "effectiveDateTime": "2026-01-06T08:14:00+05:30",
+        "valueQuantity": {
+          "value": 8.144,
+          "unit": "mIU/L",
+          "system": "http://unitsofmeasure.org",
+          "code": "mIU/L"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:RES-00041-VG4E9",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "RES-00041-VG4E9",
+        "status": "amended",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "3016-3",
+              "display": "Thyroid stimulating hormone"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/P000041"
+        },
+        "effectiveDateTime": "2026-01-06T11:51:00+05:30",
+        "valueQuantity": {
+          "value": 7.199,
+          "unit": "mIU/L",
+          "system": "http://unitsofmeasure.org",
+          "code": "mIU/L"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "CRITICAL"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:RES-00042-4F1EC",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "RES-00042-4F1EC",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "3016-3",
+              "display": "Thyroid stimulating hormone"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/P000042"
+        },
+        "effectiveDateTime": "2026-01-06T14:42:00+05:30",
+        "valueQuantity": {
+          "value": 0.878,
+          "unit": "mIU/L",
+          "system": "http://unitsofmeasure.org",
+          "code": "mIU/L"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:RES-00043-KN9IX",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "RES-00043-KN9IX",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "3016-3",
+              "display": "Thyroid stimulating hormone"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/P000043"
+        },
+        "effectiveDateTime": "2026-01-06T17:49:00+05:30",
+        "valueQuantity": {
+          "value": 13.738,
+          "unit": "mIU/L",
+          "system": "http://unitsofmeasure.org",
+          "code": "mIU/L"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:RES-00044-3FZGS",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "RES-00044-3FZGS",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "2345-7",
+              "display": "Glucose"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/P000044"
+        },
+        "effectiveDateTime": "2026-01-06T20:37:00+05:30",
+        "valueQuantity": {
+          "value": 117.432,
+          "unit": "mg/dL",
+          "system": "http://unitsofmeasure.org",
+          "code": "mg/dL"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:RES-00045-EXUM4",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "RES-00045-EXUM4",
+        "status": "amended",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "3016-3",
+              "display": "Thyroid stimulating hormone"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/P000045"
+        },
+        "effectiveDateTime": "2026-01-06T23:29:00+05:30",
+        "valueQuantity": {
+          "value": 2.241,
+          "unit": "mIU/L",
+          "system": "http://unitsofmeasure.org",
+          "code": "mIU/L"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "ABNORMAL"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:RES-00046-T2KUH",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "RES-00046-T2KUH",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "2160-0",
+              "display": "Creatinine"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/P000046"
+        },
+        "effectiveDateTime": "2026-01-07T02:07:00+05:30",
+        "valueQuantity": {
+          "value": 0.927,
+          "unit": "mg/dL",
+          "system": "http://unitsofmeasure.org",
+          "code": "mg/dL"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:RES-00047-8XV03",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "RES-00047-8XV03",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "2160-0",
+              "display": "Creatinine"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/P000047"
+        },
+        "effectiveDateTime": "2026-01-07T05:35:00+05:30",
+        "valueQuantity": {
+          "value": 1.351,
+          "unit": "mg/dL",
+          "system": "http://unitsofmeasure.org",
+          "code": "mg/dL"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:RES-00048-XTAHE",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "RES-00048-XTAHE",
+        "status": "amended",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "1742-6",
+              "display": "Alanine aminotransferase"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/P000048"
+        },
+        "effectiveDateTime": "2026-01-07T08:54:00+05:30",
+        "valueQuantity": {
+          "value": 82.804,
+          "unit": "U/L",
+          "system": "http://unitsofmeasure.org",
+          "code": "U/L"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "PANIC"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:RES-00049-HLL56",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "RES-00049-HLL56",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "1742-6",
+              "display": "Alanine aminotransferase"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/P000049"
+        },
+        "effectiveDateTime": "2026-01-07T11:36:00+05:30",
+        "valueQuantity": {
+          "value": 192.571,
+          "unit": "U/L",
+          "system": "http://unitsofmeasure.org",
+          "code": "U/L"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:RES-00050-V3YKE",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "RES-00050-V3YKE",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "2345-7",
+              "display": "Glucose"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/P000050"
+        },
+        "effectiveDateTime": "2026-01-07T14:38:00+05:30",
+        "valueQuantity": {
+          "value": 175.283,
+          "unit": "mg/dL",
+          "system": "http://unitsofmeasure.org",
+          "code": "mg/dL"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:RES-00051-EB34Q",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "RES-00051-EB34Q",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "2160-0",
+              "display": "Creatinine"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/P000051"
+        },
+        "effectiveDateTime": "2026-01-07T17:21:00+05:30",
+        "valueQuantity": {
+          "value": 0.931,
+          "unit": "mg/dL",
+          "system": "http://unitsofmeasure.org",
+          "code": "mg/dL"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:RES-00052-YFSNF",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "RES-00052-YFSNF",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "1742-6",
+              "display": "Alanine aminotransferase"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/P000052"
+        },
+        "effectiveDateTime": "2026-01-07T20:37:00+05:30",
+        "valueQuantity": {
+          "value": 127.0,
+          "unit": "U/L",
+          "system": "http://unitsofmeasure.org",
+          "code": "U/L"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:RES-00053-LXKGV",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "RES-00053-LXKGV",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "1742-6",
+              "display": "Alanine aminotransferase"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/P000053"
+        },
+        "effectiveDateTime": "2026-01-07T23:56:00+05:30",
+        "valueQuantity": {
+          "value": 139.441,
+          "unit": "U/L",
+          "system": "http://unitsofmeasure.org",
+          "code": "U/L"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:RES-00054-0ISMP",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "RES-00054-0ISMP",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "2345-7",
+              "display": "Glucose"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/P000054"
+        },
+        "effectiveDateTime": "2026-01-08T02:45:00+05:30",
+        "valueQuantity": {
+          "value": 141.625,
+          "unit": "mg/dL",
+          "system": "http://unitsofmeasure.org",
+          "code": "mg/dL"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:RES-00055-SPKQ9",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "RES-00055-SPKQ9",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "3016-3",
+              "display": "Thyroid stimulating hormone"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/P000055"
+        },
+        "effectiveDateTime": "2026-01-08T05:17:00+05:30",
+        "valueQuantity": {
+          "value": 4.264,
+          "unit": "mIU/L",
+          "system": "http://unitsofmeasure.org",
+          "code": "mIU/L"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:RES-00056-6SGJG",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "RES-00056-6SGJG",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "2345-7",
+              "display": "Glucose"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/P000056"
+        },
+        "effectiveDateTime": "2026-01-08T08:02:00+05:30",
+        "valueQuantity": {
+          "value": 151.332,
+          "unit": "mg/dL",
+          "system": "http://unitsofmeasure.org",
+          "code": "mg/dL"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:RES-00057-0WOPQ",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "RES-00057-0WOPQ",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "3016-3",
+              "display": "Thyroid stimulating hormone"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/P000057"
+        },
+        "effectiveDateTime": "2026-01-08T11:32:00+05:30",
+        "valueQuantity": {
+          "value": 0.609,
+          "unit": "mIU/L",
+          "system": "http://unitsofmeasure.org",
+          "code": "mIU/L"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:RES-00058-R7M2P",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "RES-00058-R7M2P",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "2345-7",
+              "display": "Glucose"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/P000058"
+        },
+        "effectiveDateTime": "2026-01-08T14:33:00+05:30",
+        "valueQuantity": {
+          "value": 147.246,
+          "unit": "mg/dL",
+          "system": "http://unitsofmeasure.org",
+          "code": "mg/dL"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:RES-00059-2H1LL",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "RES-00059-2H1LL",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "3016-3",
+              "display": "Thyroid stimulating hormone"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/P000059"
+        },
+        "effectiveDateTime": "2026-01-08T17:23:00+05:30",
+        "valueQuantity": {
+          "value": 14.849,
+          "unit": "mIU/L",
+          "system": "http://unitsofmeasure.org",
+          "code": "mIU/L"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:RES-00060-EUH6T",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "RES-00060-EUH6T",
+        "status": "amended",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "2160-0",
+              "display": "Creatinine"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/P000060"
+        },
+        "effectiveDateTime": "2026-01-08T20:36:00+05:30",
+        "valueQuantity": {
+          "value": 3.058,
+          "unit": "mg/dL",
+          "system": "http://unitsofmeasure.org",
+          "code": "mg/dL"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "CRITICAL"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:RES-00061-0HJM2",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "RES-00061-0HJM2",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "2160-0",
+              "display": "Creatinine"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/P000061"
+        },
+        "effectiveDateTime": "2026-01-08T23:24:00+05:30",
+        "valueQuantity": {
+          "value": 2.015,
+          "unit": "mg/dL",
+          "system": "http://unitsofmeasure.org",
+          "code": "mg/dL"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:RES-00062-QEGQW",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "RES-00062-QEGQW",
+        "status": "amended",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "2345-7",
+              "display": "Glucose"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/P000062"
+        },
+        "effectiveDateTime": "2026-01-09T02:19:00+05:30",
+        "valueQuantity": {
+          "value": 172.852,
+          "unit": "mg/dL",
+          "system": "http://unitsofmeasure.org",
+          "code": "mg/dL"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "CRITICAL"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:RES-00063-ECKNY",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "RES-00063-ECKNY",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "1742-6",
+              "display": "Alanine aminotransferase"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/P000063"
+        },
+        "effectiveDateTime": "2026-01-09T05:45:00+05:30",
+        "valueQuantity": {
+          "value": 83.457,
+          "unit": "U/L",
+          "system": "http://unitsofmeasure.org",
+          "code": "U/L"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:RES-00064-YSHJ2",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "RES-00064-YSHJ2",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "2345-7",
+              "display": "Glucose"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/P000064"
+        },
+        "effectiveDateTime": "2026-01-09T08:56:00+05:30",
+        "valueQuantity": {
+          "value": 175.104,
+          "unit": "mg/dL",
+          "system": "http://unitsofmeasure.org",
+          "code": "mg/dL"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:RES-00065-S0VA5",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "RES-00065-S0VA5",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "2345-7",
+              "display": "Glucose"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/P000065"
+        },
+        "effectiveDateTime": "2026-01-09T11:16:00+05:30",
+        "valueQuantity": {
+          "value": 158.669,
+          "unit": "mg/dL",
+          "system": "http://unitsofmeasure.org",
+          "code": "mg/dL"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:RES-00066-0EFN6",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "RES-00066-0EFN6",
+        "status": "amended",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "2160-0",
+              "display": "Creatinine"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/P000066"
+        },
+        "effectiveDateTime": "2026-01-09T14:33:00+05:30",
+        "valueQuantity": {
+          "value": 0.798,
+          "unit": "mg/dL",
+          "system": "http://unitsofmeasure.org",
+          "code": "mg/dL"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "PANIC"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:RES-00067-HDOZV",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "RES-00067-HDOZV",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "2345-7",
+              "display": "Glucose"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/P000067"
+        },
+        "effectiveDateTime": "2026-01-09T17:00:00+05:30",
+        "valueQuantity": {
+          "value": 151.486,
+          "unit": "mg/dL",
+          "system": "http://unitsofmeasure.org",
+          "code": "mg/dL"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:RES-00068-OBYGZ",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "RES-00068-OBYGZ",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "1742-6",
+              "display": "Alanine aminotransferase"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/P000068"
+        },
+        "effectiveDateTime": "2026-01-09T20:24:00+05:30",
+        "valueQuantity": {
+          "value": 210.11,
+          "unit": "U/L",
+          "system": "http://unitsofmeasure.org",
+          "code": "U/L"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:RES-00069-MY357",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "RES-00069-MY357",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "3016-3",
+              "display": "Thyroid stimulating hormone"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/P000069"
+        },
+        "effectiveDateTime": "2026-01-09T23:08:00+05:30",
+        "valueQuantity": {
+          "value": 7.0,
+          "unit": "mIU/L",
+          "system": "http://unitsofmeasure.org",
+          "code": "mIU/L"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:RES-00070-RQIEE",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "RES-00070-RQIEE",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "3016-3",
+              "display": "Thyroid stimulating hormone"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/P000070"
+        },
+        "effectiveDateTime": "2026-01-10T02:13:00+05:30",
+        "valueQuantity": {
+          "value": 14.21,
+          "unit": "mIU/L",
+          "system": "http://unitsofmeasure.org",
+          "code": "mIU/L"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:RES-00071-WR8OI",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "RES-00071-WR8OI",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "1742-6",
+              "display": "Alanine aminotransferase"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/P000071"
+        },
+        "effectiveDateTime": "2026-01-10T05:14:00+05:30",
+        "valueQuantity": {
+          "value": 32.323,
+          "unit": "U/L",
+          "system": "http://unitsofmeasure.org",
+          "code": "U/L"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:RES-00072-35ML3",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "RES-00072-35ML3",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "3016-3",
+              "display": "Thyroid stimulating hormone"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/P000072"
+        },
+        "effectiveDateTime": "2026-01-10T08:07:00+05:30",
+        "valueQuantity": {
+          "value": 12.4,
+          "unit": "mIU/L",
+          "system": "http://unitsofmeasure.org",
+          "code": "mIU/L"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:RES-00073-8YUAS",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "RES-00073-8YUAS",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "1742-6",
+              "display": "Alanine aminotransferase"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/P000073"
+        },
+        "effectiveDateTime": "2026-01-10T11:19:00+05:30",
+        "valueQuantity": {
+          "value": 23.773,
+          "unit": "U/L",
+          "system": "http://unitsofmeasure.org",
+          "code": "U/L"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:RES-00074-XG0LH",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "RES-00074-XG0LH",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "1742-6",
+              "display": "Alanine aminotransferase"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/P000074"
+        },
+        "effectiveDateTime": "2026-01-10T14:48:00+05:30",
+        "valueQuantity": {
+          "value": 64.721,
+          "unit": "U/L",
+          "system": "http://unitsofmeasure.org",
+          "code": "U/L"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:RES-00075-FCLUZ",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "RES-00075-FCLUZ",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "1742-6",
+              "display": "Alanine aminotransferase"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/P000075"
+        },
+        "effectiveDateTime": "2026-01-10T17:30:00+05:30",
+        "valueQuantity": {
+          "value": 63.04,
+          "unit": "U/L",
+          "system": "http://unitsofmeasure.org",
+          "code": "U/L"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:RES-00076-9E98N",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "RES-00076-9E98N",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "2345-7",
+              "display": "Glucose"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/P000076"
+        },
+        "effectiveDateTime": "2026-01-10T20:35:00+05:30",
+        "valueQuantity": {
+          "value": 153.751,
+          "unit": "mg/dL",
+          "system": "http://unitsofmeasure.org",
+          "code": "mg/dL"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:RES-00077-K275B",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "RES-00077-K275B",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "2160-0",
+              "display": "Creatinine"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/P000077"
+        },
+        "effectiveDateTime": "2026-01-10T23:26:00+05:30",
+        "valueQuantity": {
+          "value": 3.193,
+          "unit": "mg/dL",
+          "system": "http://unitsofmeasure.org",
+          "code": "mg/dL"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:RES-00078-Q2AZO",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "RES-00078-Q2AZO",
+        "status": "amended",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "2345-7",
+              "display": "Glucose"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/P000078"
+        },
+        "effectiveDateTime": "2026-01-11T02:09:00+05:30",
+        "valueQuantity": {
+          "value": 115.166,
+          "unit": "mg/dL",
+          "system": "http://unitsofmeasure.org",
+          "code": "mg/dL"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "PANIC"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:RES-00079-FY70O",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "RES-00079-FY70O",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "3016-3",
+              "display": "Thyroid stimulating hormone"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/P000079"
+        },
+        "effectiveDateTime": "2026-01-11T05:51:00+05:30",
+        "valueQuantity": {
+          "value": 10.45,
+          "unit": "mIU/L",
+          "system": "http://unitsofmeasure.org",
+          "code": "mIU/L"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:RES-00080-WY7D6",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "RES-00080-WY7D6",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "2160-0",
+              "display": "Creatinine"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/P000080"
+        },
+        "effectiveDateTime": "2026-01-11T08:47:00+05:30",
+        "valueQuantity": {
+          "value": 1.444,
+          "unit": "mg/dL",
+          "system": "http://unitsofmeasure.org",
+          "code": "mg/dL"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:RES-00081-B1P6A",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "RES-00081-B1P6A",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "2160-0",
+              "display": "Creatinine"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/P000081"
+        },
+        "effectiveDateTime": "2026-01-11T11:51:00+05:30",
+        "valueQuantity": {
+          "value": 1.419,
+          "unit": "mg/dL",
+          "system": "http://unitsofmeasure.org",
+          "code": "mg/dL"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:RES-00082-9T32L",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "RES-00082-9T32L",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "2160-0",
+              "display": "Creatinine"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/P000082"
+        },
+        "effectiveDateTime": "2026-01-11T14:06:00+05:30",
+        "valueQuantity": {
+          "value": 2.75,
+          "unit": "mg/dL",
+          "system": "http://unitsofmeasure.org",
+          "code": "mg/dL"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:RES-00083-2G7KM",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "RES-00083-2G7KM",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "2345-7",
+              "display": "Glucose"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/P000083"
+        },
+        "effectiveDateTime": "2026-01-11T17:30:00+05:30",
+        "valueQuantity": {
+          "value": 94.83,
+          "unit": "mg/dL",
+          "system": "http://unitsofmeasure.org",
+          "code": "mg/dL"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:RES-00084-N85OK",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "RES-00084-N85OK",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "1742-6",
+              "display": "Alanine aminotransferase"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/P000084"
+        },
+        "effectiveDateTime": "2026-01-11T20:46:00+05:30",
+        "valueQuantity": {
+          "value": 114.083,
+          "unit": "U/L",
+          "system": "http://unitsofmeasure.org",
+          "code": "U/L"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:RES-00085-TUMZU",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "RES-00085-TUMZU",
+        "status": "amended",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "1742-6",
+              "display": "Alanine aminotransferase"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/P000085"
+        },
+        "effectiveDateTime": "2026-01-11T23:03:00+05:30",
+        "valueQuantity": {
+          "value": 145.812,
+          "unit": "U/L",
+          "system": "http://unitsofmeasure.org",
+          "code": "U/L"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "ABNORMAL"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:RES-00086-CD6NG",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "RES-00086-CD6NG",
+        "status": "amended",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "2345-7",
+              "display": "Glucose"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/P000086"
+        },
+        "effectiveDateTime": "2026-01-12T02:11:00+05:30",
+        "valueQuantity": {
+          "value": 72.246,
+          "unit": "mg/dL",
+          "system": "http://unitsofmeasure.org",
+          "code": "mg/dL"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "LOW"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:RES-00087-BKVRW",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "RES-00087-BKVRW",
+        "status": "amended",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "1742-6",
+              "display": "Alanine aminotransferase"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/P000087"
+        },
+        "effectiveDateTime": "2026-01-12T05:32:00+05:30",
+        "valueQuantity": {
+          "value": 154.915,
+          "unit": "U/L",
+          "system": "http://unitsofmeasure.org",
+          "code": "U/L"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "HIGH"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:RES-00088-1SNQK",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "RES-00088-1SNQK",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "3016-3",
+              "display": "Thyroid stimulating hormone"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/P000088"
+        },
+        "effectiveDateTime": "2026-01-12T08:26:00+05:30",
+        "valueQuantity": {
+          "value": 12.039,
+          "unit": "mIU/L",
+          "system": "http://unitsofmeasure.org",
+          "code": "mIU/L"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:RES-00089-TMA8P",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "RES-00089-TMA8P",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "2345-7",
+              "display": "Glucose"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/P000089"
+        },
+        "effectiveDateTime": "2026-01-12T11:13:00+05:30",
+        "valueQuantity": {
+          "value": 71.683,
+          "unit": "mg/dL",
+          "system": "http://unitsofmeasure.org",
+          "code": "mg/dL"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:RES-00090-UNSGY",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "RES-00090-UNSGY",
+        "status": "amended",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "3016-3",
+              "display": "Thyroid stimulating hormone"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/P000090"
+        },
+        "effectiveDateTime": "2026-01-12T14:09:00+05:30",
+        "valueQuantity": {
+          "value": 5.57,
+          "unit": "mIU/L",
+          "system": "http://unitsofmeasure.org",
+          "code": "mIU/L"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "LOW"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:RES-00091-A4VAS",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "RES-00091-A4VAS",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "1742-6",
+              "display": "Alanine aminotransferase"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/P000091"
+        },
+        "effectiveDateTime": "2026-01-12T17:04:00+05:30",
+        "valueQuantity": {
+          "value": 35.313,
+          "unit": "U/L",
+          "system": "http://unitsofmeasure.org",
+          "code": "U/L"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:RES-00092-UE6YK",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "RES-00092-UE6YK",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "1742-6",
+              "display": "Alanine aminotransferase"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/P000092"
+        },
+        "effectiveDateTime": "2026-01-12T20:52:00+05:30",
+        "valueQuantity": {
+          "value": 84.577,
+          "unit": "U/L",
+          "system": "http://unitsofmeasure.org",
+          "code": "U/L"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:RES-00093-T90IP",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "RES-00093-T90IP",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "2160-0",
+              "display": "Creatinine"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/P000093"
+        },
+        "effectiveDateTime": "2026-01-12T23:42:00+05:30",
+        "valueQuantity": {
+          "value": 3.499,
+          "unit": "mg/dL",
+          "system": "http://unitsofmeasure.org",
+          "code": "mg/dL"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:RES-00094-8TKEX",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "RES-00094-8TKEX",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "2345-7",
+              "display": "Glucose"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/P000094"
+        },
+        "effectiveDateTime": "2026-01-13T02:13:00+05:30",
+        "valueQuantity": {
+          "value": 177.907,
+          "unit": "mg/dL",
+          "system": "http://unitsofmeasure.org",
+          "code": "mg/dL"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:RES-00095-AD84B",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "RES-00095-AD84B",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "2160-0",
+              "display": "Creatinine"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/P000095"
+        },
+        "effectiveDateTime": "2026-01-13T05:52:00+05:30",
+        "valueQuantity": {
+          "value": 1.569,
+          "unit": "mg/dL",
+          "system": "http://unitsofmeasure.org",
+          "code": "mg/dL"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:RES-00096-9F519",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "RES-00096-9F519",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "3016-3",
+              "display": "Thyroid stimulating hormone"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/P000096"
+        },
+        "effectiveDateTime": "2026-01-13T08:21:00+05:30",
+        "valueQuantity": {
+          "value": 4.563,
+          "unit": "mIU/L",
+          "system": "http://unitsofmeasure.org",
+          "code": "mIU/L"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:RES-00097-URPFQ",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "RES-00097-URPFQ",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "3016-3",
+              "display": "Thyroid stimulating hormone"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/P000097"
+        },
+        "effectiveDateTime": "2026-01-13T11:02:00+05:30",
+        "valueQuantity": {
+          "value": 1.351,
+          "unit": "mIU/L",
+          "system": "http://unitsofmeasure.org",
+          "code": "mIU/L"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:RES-00098-3YKEQ",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "RES-00098-3YKEQ",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "1742-6",
+              "display": "Alanine aminotransferase"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/P000098"
+        },
+        "effectiveDateTime": "2026-01-13T14:28:00+05:30",
+        "valueQuantity": {
+          "value": 199.955,
+          "unit": "U/L",
+          "system": "http://unitsofmeasure.org",
+          "code": "U/L"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:RES-00099-LXGPJ",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "RES-00099-LXGPJ",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "3016-3",
+              "display": "Thyroid stimulating hormone"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/P000099"
+        },
+        "effectiveDateTime": "2026-01-13T17:57:00+05:30",
+        "valueQuantity": {
+          "value": 9.923,
+          "unit": "mIU/L",
+          "system": "http://unitsofmeasure.org",
+          "code": "mIU/L"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:RES-00100-88T5O",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "RES-00100-88T5O",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "2345-7",
+              "display": "Glucose"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/P000100"
+        },
+        "effectiveDateTime": "2026-01-13T20:54:00+05:30",
+        "valueQuantity": {
+          "value": 161.732,
+          "unit": "mg/dL",
+          "system": "http://unitsofmeasure.org",
+          "code": "mg/dL"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:RES-00101-9PO9T",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "RES-00101-9PO9T",
+        "status": "amended",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "2345-7",
+              "display": "Glucose"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/P000101"
+        },
+        "effectiveDateTime": "2026-01-13T23:17:00+05:30",
+        "valueQuantity": {
+          "value": 155.555,
+          "unit": "mg/dL",
+          "system": "http://unitsofmeasure.org",
+          "code": "mg/dL"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "ABNORMAL"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:RES-00102-VJ52S",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "RES-00102-VJ52S",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "3016-3",
+              "display": "Thyroid stimulating hormone"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/P000102"
+        },
+        "effectiveDateTime": "2026-01-14T02:02:00+05:30",
+        "valueQuantity": {
+          "value": 7.833,
+          "unit": "mIU/L",
+          "system": "http://unitsofmeasure.org",
+          "code": "mIU/L"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:RES-00103-SG00V",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "RES-00103-SG00V",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "3016-3",
+              "display": "Thyroid stimulating hormone"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/P000103"
+        },
+        "effectiveDateTime": "2026-01-14T05:09:00+05:30",
+        "valueQuantity": {
+          "value": 5.539,
+          "unit": "mIU/L",
+          "system": "http://unitsofmeasure.org",
+          "code": "mIU/L"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:RES-00104-03FBA",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "RES-00104-03FBA",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "2160-0",
+              "display": "Creatinine"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/P000104"
+        },
+        "effectiveDateTime": "2026-01-14T08:39:00+05:30",
+        "valueQuantity": {
+          "value": 1.879,
+          "unit": "mg/dL",
+          "system": "http://unitsofmeasure.org",
+          "code": "mg/dL"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:RES-00105-6O838",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "RES-00105-6O838",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "2160-0",
+              "display": "Creatinine"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/P000105"
+        },
+        "effectiveDateTime": "2026-01-14T11:19:00+05:30",
+        "valueQuantity": {
+          "value": 0.729,
+          "unit": "mg/dL",
+          "system": "http://unitsofmeasure.org",
+          "code": "mg/dL"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:RES-00106-S312U",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "RES-00106-S312U",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "1742-6",
+              "display": "Alanine aminotransferase"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/P000106"
+        },
+        "effectiveDateTime": "2026-01-14T14:51:00+05:30",
+        "valueQuantity": {
+          "value": 114.241,
+          "unit": "U/L",
+          "system": "http://unitsofmeasure.org",
+          "code": "U/L"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:RES-00107-A6ZRC",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "RES-00107-A6ZRC",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "2345-7",
+              "display": "Glucose"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/P000107"
+        },
+        "effectiveDateTime": "2026-01-14T17:16:00+05:30",
+        "valueQuantity": {
+          "value": 101.712,
+          "unit": "mg/dL",
+          "system": "http://unitsofmeasure.org",
+          "code": "mg/dL"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:RES-00108-OZ9E8",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "RES-00108-OZ9E8",
+        "status": "amended",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "1742-6",
+              "display": "Alanine aminotransferase"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/P000108"
+        },
+        "effectiveDateTime": "2026-01-14T20:51:00+05:30",
+        "valueQuantity": {
+          "value": 116.556,
+          "unit": "U/L",
+          "system": "http://unitsofmeasure.org",
+          "code": "U/L"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "HIGH"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:RES-00109-EY3I4",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "RES-00109-EY3I4",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "2160-0",
+              "display": "Creatinine"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/P000109"
+        },
+        "effectiveDateTime": "2026-01-14T23:51:00+05:30",
+        "valueQuantity": {
+          "value": 1.919,
+          "unit": "mg/dL",
+          "system": "http://unitsofmeasure.org",
+          "code": "mg/dL"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:RES-00110-G8HER",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "RES-00110-G8HER",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "2345-7",
+              "display": "Glucose"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/P000110"
+        },
+        "effectiveDateTime": "2026-01-15T02:06:00+05:30",
+        "valueQuantity": {
+          "value": 164.554,
+          "unit": "mg/dL",
+          "system": "http://unitsofmeasure.org",
+          "code": "mg/dL"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:RES-00111-QNQH6",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "RES-00111-QNQH6",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "2160-0",
+              "display": "Creatinine"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/P000111"
+        },
+        "effectiveDateTime": "2026-01-15T05:14:00+05:30",
+        "valueQuantity": {
+          "value": 2.92,
+          "unit": "mg/dL",
+          "system": "http://unitsofmeasure.org",
+          "code": "mg/dL"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:RES-00112-JIJRD",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "RES-00112-JIJRD",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "2345-7",
+              "display": "Glucose"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/P000112"
+        },
+        "effectiveDateTime": "2026-01-15T08:28:00+05:30",
+        "valueQuantity": {
+          "value": 72.182,
+          "unit": "mg/dL",
+          "system": "http://unitsofmeasure.org",
+          "code": "mg/dL"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:RES-00113-1HQ14",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "RES-00113-1HQ14",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "3016-3",
+              "display": "Thyroid stimulating hormone"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/P000113"
+        },
+        "effectiveDateTime": "2026-01-15T11:24:00+05:30",
+        "valueQuantity": {
+          "value": 12.571,
+          "unit": "mIU/L",
+          "system": "http://unitsofmeasure.org",
+          "code": "mIU/L"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:RES-00114-230BP",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "RES-00114-230BP",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "2160-0",
+              "display": "Creatinine"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/P000114"
+        },
+        "effectiveDateTime": "2026-01-15T14:14:00+05:30",
+        "valueQuantity": {
+          "value": 1.477,
+          "unit": "mg/dL",
+          "system": "http://unitsofmeasure.org",
+          "code": "mg/dL"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:RES-00115-ZA6H5",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "RES-00115-ZA6H5",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "2160-0",
+              "display": "Creatinine"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/P000115"
+        },
+        "effectiveDateTime": "2026-01-15T17:00:00+05:30",
+        "valueQuantity": {
+          "value": 0.599,
+          "unit": "mg/dL",
+          "system": "http://unitsofmeasure.org",
+          "code": "mg/dL"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:RES-00116-LUO4Z",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "RES-00116-LUO4Z",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "1742-6",
+              "display": "Alanine aminotransferase"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/P000116"
+        },
+        "effectiveDateTime": "2026-01-15T20:13:00+05:30",
+        "valueQuantity": {
+          "value": 181.872,
+          "unit": "U/L",
+          "system": "http://unitsofmeasure.org",
+          "code": "U/L"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:RES-00117-EQNAT",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "RES-00117-EQNAT",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "2345-7",
+              "display": "Glucose"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/P000117"
+        },
+        "effectiveDateTime": "2026-01-15T23:18:00+05:30",
+        "valueQuantity": {
+          "value": 78.48,
+          "unit": "mg/dL",
+          "system": "http://unitsofmeasure.org",
+          "code": "mg/dL"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:RES-00118-1L63W",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "RES-00118-1L63W",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "2345-7",
+              "display": "Glucose"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/P000118"
+        },
+        "effectiveDateTime": "2026-01-16T02:34:00+05:30",
+        "valueQuantity": {
+          "value": 120.055,
+          "unit": "mg/dL",
+          "system": "http://unitsofmeasure.org",
+          "code": "mg/dL"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:RES-00119-41QNG",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "RES-00119-41QNG",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "2160-0",
+              "display": "Creatinine"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/P000119"
+        },
+        "effectiveDateTime": "2026-01-16T05:04:00+05:30",
+        "valueQuantity": {
+          "value": 1.164,
+          "unit": "mg/dL",
+          "system": "http://unitsofmeasure.org",
+          "code": "mg/dL"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:RES-00120-SIIO5",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "RES-00120-SIIO5",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "2160-0",
+              "display": "Creatinine"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/P000120"
+        },
+        "effectiveDateTime": "2026-01-16T08:02:00+05:30",
+        "valueQuantity": {
+          "value": 3.241,
+          "unit": "mg/dL",
+          "system": "http://unitsofmeasure.org",
+          "code": "mg/dL"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:RES-00121-6ZLEZ",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "RES-00121-6ZLEZ",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "3016-3",
+              "display": "Thyroid stimulating hormone"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/P000121"
+        },
+        "effectiveDateTime": "2026-01-16T11:03:00+05:30",
+        "valueQuantity": {
+          "value": 10.187,
+          "unit": "mIU/L",
+          "system": "http://unitsofmeasure.org",
+          "code": "mIU/L"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:RES-00122-PYBG5",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "RES-00122-PYBG5",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "2345-7",
+              "display": "Glucose"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/P000122"
+        },
+        "effectiveDateTime": "2026-01-16T14:02:00+05:30",
+        "valueQuantity": {
+          "value": 109.734,
+          "unit": "mg/dL",
+          "system": "http://unitsofmeasure.org",
+          "code": "mg/dL"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:RES-00123-6KV0P",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "RES-00123-6KV0P",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "3016-3",
+              "display": "Thyroid stimulating hormone"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/P000123"
+        },
+        "effectiveDateTime": "2026-01-16T17:54:00+05:30",
+        "valueQuantity": {
+          "value": 7.83,
+          "unit": "mIU/L",
+          "system": "http://unitsofmeasure.org",
+          "code": "mIU/L"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:RES-00124-NHLBO",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "RES-00124-NHLBO",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "2345-7",
+              "display": "Glucose"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/P000124"
+        },
+        "effectiveDateTime": "2026-01-16T20:37:00+05:30",
+        "valueQuantity": {
+          "value": 78.376,
+          "unit": "mg/dL",
+          "system": "http://unitsofmeasure.org",
+          "code": "mg/dL"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:RES-00125-S6K6C",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "RES-00125-S6K6C",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "3016-3",
+              "display": "Thyroid stimulating hormone"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/P000125"
+        },
+        "effectiveDateTime": "2026-01-16T23:11:00+05:30",
+        "valueQuantity": {
+          "value": 4.926,
+          "unit": "mIU/L",
+          "system": "http://unitsofmeasure.org",
+          "code": "mIU/L"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:RES-00126-7TF9N",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "RES-00126-7TF9N",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "3016-3",
+              "display": "Thyroid stimulating hormone"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/P000126"
+        },
+        "effectiveDateTime": "2026-01-17T02:56:00+05:30",
+        "valueQuantity": {
+          "value": 6.977,
+          "unit": "mIU/L",
+          "system": "http://unitsofmeasure.org",
+          "code": "mIU/L"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:RES-00127-HZI14",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "RES-00127-HZI14",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "3016-3",
+              "display": "Thyroid stimulating hormone"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/P000127"
+        },
+        "effectiveDateTime": "2026-01-17T05:19:00+05:30",
+        "valueQuantity": {
+          "value": 10.343,
+          "unit": "mIU/L",
+          "system": "http://unitsofmeasure.org",
+          "code": "mIU/L"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:RES-00128-G1LXP",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "RES-00128-G1LXP",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "2345-7",
+              "display": "Glucose"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/P000128"
+        },
+        "effectiveDateTime": "2026-01-17T08:38:00+05:30",
+        "valueQuantity": {
+          "value": 129.108,
+          "unit": "mg/dL",
+          "system": "http://unitsofmeasure.org",
+          "code": "mg/dL"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:RES-00129-HYEMB",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "RES-00129-HYEMB",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "2345-7",
+              "display": "Glucose"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/P000129"
+        },
+        "effectiveDateTime": "2026-01-17T11:39:00+05:30",
+        "valueQuantity": {
+          "value": 159.122,
+          "unit": "mg/dL",
+          "system": "http://unitsofmeasure.org",
+          "code": "mg/dL"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:RES-00130-YLN1C",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "RES-00130-YLN1C",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "1742-6",
+              "display": "Alanine aminotransferase"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/P000130"
+        },
+        "effectiveDateTime": "2026-01-17T14:38:00+05:30",
+        "valueQuantity": {
+          "value": 120.648,
+          "unit": "U/L",
+          "system": "http://unitsofmeasure.org",
+          "code": "U/L"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:RES-00131-W5J0J",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "RES-00131-W5J0J",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "2345-7",
+              "display": "Glucose"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/P000131"
+        },
+        "effectiveDateTime": "2026-01-17T17:02:00+05:30",
+        "valueQuantity": {
+          "value": 84.525,
+          "unit": "mg/dL",
+          "system": "http://unitsofmeasure.org",
+          "code": "mg/dL"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:RES-00132-09LAE",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "RES-00132-09LAE",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "1742-6",
+              "display": "Alanine aminotransferase"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/P000132"
+        },
+        "effectiveDateTime": "2026-01-17T20:52:00+05:30",
+        "valueQuantity": {
+          "value": 146.319,
+          "unit": "U/L",
+          "system": "http://unitsofmeasure.org",
+          "code": "U/L"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:RES-00133-O0D7D",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "RES-00133-O0D7D",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "2345-7",
+              "display": "Glucose"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/P000133"
+        },
+        "effectiveDateTime": "2026-01-17T23:56:00+05:30",
+        "valueQuantity": {
+          "value": 155.575,
+          "unit": "mg/dL",
+          "system": "http://unitsofmeasure.org",
+          "code": "mg/dL"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:RES-00134-EDGX8",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "RES-00134-EDGX8",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "2345-7",
+              "display": "Glucose"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/P000134"
+        },
+        "effectiveDateTime": "2026-01-18T02:42:00+05:30",
+        "valueQuantity": {
+          "value": 111.864,
+          "unit": "mg/dL",
+          "system": "http://unitsofmeasure.org",
+          "code": "mg/dL"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:RES-00135-CQPTF",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "RES-00135-CQPTF",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "2345-7",
+              "display": "Glucose"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/P000135"
+        },
+        "effectiveDateTime": "2026-01-18T05:05:00+05:30",
+        "valueQuantity": {
+          "value": 147.443,
+          "unit": "mg/dL",
+          "system": "http://unitsofmeasure.org",
+          "code": "mg/dL"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:RES-00136-AYF9L",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "RES-00136-AYF9L",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "2160-0",
+              "display": "Creatinine"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/P000136"
+        },
+        "effectiveDateTime": "2026-01-18T08:41:00+05:30",
+        "valueQuantity": {
+          "value": 3.094,
+          "unit": "mg/dL",
+          "system": "http://unitsofmeasure.org",
+          "code": "mg/dL"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:RES-00137-W2PTU",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "RES-00137-W2PTU",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "3016-3",
+              "display": "Thyroid stimulating hormone"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/P000137"
+        },
+        "effectiveDateTime": "2026-01-18T11:42:00+05:30",
+        "valueQuantity": {
+          "value": 7.419,
+          "unit": "mIU/L",
+          "system": "http://unitsofmeasure.org",
+          "code": "mIU/L"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:RES-00138-8OOS4",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "RES-00138-8OOS4",
+        "status": "amended",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "1742-6",
+              "display": "Alanine aminotransferase"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/P000138"
+        },
+        "effectiveDateTime": "2026-01-18T14:09:00+05:30",
+        "valueQuantity": {
+          "value": 131.585,
+          "unit": "U/L",
+          "system": "http://unitsofmeasure.org",
+          "code": "U/L"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "LOW"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:RES-00139-B8351",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "RES-00139-B8351",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "1742-6",
+              "display": "Alanine aminotransferase"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/P000139"
+        },
+        "effectiveDateTime": "2026-01-18T17:27:00+05:30",
+        "valueQuantity": {
+          "value": 27.813,
+          "unit": "U/L",
+          "system": "http://unitsofmeasure.org",
+          "code": "U/L"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:RES-00140-Q4VZM",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "RES-00140-Q4VZM",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "2345-7",
+              "display": "Glucose"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/P000140"
+        },
+        "effectiveDateTime": "2026-01-18T20:04:00+05:30",
+        "valueQuantity": {
+          "value": 105.476,
+          "unit": "mg/dL",
+          "system": "http://unitsofmeasure.org",
+          "code": "mg/dL"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:RES-00141-HV1MK",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "RES-00141-HV1MK",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "3016-3",
+              "display": "Thyroid stimulating hormone"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/P000141"
+        },
+        "effectiveDateTime": "2026-01-18T23:36:00+05:30",
+        "valueQuantity": {
+          "value": 5.235,
+          "unit": "mIU/L",
+          "system": "http://unitsofmeasure.org",
+          "code": "mIU/L"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:RES-00142-SA0RW",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "RES-00142-SA0RW",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "2160-0",
+              "display": "Creatinine"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/P000142"
+        },
+        "effectiveDateTime": "2026-01-19T02:23:00+05:30",
+        "valueQuantity": {
+          "value": 2.622,
+          "unit": "mg/dL",
+          "system": "http://unitsofmeasure.org",
+          "code": "mg/dL"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:RES-00143-PEPMB",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "RES-00143-PEPMB",
+        "status": "amended",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "2160-0",
+              "display": "Creatinine"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/P000143"
+        },
+        "effectiveDateTime": "2026-01-19T05:55:00+05:30",
+        "valueQuantity": {
+          "value": 0.945,
+          "unit": "mg/dL",
+          "system": "http://unitsofmeasure.org",
+          "code": "mg/dL"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "LOW"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:RES-00144-W5AW6",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "RES-00144-W5AW6",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "2160-0",
+              "display": "Creatinine"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/P000144"
+        },
+        "effectiveDateTime": "2026-01-19T08:03:00+05:30",
+        "valueQuantity": {
+          "value": 0.655,
+          "unit": "mg/dL",
+          "system": "http://unitsofmeasure.org",
+          "code": "mg/dL"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:RES-00145-M08Z5",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "RES-00145-M08Z5",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "2345-7",
+              "display": "Glucose"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/P000145"
+        },
+        "effectiveDateTime": "2026-01-19T11:32:00+05:30",
+        "valueQuantity": {
+          "value": 137.943,
+          "unit": "mg/dL",
+          "system": "http://unitsofmeasure.org",
+          "code": "mg/dL"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:RES-00146-EEND1",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "RES-00146-EEND1",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "2345-7",
+              "display": "Glucose"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/P000146"
+        },
+        "effectiveDateTime": "2026-01-19T14:55:00+05:30",
+        "valueQuantity": {
+          "value": 119.215,
+          "unit": "mg/dL",
+          "system": "http://unitsofmeasure.org",
+          "code": "mg/dL"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:RES-00147-DKSAP",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "RES-00147-DKSAP",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "2345-7",
+              "display": "Glucose"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/P000147"
+        },
+        "effectiveDateTime": "2026-01-19T17:10:00+05:30",
+        "valueQuantity": {
+          "value": 146.641,
+          "unit": "mg/dL",
+          "system": "http://unitsofmeasure.org",
+          "code": "mg/dL"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:RES-00148-9K22E",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "RES-00148-9K22E",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "3016-3",
+              "display": "Thyroid stimulating hormone"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/P000148"
+        },
+        "effectiveDateTime": "2026-01-19T20:18:00+05:30",
+        "valueQuantity": {
+          "value": 11.698,
+          "unit": "mIU/L",
+          "system": "http://unitsofmeasure.org",
+          "code": "mIU/L"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:RES-00149-ZJO2Z",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "RES-00149-ZJO2Z",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "1742-6",
+              "display": "Alanine aminotransferase"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/P000149"
+        },
+        "effectiveDateTime": "2026-01-19T23:03:00+05:30",
+        "valueQuantity": {
+          "value": 5.704,
+          "unit": "U/L",
+          "system": "http://unitsofmeasure.org",
+          "code": "U/L"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:RES-00150-JZ7VJ",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "RES-00150-JZ7VJ",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "3016-3",
+              "display": "Thyroid stimulating hormone"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/P000150"
+        },
+        "effectiveDateTime": "2026-01-20T02:52:00+05:30",
+        "valueQuantity": {
+          "value": 10.153,
+          "unit": "mIU/L",
+          "system": "http://unitsofmeasure.org",
+          "code": "mIU/L"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N"
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

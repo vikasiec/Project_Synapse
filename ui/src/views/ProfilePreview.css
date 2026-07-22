@@ -1,0 +1,42 @@
+.profile-preview {
+  padding: 8px 20px;
+  background: var(--panel-2);
+  border-bottom: 1px solid var(--border);
+  font-size: 12px;
+  color: var(--text-dim);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.profile-preview.error {
+  color: var(--danger);
+}
+
+.profile-preview-label {
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-size: 10px;
+  flex: 0 0 auto;
+}
+
+.profile-chips {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.profile-chip {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  padding: 2px 7px;
+  font-family: ui-monospace, Consolas, monospace;
+}
+
+.profile-chip em {
+  font-style: normal;
+  color: var(--accent);
+  margin-left: 4px;
+}

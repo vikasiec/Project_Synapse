@@ -19,6 +19,7 @@ from synapse.extraction import RuleExtractor
 from synapse.graph_memory import GraphMemoryAdapter, create_graph_adapter
 from synapse.ingestion import IngestionService
 from synapse.materialize import Materializer
+from synapse.matching import CandidateCache
 from synapse.metrics import METRICS
 from synapse.ontology import OntologyRegistry
 from synapse.operators import OperatorPipeline
@@ -54,6 +55,7 @@ class SynapseSession:
     actions: ActionBus
     drift: DriftDetector
     claim_cache: ClaimCache
+    candidate_cache: CandidateCache
     db_path: Optional[str] = None
 
     def close(self) -> None:
@@ -121,6 +123,12 @@ def open_session(
 
     cp = ControlPlane(auth)
     ontology = OntologyRegistry.default()
+    # F-027: rehydrate curated relationship edges + rejection log from a
+    # durable store, and write-through future ACCEPT/REJECT/RELABEL
+    # decisions to it -- without this, the Catalog silently resets to
+    # empty every restart even under a SQLite-backed store, since
+    # OntologyRegistry itself is reconstructed fresh every open_session().
+    ontology.load_from_store(store)
     prep_pipeline = OperatorPipeline()
     ingestion = IngestionService(store, domain=domain, pipeline=prep_pipeline)
     extractor = RuleExtractor(store, ontology=ontology)
@@ -152,6 +160,7 @@ def open_session(
     materializer = Materializer(store)
     actions = ActionBus(store)
     drift = DriftDetector(store)
+    candidate_cache = CandidateCache()
     METRICS.inc("session.open")
     return SynapseSession(
         store=store,
@@ -175,5 +184,6 @@ def open_session(
         actions=actions,
         drift=drift,
         claim_cache=claim_cache,
+        candidate_cache=candidate_cache,
         db_path=db_path,
     )

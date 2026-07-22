@@ -1,0 +1,129 @@
+.drawer {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 340px;
+  background: var(--panel);
+  border-left: 1px solid var(--border);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  overflow-y: auto;
+  z-index: 5;
+}
+
+.drawer-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.drawer-close {
+  background: none;
+  border: none;
+  color: var(--text-dim);
+  font-size: 20px;
+  line-height: 1;
+}
+
+.drawer-fields {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.field-block {
+  flex: 1;
+  background: var(--panel-2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px;
+  text-align: center;
+}
+
+.field-source {
+  font-size: 10px;
+  color: var(--text-dim);
+  text-transform: uppercase;
+}
+
+.field-name {
+  font-family: ui-monospace, Consolas, monospace;
+  font-size: 13px;
+  margin-top: 4px;
+}
+
+.field-arrow {
+  color: var(--text-dim);
+}
+
+.drawer-score {
+  font-size: 12px;
+  color: var(--accent-2);
+  font-weight: 600;
+}
+
+.drawer-section-title {
+  font-size: 11px;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 6px;
+}
+
+.reasons-list {
+  margin: 0;
+  padding-left: 18px;
+  font-size: 13px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.drawer-section select {
+  width: 100%;
+  background: var(--panel-2);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 6px 10px;
+}
+
+.drawer-actions {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.btn {
+  border: none;
+  border-radius: 6px;
+  padding: 10px;
+  font-weight: 600;
+  font-size: 13px;
+}
+.btn:disabled {
+  opacity: 0.6;
+}
+
+.btn.accept {
+  background: var(--accent-2);
+  color: #0b0d12;
+}
+.btn.relabel {
+  background: var(--accent);
+  color: #0b0d12;
+}
+.btn.reject {
+  background: transparent;
+  color: var(--danger);
+  border: 1px solid var(--danger);
+}

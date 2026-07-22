@@ -68,6 +68,36 @@ class EntityResolutionService:
     ) -> None:
         self.store = store
         self.ontology = ontology or OntologyRegistry.default()
+        # Major Goal 4, task 2: confirmed schema-field relationships
+        # (source_system, field_name) pairs from an accepted SAME_ENTITY_AS
+        # curation decision -- immediately available as ER blocking metadata
+        # for future entities sourced from these two systems. Deliberately
+        # does not retroactively merge/re-block existing entities on name
+        # alone; that remains suggest_merges()'s existing, separately-vetted
+        # blocking strategy. This records *that* two source fields are known
+        # to refer to the same real-world concept, for the transitive
+        # learning engine (Major Goal 4, task 3) to consume.
+        self.linked_schema_fields: set[tuple[str, str, str, str]] = set()
+
+    def link_schema_fields(self, source_a: dict[str, str], source_b: dict[str, str]) -> None:
+        key = (
+            source_a.get("source_system", ""),
+            source_a.get("field_name", ""),
+            source_b.get("source_system", ""),
+            source_b.get("field_name", ""),
+        )
+        self.linked_schema_fields.add(key)
+
+    def linked_sources_for(self, source_system: str) -> set[str]:
+        """All source systems already confirmed as SAME_ENTITY_AS-linked to
+        the given one -- the lookup the transitive learning engine walks."""
+        linked: set[str] = set()
+        for a_sys, _a_field, b_sys, _b_field in self.linked_schema_fields:
+            if a_sys == source_system:
+                linked.add(b_sys)
+            elif b_sys == source_system:
+                linked.add(a_sys)
+        return linked
 
     def resolve_id(self, entity_id: str, *, max_hops: int = 8) -> str:
         """Follow merge redirects to the active survivor."""

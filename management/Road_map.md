@@ -1,6 +1,11 @@
 # Road Map — Project Synapse Healthcare Vertical
 
-**Status:** Updated 2026-07-19 (evening) from `Active_File.md` rows 1-20, all closed.
+**Status:** Sections below (rows 1-20) are historical, last touched 2026-07-19 —
+**stale beyond that point.** `Active_File.md` rows 21-47 happened since and are
+not reflected in the tables below; read the ledger's own tail for current state,
+not this file's "Currently open" section (still says "Nothing" — wrong as of
+2026-07-22). See the "2026-07-22 update" section near the bottom for the newest
+work stream (rows 38-47, Semantic Discovery & Curation).
 **Ownership model:** per `.agent_os/collaboration_model_V2.0.md` (V2.8) Rule 13 —
 Lead AI (Claude) allocates, owning agent delivers end-to-end incl. tests
 (Rule 14), Lead AI reviews before `🟢 DONE`.
@@ -128,3 +133,50 @@ before opening any tracker rows — all checked out exactly as described.
 `https://github.com/vikasiec/Project_Synapse.git`, branch `main`, initial commit
 `2b1e9aa` (row 16). Own dedicated repo, decoupled from the parent folder's
 `Financial-Planner-2.0` remote/scope issue that started that row.
+
+## 2026-07-22 update — new work stream: Semantic Discovery & Curation (rows 38-47)
+
+Vikas supplied a new spec (`docs/Master Architectural Specification &
+Implementation Roadmap.md`, uncommitted) describing "SYNAPSE" as an
+embedding/vector-based schema-field discovery and curation engine, in 7
+Major Goals across two phases. Investigation confirmed this spec's concepts
+(field profiling, hybrid candidate scoring, a curation canvas, an ontology
+relationship registry) did not exist anywhere in the prior codebase — the
+existing entity-resolution/conflict/FHIR-HL7v2 core (everything above this
+section) operates one layer lower, matching *records*, not *schema fields*.
+
+**Vision framing, agreed with Vikas before implementation:** this is an
+additive front-door layer that feeds the existing `ER.suggest_merges()`
+core (the new spec's own Major Goal 4 names that exact method), not a
+replacement for anything above. Confirmed field relationships (e.g.
+`cust_id` ↔ `client_num`) become ER blocking metadata; nothing here
+retroactively re-merges existing entities.
+
+**Phase 1 (Major Goals 1-4), all done this session:**
+- Row 38: `synapse/profiling.py` — schema field profiling (`data_type`,
+  `entropy_score`, `regex_pattern_match`, `min_hash_sketch`) + a stdlib-only
+  hashing-trick semantic vector standing in for the spec's "cross-encoder"
+  (no embedding library is installed in this project).
+- Row 39: `synapse/matching.py` + `POST /v1/explore/analyze` — the exact
+  spec formula (`0.45·VectorSim + 0.40·ValueOverlap + 0.15·GraphProximity`)
+  and thresholds.
+- Rows 40-41: `synapse/ontology.py`'s new `RelationshipEdge` registry +
+  `POST /v1/ontology/relationships` (ACCEPT/REJECT/RELABEL), wired into ER
+  blocking metadata (`entity_resolution.py::link_schema_fields`).
+- Row 42: `transitive_candidates()` — a newly-ingested source gets
+  auto-proposed candidates against sources already linked in the registry.
+- Row 43-45: full UI rebuild, `ui/` (Vite + React + reactflow), served at
+  `/app` alongside the legacy Sense board at `/` (not yet retired — new UI
+  covers Catalog + Explore only, not RAW/MEANING/CONFLICTS/ASK/EMIT).
+  Verified live in a real Chrome session, not just unit-tested: full
+  Explore journey (pick sources → analyze → full-canvas node-link graph →
+  click edge → explanation drawer with real `match_reasons` → Accept →
+  shows up in Catalog immediately).
+- Row 46: all 4 of the spec's own VnV Layer scenarios implemented and
+  passing as named tests.
+- Full backend suite: 232/232 (was 220/220 before row 38).
+
+**Explicitly NOT started:** Phase 2 (Major Goals 5-7 — CDM/translation
+bridge, cross-system conflict routing beyond what already exists, FHIR/
+BIAN/OpenAPI federated exports). The spec's own execution gate requires
+Vikas's explicit sign-off on Phase 1 before this begins.
