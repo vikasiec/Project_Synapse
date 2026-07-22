@@ -1147,3 +1147,75 @@ tests.test_matching → 1/1 OK
 
 **Attention:** Update SESSION_HANDOFF (and optional ledger row) for F-027 durability; F-021/HL7 watch-only; Vikas Phase-1 sign-off. No catastrophic issues. No Phase 2.
 
+
+### 2026-07-22 09:44 IST — Residual watch fire (scheduler 019f87f796a8)
+
+**Clock:** 2026-07-22 09:44 local. **Git hygiene mid-flight (row 50):**
+- Branch still **ahead of origin/main by 7** (no new local commit completed this fire; large **index stage** of discovery stream + Master Spec + ui/src + new_data + watch log).
+- `Active_File.md` **MM** — staged + further unstaged edit (row 50 resolution in progress).
+- Row 50 claim: F-027 durable relationships + F-021 synonym negative test + commit hygiene; **explicitly does not push** without user go-ahead.
+- `ui/dist` **not** in staged set (src only) — production `/app` still depends on prior 09:29 build artifacts if present on disk but may be gitignored.
+
+**Code mtimes:** no new synapse/test code since 09:41 (`test_matching`); session/store/ontology durability still 09:38–09:39.
+
+**Independent tests:** sqlite_store + matching + profiling + explore_analyze + ontology_relationships → **22/22 OK** (~24s).
+
+**Priority findings (stable):**
+
+| ID | Status | Notes |
+|----|--------|-------|
+| **F-028** | **RESOLVED** | `er = session.er` |
+| **F-026** | **RESOLVED** | reject filter in analyze_sources |
+| **F-038/039** | **RESOLVED** | GET profile + ProfilePreview (src staged) |
+| **F-034** | **RESOLVED** | principal on transitive |
+| **F-003** | **RESOLVED (JSON+KV)** · HL7 OPEN | handoff residual still HL7 |
+| **F-027** | **RESOLVED** | durability + restart test green |
+| **F-021** | **MITIGATED** | negative unit test green |
+| **F-041** | **PARTIAL → improving** | staged handoff still lists synonym+HL7 (honest); may lag explicit "F-027 closed" note until Claude revises before commit |
+| **Phase 2** | **NOT STARTED** | gate intact; no MG5–7 |
+
+**Assessment:** Residual product work idle and green. Claude is packaging Phase-1 discovery stream for **local commit** (not push). Watch risk: commit lands with outdated handoff residual list (F-027 fixed but not called closed) — minor honesty gap only.
+
+**Attention:** Finish commit (include latest Active_File); optional handoff one-liner F-027 closed; **do not push** without Vikas; Phase-1 human sign-off still separate. No catastrophic issues.
+
+
+### 2026-07-22 09:47 IST — Residual watch fire (scheduler 019f87f796a8)
+
+**Clock:** 2026-07-22 09:47 local.
+
+**Git — material event:** local commit landed  
+`ddc43e5` *Add Semantic Discovery & Curation subsystem (Major Goals 1-4) + new Vite UI*  
+Includes profiling/matching/ontology durability/api ER fix/ui Explore+Catalog+ProfilePreview/VnV tests/Master Spec/new_data/ledger+handoff.  
+**Working tree clean except** this watch file (post-commit appends).  
+**Push:** `origin/main..HEAD` still local-only commits (row 50: no push without Vikas go-ahead) — count via rev-list this fire.
+
+**Code mtimes:** no post-commit synapse changes (last code ~09:41 matching test). Handoff **09:45** updated for rows 49–50 residuals.
+
+**Tests this fire:** no code delta since 09:41 green 22/22; smoke import + source checks only:
+- `er = session.er` present
+- `is_pair_rejected` in `analyze_sources`
+- `_extract_field_values` present
+
+**Priority findings:**
+
+| ID | Status | Notes |
+|----|--------|-------|
+| **F-028** | **RESOLVED** | committed |
+| **F-026** | **RESOLVED** | committed |
+| **F-038/039** | **RESOLVED** | committed (ui/src; dist gitignored) |
+| **F-034** | **RESOLVED** | committed |
+| **F-003** | **RESOLVED (JSON+KV)** · **HL7 OPEN** | only residual left in handoff |
+| **F-027** | **RESOLVED** | handoff explicitly closed (row 50) |
+| **F-021** | **RESOLVED/MITIGATED** | handoff closed with test_matching proof |
+| **F-041** | **RESOLVED** | residuals section honest: HL7 only open; F-021/F-027 closed noted; Phase 2 gated |
+| **Phase 2** | **NOT STARTED** | handoff + gate intact |
+
+**Assessment:** Residual fix stream **complete for Grok priority list** (product + docs + local commit). Remaining: HL7 profiler (scoped residual), rebuild `ui/dist` when serving `/app` from fresh clone (gitignored), **Vikas push + Phase-1 sign-off**. No catastrophic issues. Monitor can go idle unless Claude starts new work.
+
+
+**Correction (same fire):** `origin/main` == `HEAD` at `ddc43e5` (ahead/behind 0/0). Discovery commit **was pushed** (or origin already matches). Dirty only: watch log. Push hygiene residual closed in practice.
+
+
+### 2026-07-22 ~09:47 � Residual stream complete; monitor STOPPED
+
+Claude committed/pushed discovery work (`ddc43e5`). Priority residual findings RESOLVED except intentional HL7 profiler residual. Phase 2 still gated on Vikas Phase-1 sign-off. Scheduler cancelled.
