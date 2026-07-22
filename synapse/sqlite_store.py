@@ -26,6 +26,7 @@ from synapse.models import (
 )
 from synapse.ontology import RejectedCandidate, RelationshipEdge
 from synapse.store import SemanticStore
+from synapse.workspace import Workspace
 
 PathLike = Union[str, Path]
 
@@ -104,6 +105,10 @@ class SqliteSemanticStore(SemanticStore):
                     id TEXT PRIMARY KEY,
                     data TEXT NOT NULL
                 );
+                CREATE TABLE IF NOT EXISTS workspaces (
+                    id TEXT PRIMARY KEY,
+                    data TEXT NOT NULL
+                );
                 """
             )
             self._conn.commit()
@@ -131,6 +136,7 @@ class SqliteSemanticStore(SemanticStore):
             rows_rel = list(self._conn.execute("SELECT data FROM relationship_edges"))
             rows_rej = list(self._conn.execute("SELECT data FROM rejected_candidates"))
             rows_layout = list(self._conn.execute("SELECT data FROM schema_layout"))
+            rows_ws = list(self._conn.execute("SELECT data FROM workspaces"))
         for row in rows_raw:
             super().put_raw(_raw_from_dict(json.loads(row["data"])))
         for row in rows_ep:
@@ -150,6 +156,9 @@ class SqliteSemanticStore(SemanticStore):
         for row in rows_layout:
             d = json.loads(row["data"])
             super().put_layout_position(d["source_system"], d["x"], d["y"])
+        for row in rows_ws:
+            d = json.loads(row["data"])
+            super().put_workspace(Workspace(**d))
         for row in rows_audit:
             from synapse.audit import AuditEvent
 
@@ -215,6 +224,11 @@ class SqliteSemanticStore(SemanticStore):
         self._upsert("schema_layout", source_system, entry)
         return entry
 
+    def put_workspace(self, workspace: Workspace) -> Workspace:
+        super().put_workspace(workspace)
+        self._upsert("workspaces", workspace.workspace_id, workspace.to_dict())
+        return workspace
+
     def persist_audit_tail(self) -> None:
         """Flush any in-memory audit events not yet written."""
         with self._lock:
@@ -241,6 +255,7 @@ def _raw_from_dict(d: dict[str, Any]) -> RawObject:
         media_type=d.get("media_type", "text/plain"),
         sensitivity=d.get("sensitivity", "internal"),
         retention_class=d.get("retention_class", "standard"),
+        workspace_id=d.get("workspace_id", "default"),
     )
 
 

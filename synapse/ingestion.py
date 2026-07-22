@@ -49,6 +49,7 @@ class IngestionService:
         source_uri: Optional[str] = None,
         sensitivity: str = "internal",
         actor: str = "system:ingest",
+        workspace_id: str = "default",
     ) -> IngestResult:
         # Run prep operators first (blueprint: normalize without warehouse schema)
         prep = self.pipeline.run(payload, source_system=source_system)
@@ -69,6 +70,7 @@ class IngestionService:
                 acl_tags=acl_tags,
                 source_uri=source_uri,
                 sensitivity=sensitivity,
+                workspace_id=workspace_id,
             )
             ep = Episode.from_raw(
                 dummy,
@@ -117,6 +119,7 @@ class IngestionService:
             acl_tags=acl_tags,
             source_uri=source_uri,
             sensitivity=sensitivity,
+            workspace_id=workspace_id,
         )
         self.store.put_raw(raw)
 

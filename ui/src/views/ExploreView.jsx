@@ -112,7 +112,7 @@ function buildEdges(candidates, confirmedByKey) {
   })
 }
 
-export default function ExploreView({ onCommitted }) {
+export default function ExploreView({ workspaceId, onCommitted }) {
   const [sources, setSources] = useState([])
   const [profilesBySource, setProfilesBySource] = useState({})
   const [activeSource, setActiveSource] = useState(null)
@@ -139,7 +139,7 @@ export default function ExploreView({ onCommitted }) {
 
   const loadConfirmed = useCallback(async () => {
     try {
-      const d = await api.ontology()
+      const d = await api.ontology(workspaceId)
       const map = new Map()
       for (const r of d.relationships || []) {
         map.set(relationshipKey(r.source_a, r.source_b), {
@@ -151,12 +151,12 @@ export default function ExploreView({ onCommitted }) {
     } catch {
       // Non-fatal -- edges just fall back to unconfirmed styling.
     }
-  }, [])
+  }, [workspaceId])
 
   const loadLandscape = useCallback(async () => {
     let list = []
     try {
-      const d = await api.explore()
+      const d = await api.explore(workspaceId)
       list = d.sources || []
       setSources(list)
     } catch (e) {
@@ -166,7 +166,7 @@ export default function ExploreView({ onCommitted }) {
     const entries = await Promise.all(
       list.map(async (s) => {
         try {
-          const p = await api.profile(s.source_system)
+          const p = await api.profile(s.source_system, workspaceId)
           return [s.source_system, p.fields || []]
         } catch {
           return [s.source_system, []]
@@ -174,7 +174,7 @@ export default function ExploreView({ onCommitted }) {
       }),
     )
     setProfilesBySource(Object.fromEntries(entries))
-  }, [])
+  }, [workspaceId])
 
   useEffect(() => {
     loadLandscape()
@@ -251,8 +251,8 @@ export default function ExploreView({ onCommitted }) {
       setSamplesLoading(true)
       try {
         const [a, b] = await Promise.all([
-          api.samples(top.source_a.source_system, top.source_a.field_name),
-          api.samples(top.source_b.source_system, top.source_b.field_name),
+          api.samples(top.source_a.source_system, top.source_a.field_name, 5, workspaceId),
+          api.samples(top.source_b.source_system, top.source_b.field_name, 5, workspaceId),
         ])
         setSamples({ a: a.values || [], b: b.values || [] })
       } catch (e) {
@@ -261,7 +261,7 @@ export default function ExploreView({ onCommitted }) {
         setSamplesLoading(false)
       }
     },
-    [openMatch],
+    [openMatch, workspaceId],
   )
 
   const onSelectAlternate = useCallback((candidate) => {
@@ -300,7 +300,7 @@ export default function ExploreView({ onCommitted }) {
   return (
     <div className="explore-shell">
       <div className="explore-upload">
-        <FileIngest onLanded={handleLanded} />
+        <FileIngest workspaceId={workspaceId} onLanded={handleLanded} />
         {sources.length > 0 && (
           <span className="explore-hint">
             {sources.length} source{sources.length === 1 ? '' : 's'} loaded — click a source's header to

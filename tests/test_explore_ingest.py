@@ -124,6 +124,66 @@ class TestExploreIngest(unittest.TestCase):
         self.assertIn(frozenset({"UploadedHL7::ORC", "UploadedHL7::OBR"}), pairs)
         self.assertIn(frozenset({"UploadedHL7::PID", "UploadedHL7::MSH"}), pairs)
 
+    def test_workspace_creation_and_scoped_ingest_isolation(self):
+        status, ws_a = self._post("/v1/workspaces", {"name": "Workspace A"})
+        self.assertEqual(status, 200)
+        self.assertIn("workspace_id", ws_a)
+        status, ws_b = self._post("/v1/workspaces", {"name": "Workspace B"})
+        self.assertEqual(status, 200)
+
+        status, body = self._post(
+            "/v1/explore/ingest",
+            {
+                "filename": "wa_orders.csv",
+                "content": "order_id\n1\n2\n",
+                "source_system": "WA_Orders",
+                "workspace_id": ws_a["workspace_id"],
+                "principal": "l2",
+            },
+        )
+        self.assertEqual(status, 200)
+        self.assertEqual(body["workspace_id"], ws_a["workspace_id"])
+
+        status, body = self._post(
+            "/v1/explore/ingest",
+            {
+                "filename": "wb_customers.csv",
+                "content": "cust_id\n1\n2\n",
+                "source_system": "WB_Customers",
+                "workspace_id": ws_b["workspace_id"],
+                "principal": "l2",
+            },
+        )
+        self.assertEqual(status, 200)
+
+        with urllib.request.urlopen(
+            self._url(f"/v1/explore?principal=l2&workspace_id={ws_a['workspace_id']}")
+        ) as resp:
+            data_a = json.loads(resp.read().decode())
+        names_a = {s["source_system"] for s in data_a["sources"]}
+        self.assertIn("WA_Orders", names_a)
+        self.assertNotIn("WB_Customers", names_a)
+
+        with urllib.request.urlopen(
+            self._url(f"/v1/explore?principal=l2&workspace_id={ws_b['workspace_id']}")
+        ) as resp:
+            data_b = json.loads(resp.read().decode())
+        names_b = {s["source_system"] for s in data_b["sources"]}
+        self.assertIn("WB_Customers", names_b)
+        self.assertNotIn("WA_Orders", names_b)
+
+    def test_workspaces_list_returns_created_workspace(self):
+        status, ws = self._post("/v1/workspaces", {"name": "Listable Workspace", "description": "d"})
+        self.assertEqual(status, 200)
+        with urllib.request.urlopen(self._url("/v1/workspaces")) as resp:
+            data = json.loads(resp.read().decode())
+        ids = {w["workspace_id"] for w in data["workspaces"]}
+        self.assertIn(ws["workspace_id"], ids)
+
+    def test_workspace_missing_name_is_400(self):
+        status, body = self._post("/v1/workspaces", {})
+        self.assertEqual(status, 400)
+
 
 if __name__ == "__main__":
     unittest.main()

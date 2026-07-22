@@ -32,7 +32,7 @@ function sourceNameFor(file) {
 // hand back the new source_system name so the caller can preselect it in
 // the source picker -- closing the "there's no way to bring NEW data in"
 // gap the current dropdown-only picker had.
-export default function FileIngest({ onLanded }) {
+export default function FileIngest({ workspaceId, onLanded }) {
   const [busy, setBusy] = useState(false)
   const [log, setLog] = useState([])
   const [error, setError] = useState(null)
@@ -59,7 +59,7 @@ export default function FileIngest({ onLanded }) {
       try {
         const content = await readFileText(file)
         const sourceSystem = sourceNameFor(file)
-        const result = await api.ingestFile(file.name, content, sourceSystem)
+        const result = await api.ingestFile(file.name, content, sourceSystem, workspaceId)
         lastSource = result.source_system
         setLog((prev) => [
           ...prev,

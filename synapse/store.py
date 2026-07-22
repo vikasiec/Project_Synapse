@@ -8,6 +8,7 @@ from typing import Optional
 from synapse.audit import AuditLog
 from synapse.models import Claim, Conflict, Entity, Episode, Fact, RawObject
 from synapse.ontology import RejectedCandidate, RelationshipEdge
+from synapse.workspace import DEFAULT_WORKSPACE_ID, DEFAULT_WORKSPACE_NAME, Workspace
 
 
 @dataclass
@@ -29,6 +30,10 @@ class SemanticStore:
     # deliberately-arranged schema diagram looks the same every visit
     # instead of resetting to a fresh auto-layout each time.
     schema_layout: dict[str, dict] = field(default_factory=dict)
+    # Top-level project boundary: sources are imported into a workspace,
+    # and a workspace's confirmed relationships are its schema. See
+    # synapse/workspace.py.
+    workspaces: dict[str, Workspace] = field(default_factory=dict)
     # external_id key "system:id" -> entity_id
     entity_index: dict[str, str] = field(default_factory=dict)
     # canonical_name lower -> entity_id (same type preference handled by caller)
@@ -133,6 +138,32 @@ class SemanticStore:
         entry = {"source_system": source_system, "x": x, "y": y}
         self.schema_layout[source_system] = entry
         return entry
+
+    def put_workspace(self, workspace: Workspace) -> Workspace:
+        self.workspaces[workspace.workspace_id] = workspace
+        return workspace
+
+    def ensure_default_workspace(self) -> Workspace:
+        """Idempotent: already-landed (pre-workspace) data implicitly
+        belongs to workspace_id="default" via RawObject's default field --
+        this just makes sure that id resolves to a real, named Workspace
+        row instead of a bare id with nothing behind it."""
+        existing = self.workspaces.get(DEFAULT_WORKSPACE_ID)
+        if existing is not None:
+            return existing
+        return self.put_workspace(Workspace(workspace_id=DEFAULT_WORKSPACE_ID, name=DEFAULT_WORKSPACE_NAME))
+
+    def workspace_for_source(self, source_system: str) -> Optional[str]:
+        """Resolves a (possibly virtual "base::SEGMENT") source_system back
+        to the workspace_id of any RawObject landed under its base name --
+        used to derive which workspace(s) a relationship touches, and to
+        scope /v1/explore listings, without storing workspace redundantly
+        on every downstream record."""
+        base = source_system.split("::", 1)[0]
+        for raw in self.raw_objects.values():
+            if raw.source_system == base:
+                return raw.workspace_id
+        return None
 
     def get_entity_by_name(self, name: str) -> Optional[Entity]:
         eid = self.name_index.get(name.lower())

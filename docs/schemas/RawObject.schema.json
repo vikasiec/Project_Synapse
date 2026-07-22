@@ -29,6 +29,7 @@
     "source_uri": { "type": ["string", "null"] },
     "media_type": { "type": "string", "default": "text/plain" },
     "sensitivity": { "type": "string", "default": "internal" },
-    "retention_class": { "type": "string", "default": "standard" }
+    "retention_class": { "type": "string", "default": "standard" },
+    "workspace_id": { "type": "string", "default": "default" }
   }
 }

@@ -30,7 +30,7 @@ function fieldFromHandle(nodeId, handleId, prefix) {
 // deliberately-arranged diagram looks the same on the next visit, and a
 // hand-drawn field-to-field connection routes through the exact same
 // ACCEPT/REJECT/RELABEL drawer Explore uses -- no second curation path.
-export default function SchemaView() {
+export default function SchemaView({ workspaceId }) {
   const [sources, setSources] = useState([])
   const [profilesBySource, setProfilesBySource] = useState({})
   const [relationships, setRelationships] = useState([])
@@ -46,9 +46,9 @@ export default function SchemaView() {
   const loadAll = useCallback(async () => {
     try {
       const [exploreData, ontologyData, layoutData] = await Promise.all([
-        api.explore(),
-        api.ontology(),
-        api.getLayout(),
+        api.explore(workspaceId),
+        api.ontology(workspaceId),
+        api.getLayout(workspaceId),
       ])
       const list = exploreData.sources || []
       setSources(list)
@@ -62,7 +62,7 @@ export default function SchemaView() {
       const entries = await Promise.all(
         list.map(async (s) => {
           try {
-            const p = await api.profile(s.source_system)
+            const p = await api.profile(s.source_system, workspaceId)
             return [s.source_system, p.fields || []]
           } catch {
             return [s.source_system, []]
@@ -73,7 +73,7 @@ export default function SchemaView() {
     } catch (e) {
       setError(e.message)
     }
-  }, [])
+  }, [workspaceId])
 
   useEffect(() => {
     loadAll()
@@ -185,8 +185,8 @@ export default function SchemaView() {
         setSamplesLoading(true)
         try {
           const [sa, sb] = await Promise.all([
-            api.samples(candidate.source_a.source_system, candidate.source_a.field_name),
-            api.samples(candidate.source_b.source_system, candidate.source_b.field_name),
+            api.samples(candidate.source_a.source_system, candidate.source_a.field_name, 5, workspaceId),
+            api.samples(candidate.source_b.source_system, candidate.source_b.field_name, 5, workspaceId),
           ])
           setSamples({ a: sa.values || [], b: sb.values || [] })
         } finally {
@@ -198,7 +198,7 @@ export default function SchemaView() {
         setBusy(false)
       }
     },
-    [],
+    [workspaceId],
   )
 
   const confirmedForSelected = useMemo(() => {

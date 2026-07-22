@@ -122,6 +122,10 @@ def open_session(
         auth.update(authority)
 
     cp = ControlPlane(auth)
+    # Every already-landed (pre-workspace) source implicitly belongs to
+    # workspace_id="default" via RawObject's default field -- this gives
+    # that id a real named Workspace row instead of a bare id.
+    store.ensure_default_workspace()
     ontology = OntologyRegistry.default()
     # F-027: rehydrate curated relationship edges + rejection log from a
     # durable store, and write-through future ACCEPT/REJECT/RELABEL

@@ -374,9 +374,11 @@ class SchemaProfiler:
         self.store = store
 
     def _visible_raw_for_source(
-        self, source_system: str, principal: Optional[Principal]
+        self, source_system: str, principal: Optional[Principal], workspace_id: Optional[str] = None
     ) -> list:
         raws = [r for r in self.store.raw_objects.values() if r.source_system == source_system]
+        if workspace_id:
+            raws = [r for r in raws if r.workspace_id == workspace_id]
         if principal is not None:
             raws = filter_raw_objects(principal, raws)
         return raws
@@ -394,11 +396,11 @@ class SchemaProfiler:
         return source_system, None
 
     def profile_source(
-        self, source_system: str, principal: Optional[Principal] = None
+        self, source_system: str, principal: Optional[Principal] = None, workspace_id: Optional[str] = None
     ) -> dict[str, SchemaFieldProfile]:
         base, sub = self._split_virtual(source_system)
         field_values: dict[str, list[str]] = defaultdict(list)
-        for raw in self._visible_raw_for_source(base, principal):
+        for raw in self._visible_raw_for_source(base, principal, workspace_id):
             for key, values in _extract_field_values(raw.raw_payload, type_filter=sub).items():
                 field_values[key].extend(values)
 
@@ -424,6 +426,7 @@ class SchemaProfiler:
         *,
         principal: Optional[Principal] = None,
         limit: int = 5,
+        workspace_id: Optional[str] = None,
     ) -> list[str]:
         """A small, bounded set of distinct observed values for one field,
         computed fresh from ACL-visible raw text and never persisted --
@@ -436,7 +439,7 @@ class SchemaProfiler:
         actions, not leave it open to any reader."""
         base, sub = self._split_virtual(source_system)
         seen: list[str] = []
-        for raw in self._visible_raw_for_source(base, principal):
+        for raw in self._visible_raw_for_source(base, principal, workspace_id):
             for key, values in _extract_field_values(raw.raw_payload, type_filter=sub).items():
                 if key != field_name:
                     continue
@@ -447,12 +450,16 @@ class SchemaProfiler:
                         return seen
         return seen
 
-    def known_sources(self, principal: Optional[Principal] = None) -> list[str]:
+    def known_sources(
+        self, principal: Optional[Principal] = None, workspace_id: Optional[str] = None
+    ) -> list[str]:
         """Real base source_system names plus any HL7/FHIR source's
         virtual sub-source names ("base::SEGMENT" / "base::resourceType")
         -- a decomposable source is listed only by its sub-sources, not
         also as a redundant flat blob."""
         raws = list(self.store.raw_objects.values())
+        if workspace_id:
+            raws = [r for r in raws if r.workspace_id == workspace_id]
         if principal is not None:
             raws = filter_raw_objects(principal, raws)
         by_base: dict[str, list] = defaultdict(list)

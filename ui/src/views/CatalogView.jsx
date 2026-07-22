@@ -5,7 +5,7 @@ import './CatalogView.css'
 // The "already explored" showcase: everything already confirmed via the
 // Explore journey's ACCEPT action, browsable as a growing library rather
 // than a settings page.
-export default function CatalogView({ refreshKey }) {
+export default function CatalogView({ workspaceId, refreshKey }) {
   const [ontology, setOntology] = useState(null)
   const [error, setError] = useState(null)
   const [dedupeStatus, setDedupeStatus] = useState(null)
@@ -13,10 +13,10 @@ export default function CatalogView({ refreshKey }) {
 
   const load = useCallback(() => {
     api
-      .ontology()
+      .ontology(workspaceId)
       .then(setOntology)
       .catch((e) => setError(e.message))
-  }, [])
+  }, [workspaceId])
 
   useEffect(load, [load, refreshKey])
 

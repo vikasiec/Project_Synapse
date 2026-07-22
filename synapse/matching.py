@@ -29,6 +29,15 @@ GRAPH_PROXIMITY_WEIGHT = 0.15
 HIGH_CONFIDENCE_THRESHOLD = 0.85
 CANDIDATE_THRESHOLD = 0.50
 
+# VectorSim leans on field *names* (a char-trigram hash + an English-only
+# synonym table -- see profiling.py) -- a real relationship across
+# differently-named or differently-languaged sources can score ~0 on name
+# alone. When the actual observed *values* overlap this strongly and the
+# two fields share a data_type, that's real automated evidence independent
+# of naming, strong enough to clear the candidate bar on its own rather
+# than requiring the name signal to contribute anything.
+VALUE_OVERLAP_OVERRIDE_THRESHOLD = 0.90
+
 
 def vector_sim(a: SchemaFieldProfile, b: SchemaFieldProfile) -> float:
     return cosine_similarity(a.semantic_vector, b.semantic_vector)
@@ -130,11 +139,20 @@ def score_pair(
     s_total = round(
         VECTOR_WEIGHT * vsim + VALUE_OVERLAP_WEIGHT * voverlap + GRAPH_PROXIMITY_WEIGHT * gprox, 4
     )
-    if s_total < CANDIDATE_THRESHOLD and not force:
+    value_overlap_override = (
+        voverlap >= VALUE_OVERLAP_OVERRIDE_THRESHOLD and profile_a.data_type == profile_b.data_type
+    )
+    if s_total < CANDIDATE_THRESHOLD and not force and not value_overlap_override:
         return None
 
     reasons = _match_reasons(vsim, voverlap, gprox, profile_a, profile_b)
-    if s_total < CANDIDATE_THRESHOLD:
+    if s_total < CANDIDATE_THRESHOLD and value_overlap_override:
+        status = "candidate"
+        reasons = reasons + [
+            "Strong value overlap despite low name similarity "
+            "(possibly a different naming convention or language)"
+        ]
+    elif s_total < CANDIDATE_THRESHOLD:
         status = "manual"
         reasons = reasons + ["Manually connected by user (score below the usual candidate threshold)"]
     elif s_total >= HIGH_CONFIDENCE_THRESHOLD:

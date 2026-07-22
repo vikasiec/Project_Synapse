@@ -49,6 +49,12 @@ class RawObject:
     media_type: str = "text/plain"
     sensitivity: str = "internal"
     retention_class: str = "standard"
+    # Which workspace this source was imported into -- defaulted (not
+    # required) so every existing caller/test/already-landed source keeps
+    # working unchanged; the "default" workspace is auto-created on
+    # session open (see synapse/workspace.py) so pre-workspace data still
+    # has a real named home instead of a bare id.
+    workspace_id: str = "default"
 
     @classmethod
     def create(
@@ -62,6 +68,7 @@ class RawObject:
         sensitivity: str = "internal",
         retention_class: str = "standard",
         ingested_at: Optional[str] = None,
+        workspace_id: str = "default",
     ) -> RawObject:
         h = content_hash(payload)
         return cls(
@@ -76,6 +83,7 @@ class RawObject:
             media_type=media_type,
             sensitivity=sensitivity,
             retention_class=retention_class,
+            workspace_id=workspace_id,
         )
 
     def to_dict(self) -> dict[str, Any]:

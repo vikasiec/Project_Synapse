@@ -143,7 +143,7 @@ _EXPLORE_SAMPLE_LIMIT = 8
 
 
 def _explore_summary(
-    session: SynapseSession, principal: Principal
+    session: SynapseSession, principal: Principal, workspace_id: Optional[str] = None
 ) -> dict[str, Any]:
     """
     Query-free "what's actually in here" view (H-explore): entity types +
@@ -187,6 +187,8 @@ def _explore_summary(
     ]
 
     visible_raw = filter_raw_objects(principal, store.raw_objects.values())
+    if workspace_id:
+        visible_raw = [r for r in visible_raw if r.workspace_id == workspace_id]
     domain_by_source: dict[str, str] = {}
     for raw in visible_raw:
         domain = next((t for t in raw.acl_tags if t.startswith("domain:")), "domain:unknown")
@@ -720,9 +722,49 @@ def make_handler(session: SynapseSession):
             if path == "/v1/engines":
                 return _json_response(self, 200, session.engines.describe())
             if path == "/v1/ontology":
-                return _json_response(self, 200, session.ontology.describe())
+                qs = parse_qs(urlparse(self.path).query)
+                workspace_id = qs.get("workspace_id", [None])[0]
+                described = session.ontology.describe()
+                if workspace_id:
+                    store = session.store
+                    described["relationships"] = [
+                        r
+                        for r in described["relationships"]
+                        if store.workspace_for_source(r["source_a"]["source_system"]) == workspace_id
+                        and store.workspace_for_source(r["source_b"]["source_system"]) == workspace_id
+                    ]
+                return _json_response(self, 200, described)
+            if path == "/v1/workspaces":
+                store = session.store
+                source_counts: dict[str, set] = {}
+                for raw in store.raw_objects.values():
+                    source_counts.setdefault(raw.workspace_id, set()).add(raw.source_system)
+                rel_counts: dict[str, int] = {}
+                for edge in session.ontology.relationships.values():
+                    ws_a = store.workspace_for_source(edge.source_a.get("source_system", ""))
+                    ws_b = store.workspace_for_source(edge.source_b.get("source_system", ""))
+                    if ws_a and ws_a == ws_b:
+                        rel_counts[ws_a] = rel_counts.get(ws_a, 0) + 1
+                workspaces = [
+                    {
+                        **ws.to_dict(),
+                        "source_count": len(source_counts.get(ws.workspace_id, set())),
+                        "relationship_count": rel_counts.get(ws.workspace_id, 0),
+                    }
+                    for ws in sorted(store.workspaces.values(), key=lambda w: w.created_at)
+                ]
+                return _json_response(self, 200, {"workspaces": workspaces})
             if path == "/v1/schema/layout":
-                return _json_response(self, 200, {"positions": list(session.store.schema_layout.values())})
+                qs = parse_qs(urlparse(self.path).query)
+                workspace_id = qs.get("workspace_id", [None])[0]
+                positions = list(session.store.schema_layout.values())
+                if workspace_id:
+                    positions = [
+                        p
+                        for p in positions
+                        if session.store.workspace_for_source(p["source_system"]) == workspace_id
+                    ]
+                return _json_response(self, 200, {"positions": positions})
             if path == "/v1/capability":
                 from synapse.capability_matrix import capability_matrix
 
@@ -802,7 +844,8 @@ def make_handler(session: SynapseSession):
             if path == "/v1/explore":
                 qs = parse_qs(urlparse(self.path).query)
                 principal = _principal_from_query(qs, session.store)
-                return _json_response(self, 200, _explore_summary(session, principal))
+                workspace_id = qs.get("workspace_id", [None])[0]
+                return _json_response(self, 200, _explore_summary(session, principal, workspace_id))
             if path == "/v1/explore/profile":
                 # Major Goal 1 read path -- lets the Explore UI show computed
                 # field profiles for a picked source before/alongside
@@ -815,8 +858,9 @@ def make_handler(session: SynapseSession):
                 source = qs.get("source", [None])[0]
                 if not source:
                     return _json_response(self, 400, {"error": "source query param required"})
+                workspace_id = qs.get("workspace_id", [None])[0]
                 profiler = SchemaProfiler(session.store)
-                profiles = profiler.profile_source(source, principal=principal)
+                profiles = profiler.profile_source(source, principal=principal, workspace_id=workspace_id)
                 return _json_response(
                     self,
                     200,
@@ -838,8 +882,9 @@ def make_handler(session: SynapseSession):
                 if not source or not field:
                     return _json_response(self, 400, {"error": "source and field query params required"})
                 limit = min(int(qs.get("limit", ["5"])[0]), 20)
+                workspace_id = qs.get("workspace_id", [None])[0]
                 profiler = SchemaProfiler(session.store)
-                values = profiler.sample_values(source, field, principal=principal, limit=limit)
+                values = profiler.sample_values(source, field, principal=principal, limit=limit, workspace_id=workspace_id)
                 return _json_response(self, 200, {"source": source, "field": field, "values": values})
             if path == "/v1/graph":
                 snap = session.sync_graph()
@@ -1146,6 +1191,34 @@ def make_handler(session: SynapseSession):
                     },
                 )
 
+            if path == "/v1/workspaces":
+                from synapse.workspace import Workspace
+
+                name = (body.get("name") or "").strip()
+                if not name:
+                    return _json_response(self, 400, {"error": "name is required"})
+                description = (body.get("description") or "").strip()
+                ws = Workspace.create(name, description)
+                session.store.put_workspace(ws)
+                return _json_response(self, 200, ws.to_dict())
+
+            if path == "/v1/super-schema":
+                from synapse.profiling import SchemaProfiler
+                from synapse.super_schema import compute_super_schema
+
+                principal = _principal_from_body(body, session.store)
+                workspace_ids = body.get("workspace_ids") or []
+                if not isinstance(workspace_ids, list) or len(workspace_ids) < 2:
+                    return _json_response(self, 400, {"error": "workspace_ids must be a list of at least 2 ids"})
+                unknown = [w for w in workspace_ids if w not in session.store.workspaces]
+                if unknown:
+                    return _json_response(self, 400, {"error": f"unknown workspace_ids: {unknown}"})
+                profiler = SchemaProfiler(session.store)
+                result = compute_super_schema(
+                    session.store, session.ontology, profiler, workspace_ids, principal=principal
+                )
+                return _json_response(self, 200, result)
+
             if path == "/v1/explore/ingest":
                 # Explore journey step 1 for real use, not just already-
                 # landed demo sources: the browser reads a picked file's
@@ -1165,6 +1238,7 @@ def make_handler(session: SynapseSession):
                     filename.rsplit(".", 1)[0] if filename else "Uploaded"
                 )
                 acl = body.get("acl_tags") or ["domain:sre", "clearance:l2"]
+                workspace_id = (body.get("workspace_id") or "").strip() or "default"
                 if content is None:
                     return _json_response(self, 400, {"error": "content required"})
 
@@ -1172,7 +1246,9 @@ def make_handler(session: SynapseSession):
                 landed = 0
 
                 def _land_only(payload: str):
-                    return session.ingestion.land(source_system, payload, list(acl), actor="api:explore-ingest")
+                    return session.ingestion.land(
+                        source_system, payload, list(acl), actor="api:explore-ingest", workspace_id=workspace_id
+                    )
 
                 if ext == "csv":
                     import csv as _csv
@@ -1234,7 +1310,12 @@ def make_handler(session: SynapseSession):
                 return _json_response(
                     self,
                     200,
-                    {"source_system": source_system, "filename": filename, "objects_landed": landed},
+                    {
+                        "source_system": source_system,
+                        "filename": filename,
+                        "objects_landed": landed,
+                        "workspace_id": workspace_id,
+                    },
                 )
 
             if path == "/v1/ontology/relationships/dedupe":

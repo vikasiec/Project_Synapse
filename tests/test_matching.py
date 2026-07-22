@@ -14,7 +14,7 @@ from __future__ import annotations
 
 import unittest
 
-from synapse.matching import score_pair
+from synapse.matching import VALUE_OVERLAP_OVERRIDE_THRESHOLD, score_pair, value_overlap, vector_sim
 from synapse.models import RawObject
 from synapse.ontology import OntologyRegistry
 from synapse.profiling import SchemaProfiler
@@ -63,6 +63,40 @@ class TestMatchingNegative(unittest.TestCase):
         self.assertIsNotNone(edge)
         self.assertEqual(edge.status, "manual")
         self.assertTrue(any("Manually connected" in r for r in edge.match_reasons))
+
+    def test_value_overlap_override_promotes_low_name_similarity_pair_to_candidate(self) -> None:
+        # VectorSim leans on field *names* (char-trigrams + an English-only
+        # synonym table) -- a genuinely related field in a differently-
+        # languaged or differently-named source can score near-zero on
+        # name alone. Real, strong value overlap should still be able to
+        # clear the candidate bar on its own, without force=True.
+        store = SemanticStore()
+        acl = ["domain:sre", "clearance:l2"]
+        shared_ids = ("84920112", "10293847", "55512309")
+        for val in shared_ids:
+            store.put_raw(RawObject.create(source_system="TableA", payload=f"customer_id: {val}", acl_tags=acl))
+        # "codigo_referencia_unica_zzqx" shares no meaningful trigrams or
+        # synonym-canon overlap with "customer_id" -- deliberately
+        # name-dissimilar, same underlying identifier values.
+        for val in shared_ids:
+            store.put_raw(
+                RawObject.create(source_system="TableB", payload=f"codigo_referencia_unica_zzqx: {val}", acl_tags=acl)
+            )
+
+        profiler = SchemaProfiler(store)
+        profile_a = profiler.profile_source("TableA")["customer_id"]
+        profile_b = profiler.profile_source("TableB")["codigo_referencia_unica_zzqx"]
+
+        # Confirm the premise: name similarity alone contributes almost
+        # nothing here (VECTOR_WEIGHT=0.45, so a near-zero vsim alone
+        # cannot reach CANDIDATE_THRESHOLD=0.50 without real value overlap).
+        self.assertLess(vector_sim(profile_a, profile_b), 0.3)
+        self.assertGreaterEqual(value_overlap(profile_a, profile_b), VALUE_OVERLAP_OVERRIDE_THRESHOLD)
+
+        edge = score_pair(store, OntologyRegistry.default(), profile_a, profile_b)
+        self.assertIsNotNone(edge)
+        self.assertEqual(edge.status, "candidate")
+        self.assertTrue(any("different naming convention or language" in r for r in edge.match_reasons))
 
     def test_force_true_above_threshold_keeps_normal_status(self) -> None:
         # force=True must not change the status for a pair that would

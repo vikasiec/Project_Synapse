@@ -22,18 +22,25 @@ async function request(path, { method = 'GET', body } = {}) {
 
 export const api = {
   health: () => request('/health'),
-  ontology: () => request('/v1/ontology'),
-  explore: () => request('/v1/explore'),
-  ingestFile: (filename, content, sourceSystem, principal = DEFAULT_PRINCIPAL) =>
+  listWorkspaces: () => request('/v1/workspaces'),
+  createWorkspace: (name, description = '') =>
+    request('/v1/workspaces', { method: 'POST', body: { name, description } }),
+  ontology: (workspaceId) =>
+    request(workspaceId ? `/v1/ontology?workspace_id=${encodeURIComponent(workspaceId)}` : '/v1/ontology'),
+  explore: (workspaceId) =>
+    request(workspaceId ? `/v1/explore?workspace_id=${encodeURIComponent(workspaceId)}` : '/v1/explore'),
+  ingestFile: (filename, content, sourceSystem, workspaceId, principal = DEFAULT_PRINCIPAL) =>
     request('/v1/explore/ingest', {
       method: 'POST',
-      body: { filename, content, source_system: sourceSystem, principal },
+      body: { filename, content, source_system: sourceSystem, workspace_id: workspaceId, principal },
     }),
-  profile: (source, principal = DEFAULT_PRINCIPAL) =>
-    request(`/v1/explore/profile?source=${encodeURIComponent(source)}&principal=${encodeURIComponent(principal)}`),
-  samples: (source, field, limit = 5, principal = DEFAULT_PRINCIPAL) =>
+  profile: (source, workspaceId, principal = DEFAULT_PRINCIPAL) =>
     request(
-      `/v1/explore/samples?source=${encodeURIComponent(source)}&field=${encodeURIComponent(field)}&limit=${limit}&principal=${encodeURIComponent(principal)}`,
+      `/v1/explore/profile?source=${encodeURIComponent(source)}&principal=${encodeURIComponent(principal)}${workspaceId ? `&workspace_id=${encodeURIComponent(workspaceId)}` : ''}`,
+    ),
+  samples: (source, field, limit = 5, workspaceId, principal = DEFAULT_PRINCIPAL) =>
+    request(
+      `/v1/explore/samples?source=${encodeURIComponent(source)}&field=${encodeURIComponent(field)}&limit=${limit}&principal=${encodeURIComponent(principal)}${workspaceId ? `&workspace_id=${encodeURIComponent(workspaceId)}` : ''}`,
     ),
   analyze: (sourceA, sourceB, principal = DEFAULT_PRINCIPAL) =>
     request('/v1/explore/analyze', {
@@ -63,7 +70,10 @@ export const api = {
       method: 'POST',
       body: { source_a: sourceA, field_a: fieldA, source_b: sourceB, field_b: fieldB, principal },
     }),
-  getLayout: () => request('/v1/schema/layout'),
+  computeSuperSchema: (workspaceIds, principal = DEFAULT_PRINCIPAL) =>
+    request('/v1/super-schema', { method: 'POST', body: { workspace_ids: workspaceIds, principal } }),
+  getLayout: (workspaceId) =>
+    request(workspaceId ? `/v1/schema/layout?workspace_id=${encodeURIComponent(workspaceId)}` : '/v1/schema/layout'),
   saveLayoutPosition: (sourceSystem, x, y, principal = DEFAULT_PRINCIPAL) =>
     request('/v1/schema/layout', {
       method: 'POST',
