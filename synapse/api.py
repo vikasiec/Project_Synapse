@@ -752,6 +752,21 @@ def make_handler(session: SynapseSession):
                 )
             if path == "/v1/er/suggestions":
                 return _json_response(self, 200, er.suggest_merges())
+            if path == "/v1/er/merge-candidates":
+                # Graph-First Discovery & Entity Resolution (docs/Graph-First
+                # Discovery & Entity Resolution.pdf) -- scored, cross-system
+                # entity merge candidates, distinct from the unscoped
+                # same-block dump at /v1/er/suggestions above.
+                from synapse.entity_matching import generate_entity_merge_candidates
+
+                qs = parse_qs(urlparse(self.path).query)
+                principal = _principal_from_query(qs, session.store)
+                visible_entities = [
+                    e for e in filter_entities(principal, session.store.entities.values())
+                    if e.status.value == "active"
+                ]
+                candidates = generate_entity_merge_candidates(session.store, entities=visible_entities)
+                return _json_response(self, 200, {"candidates": [c.to_dict() for c in candidates]})
             if path == "/v1/explore":
                 qs = parse_qs(urlparse(self.path).query)
                 principal = _principal_from_query(qs, session.store)

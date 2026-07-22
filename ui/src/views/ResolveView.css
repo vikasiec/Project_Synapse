@@ -1,0 +1,109 @@
+.resolve-scroll {
+  height: 100%;
+  overflow-y: auto;
+  padding: 24px;
+}
+
+.resolve-empty {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-dim);
+  text-align: center;
+  gap: 8px;
+  padding: 24px;
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+.resolve-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+  gap: 16px;
+}
+
+.resolve-card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.resolve-cluster {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.resolve-entity {
+  flex: 1;
+  background: var(--panel-2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px;
+  text-align: center;
+}
+
+.resolve-entity-name {
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.resolve-entity-meta {
+  font-size: 11px;
+  color: var(--text-dim);
+  margin-top: 4px;
+}
+
+.resolve-vs {
+  color: var(--accent);
+  font-weight: 700;
+  font-size: 13px;
+}
+
+.resolve-score {
+  font-size: 12px;
+  color: var(--accent-2);
+  font-weight: 600;
+}
+
+.resolve-reasons {
+  margin: 0;
+  padding-left: 18px;
+  font-size: 12px;
+  color: var(--text-dim);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.resolve-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.resolve-actions .btn {
+  flex: 1;
+  border: none;
+  border-radius: 6px;
+  padding: 8px;
+  font-weight: 600;
+  font-size: 12px;
+}
+.resolve-actions .btn:disabled {
+  opacity: 0.6;
+}
+.resolve-actions .btn.accept {
+  background: var(--accent-2);
+  color: #0b0d12;
+}
+.resolve-actions .btn.reject {
+  background: transparent;
+  color: var(--text-dim);
+  border: 1px solid var(--border);
+}

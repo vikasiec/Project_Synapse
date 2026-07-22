@@ -43,4 +43,11 @@ export const api = {
       method: 'POST',
       body: { action, candidate_id: candidateId, principal, ...extra },
     }),
+  mergeCandidates: (principal = DEFAULT_PRINCIPAL) =>
+    request(`/v1/er/merge-candidates?principal=${encodeURIComponent(principal)}`),
+  mergeEntities: (survivorId, loserId, reason = '', principal = DEFAULT_PRINCIPAL) =>
+    request('/v1/entities/merge', {
+      method: 'POST',
+      body: { survivor_id: survivorId, loser_id: loserId, reason, principal, adjudicator: 'ui:resolve' },
+    }),
 }
