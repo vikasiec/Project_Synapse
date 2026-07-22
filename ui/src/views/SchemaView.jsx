@@ -40,6 +40,8 @@ export default function SchemaView() {
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState(null)
   const [propertiesSource, setPropertiesSource] = useState(null)
+  const [samples, setSamples] = useState(null) // { a: [...], b: [...] } | null
+  const [samplesLoading, setSamplesLoading] = useState(false)
 
   const loadAll = useCallback(async () => {
     try {
@@ -169,10 +171,27 @@ export default function SchemaView() {
       if (!a.field_name || !b.field_name) return
       setBusy(true)
       setError(null)
+      setSamples(null)
       try {
         const result = await api.analyzePair(a.source_system, a.field_name, b.source_system, b.field_name)
         const candidate = (result.candidates || [])[0]
-        if (candidate) setSelected(candidate)
+        if (!candidate) return
+        setSelected(candidate)
+        // A hand-drawn connection is a single deliberate gesture (unlike
+        // Explore's click-to-browse-many-candidates flow), so fetch
+        // sample data + the similarity score immediately instead of
+        // waiting for a second interaction -- the user just asked "are
+        // these two fields actually related?" by drawing the line.
+        setSamplesLoading(true)
+        try {
+          const [sa, sb] = await Promise.all([
+            api.samples(candidate.source_a.source_system, candidate.source_a.field_name),
+            api.samples(candidate.source_b.source_system, candidate.source_b.field_name),
+          ])
+          setSamples({ a: sa.values || [], b: sb.values || [] })
+        } finally {
+          setSamplesLoading(false)
+        }
       } catch (e) {
         setError(e.message)
       } finally {
@@ -268,10 +287,13 @@ export default function SchemaView() {
           candidate={selected}
           alternates={[]}
           confirmed={confirmedForSelected}
-          samples={null}
-          samplesLoading={false}
+          samples={samples}
+          samplesLoading={samplesLoading}
           busy={busy}
-          onClose={() => setSelected(null)}
+          onClose={() => {
+            setSelected(null)
+            setSamples(null)
+          }}
           onDecide={handleDecide}
         />
       )}

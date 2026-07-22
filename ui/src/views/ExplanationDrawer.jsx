@@ -79,12 +79,12 @@ export default function ExplanationDrawer({
       </div>
 
       <div className="drawer-score">
-        score {candidate.similarity_score.toFixed(2)} · {candidate.status}
+        {Math.round(candidate.similarity_score * 100)}% data similarity · {candidate.status}
       </div>
 
       {(samplesLoading || samples) && (
         <div className="drawer-section">
-          <div className="drawer-section-title">Sample data (double-click a match to load)</div>
+          <div className="drawer-section-title">Sample data</div>
           {samplesLoading && <div className="drawer-samples-loading">Loading samples…</div>}
           {samples && (
             <div className="drawer-samples">
