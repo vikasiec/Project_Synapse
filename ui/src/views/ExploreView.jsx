@@ -3,6 +3,7 @@ import ReactFlow, { Background, Controls, MarkerType } from 'reactflow'
 import 'reactflow/dist/style.css'
 import { api } from '../api'
 import ExplanationDrawer from './ExplanationDrawer'
+import FileIngest from './FileIngest'
 import ProfilePreview from './ProfilePreview'
 import './ExploreView.css'
 
@@ -65,12 +66,30 @@ export default function ExploreView({ onCommitted }) {
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState(null)
 
-  useEffect(() => {
-    api
+  const refreshSources = useCallback(() => {
+    return api
       .explore()
-      .then((d) => setSources(d.sources || []))
-      .catch((e) => setError(e.message))
+      .then((d) => {
+        setSources(d.sources || [])
+        return d.sources || []
+      })
+      .catch((e) => {
+        setError(e.message)
+        return []
+      })
   }, [])
+
+  useEffect(() => {
+    refreshSources()
+  }, [refreshSources])
+
+  const handleLanded = useCallback(
+    async (newSourceSystem) => {
+      await refreshSources()
+      setSourceA(newSourceSystem)
+    },
+    [refreshSources],
+  )
 
   const runAnalyze = useCallback(async () => {
     if (!sourceA || (mode === 'pair' && !sourceB)) return
@@ -127,6 +146,9 @@ export default function ExploreView({ onCommitted }) {
 
   return (
     <div className="explore-shell">
+      <div className="explore-upload">
+        <FileIngest onLanded={handleLanded} />
+      </div>
       <div className="explore-steps">
         <div className="step">
           <label>1. Source</label>

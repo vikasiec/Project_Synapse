@@ -1,0 +1,49 @@
+.file-ingest {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.file-ingest-label {
+  font-size: 11px;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.file-ingest-btn {
+  background: var(--panel-2);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 7px 12px;
+  font-size: 13px;
+  font-weight: 500;
+}
+.file-ingest-btn:hover {
+  border-color: var(--accent);
+}
+.file-ingest-btn:disabled {
+  opacity: 0.6;
+}
+
+.file-ingest-status {
+  font-size: 12px;
+  color: var(--accent);
+}
+
+.file-ingest-error {
+  font-size: 12px;
+  color: var(--danger);
+}
+
+.file-ingest-log {
+  flex-basis: 100%;
+  font-size: 11px;
+  color: var(--accent-2);
+  font-family: ui-monospace, Consolas, monospace;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}

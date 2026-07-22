@@ -5,6 +5,13 @@
   position: relative;
 }
 
+.explore-upload {
+  flex: 0 0 auto;
+  padding: 10px 20px;
+  background: var(--panel-2);
+  border-bottom: 1px solid var(--border);
+}
+
 .explore-steps {
   flex: 0 0 auto;
   display: flex;

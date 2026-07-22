@@ -1064,6 +1064,66 @@ def make_handler(session: SynapseSession):
                     },
                 )
 
+            if path == "/v1/explore/ingest":
+                # Explore journey step 1 for real use, not just already-
+                # landed demo sources: the browser reads a picked file's
+                # text client-side (File API) and POSTs its content here --
+                # no server-filesystem path required (unlike the older
+                # /v1/sense/drop CSV/JSONL "kind", which expects a path on
+                # the box the server itself runs on). Landing logic mirrors
+                # CsvDropConnector.poll() for CSV (synapse/connectors/
+                # csv_drop.py) so the resulting RawObjects are identical in
+                # shape either way.
+                principal = _principal_from_body(body, session.store)
+                if not _require_role(self, principal, "operator"):
+                    return None
+                filename = (body.get("filename") or "").strip()
+                content = body.get("content")
+                source_system = (body.get("source_system") or "").strip() or (
+                    filename.rsplit(".", 1)[0] if filename else "Uploaded"
+                )
+                acl = body.get("acl_tags") or ["domain:sre", "clearance:l2"]
+                if content is None:
+                    return _json_response(self, 400, {"error": "content required"})
+
+                ext = filename.rsplit(".", 1)[-1].lower() if "." in filename else ""
+                landed = 0
+                def _land_and_extract(payload: str) -> None:
+                    result = session.ingestion.land(source_system, payload, list(acl), actor="api:explore-ingest")
+                    if not result.dropped:
+                        session.dual_path.extract(result.episode, result.raw)
+
+                if ext == "csv":
+                    import csv as _csv
+                    import io as _io
+
+                    reader = _csv.DictReader(_io.StringIO(content))
+                    for row in reader:
+                        lines = [f"{k}: {v}" for k, v in row.items() if v not in (None, "")]
+                        if not lines:
+                            continue
+                        _land_and_extract("\n".join(lines))
+                        landed += 1
+                elif ext == "jsonl":
+                    for line in content.splitlines():
+                        line = line.strip()
+                        if not line:
+                            continue
+                        _land_and_extract(line)
+                        landed += 1
+                else:
+                    # .json or anything else: one raw object, whole content
+                    # (profiler's JSON flattener handles this shape -- row 49).
+                    if content.strip():
+                        _land_and_extract(content)
+                        landed = 1
+                session.sync_graph()
+                return _json_response(
+                    self,
+                    200,
+                    {"source_system": source_system, "filename": filename, "objects_landed": landed},
+                )
+
             if path == "/v1/ontology/relationships":
                 # Major Goal 4, task 1 (Ontology Write-Back) -- curation
                 # canvas ACCEPT/REJECT/RELABEL actions land here.

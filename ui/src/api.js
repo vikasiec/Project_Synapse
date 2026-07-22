@@ -24,6 +24,11 @@ export const api = {
   health: () => request('/health'),
   ontology: () => request('/v1/ontology'),
   explore: () => request('/v1/explore'),
+  ingestFile: (filename, content, sourceSystem, principal = DEFAULT_PRINCIPAL) =>
+    request('/v1/explore/ingest', {
+      method: 'POST',
+      body: { filename, content, source_system: sourceSystem, principal },
+    }),
   profile: (source, principal = DEFAULT_PRINCIPAL) =>
     request(`/v1/explore/profile?source=${encodeURIComponent(source)}&principal=${encodeURIComponent(principal)}`),
   analyze: (sourceA, sourceB, principal = DEFAULT_PRINCIPAL) =>
