@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { api } from '../api'
 import './CatalogView.css'
 
@@ -8,13 +8,35 @@ import './CatalogView.css'
 export default function CatalogView({ refreshKey }) {
   const [ontology, setOntology] = useState(null)
   const [error, setError] = useState(null)
+  const [dedupeStatus, setDedupeStatus] = useState(null)
+  const [dedupeBusy, setDedupeBusy] = useState(false)
 
-  useEffect(() => {
+  const load = useCallback(() => {
     api
       .ontology()
       .then(setOntology)
       .catch((e) => setError(e.message))
-  }, [refreshKey])
+  }, [])
+
+  useEffect(load, [load, refreshKey])
+
+  const handleDedupe = async () => {
+    setDedupeBusy(true)
+    setDedupeStatus(null)
+    try {
+      const result = await api.dedupeRelationships()
+      setDedupeStatus(
+        result.edges_removed > 0
+          ? `Removed ${result.edges_removed} duplicate${result.edges_removed === 1 ? '' : 's'} across ${result.groups_deduped} relationship${result.groups_deduped === 1 ? '' : 's'}.`
+          : 'No duplicates found.',
+      )
+      load()
+    } catch (e) {
+      setError(e.message)
+    } finally {
+      setDedupeBusy(false)
+    }
+  }
 
   if (error) {
     return <div className="catalog-empty">Failed to load catalog: {error}</div>
@@ -45,6 +67,12 @@ export default function CatalogView({ refreshKey }) {
 
   return (
     <div className="catalog-scroll">
+      <div className="catalog-toolbar">
+        <button className="catalog-dedupe-btn" onClick={handleDedupe} disabled={dedupeBusy}>
+          {dedupeBusy ? 'Cleaning up…' : 'Clean up duplicates'}
+        </button>
+        {dedupeStatus && <span className="catalog-dedupe-status">{dedupeStatus}</span>}
+      </div>
       <div className="catalog-grid">
         {Object.entries(bySourcePair).map(([pair, edges]) => (
           <div key={pair} className="catalog-card">

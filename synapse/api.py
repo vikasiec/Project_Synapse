@@ -1171,6 +1171,19 @@ def make_handler(session: SynapseSession):
                     {"source_system": source_system, "filename": filename, "objects_landed": landed},
                 )
 
+            if path == "/v1/ontology/relationships/dedupe":
+                # One-time cleanup: before ACCEPT/RELABEL correctly threaded
+                # relationship_id through (this same fix), re-confirming an
+                # already-confirmed field pair with a fresh candidate_id
+                # minted a brand new RelationshipEdge instead of recognizing
+                # the existing one. Collapses whatever duplicates already
+                # accumulated; safe to call repeatedly (no-op once clean).
+                principal = _principal_from_body(body, session.store)
+                if not _require_role(self, principal, "operator"):
+                    return None
+                result = session.ontology.dedupe_relationships()
+                return _json_response(self, 200, result)
+
             if path == "/v1/ontology/relationships":
                 # Major Goal 4, task 1 (Ontology Write-Back) -- curation
                 # canvas ACCEPT/REJECT/RELABEL actions land here.

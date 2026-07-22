@@ -53,6 +53,29 @@
   color: var(--accent-2);
   font-family: inherit;
 }
+.drawer-alt.decided {
+  border-color: #22c55e;
+}
+.drawer-alt.decided span {
+  color: #22c55e;
+  font-family: ui-monospace, Consolas, monospace;
+  font-size: 10px;
+}
+
+.drawer-confirmed-badge {
+  background: rgba(34, 197, 94, 0.12);
+  border: 1px solid #22c55e;
+  color: #22c55e;
+  border-radius: 6px;
+  padding: 8px 10px;
+  font-size: 11px;
+  line-height: 1.4;
+}
+.drawer-confirmed-badge.corrected {
+  background: rgba(245, 158, 11, 0.12);
+  border-color: #f59e0b;
+  color: #f59e0b;
+}
 
 .drawer-close {
   background: none;

@@ -191,6 +191,12 @@ class SqliteSemanticStore(SemanticStore):
         self._upsert("relationship_edges", edge.relationship_id, edge.to_dict())
         return edge
 
+    def delete_relationship_edge(self, relationship_id: str) -> None:
+        super().delete_relationship_edge(relationship_id)
+        with self._lock:
+            self._conn.execute("DELETE FROM relationship_edges WHERE id = ?", (relationship_id,))
+            self._conn.commit()
+
     def put_rejected_candidate(self, rejected: RejectedCandidate) -> RejectedCandidate:
         super().put_rejected_candidate(rejected)
         self._upsert("rejected_candidates", rejected.rejection_id, rejected.to_dict())

@@ -577,6 +577,51 @@ class OntologyRegistry:
                 return r
         return None
 
+    @staticmethod
+    def _pair_key(edge: RelationshipEdge) -> frozenset:
+        return frozenset(
+            {
+                tuple(sorted(edge.source_a.items())),
+                tuple(sorted(edge.source_b.items())),
+            }
+        )
+
+    def dedupe_relationships(self) -> dict[str, Any]:
+        """One-time cleanup for a real bug this session found: before
+        callers threaded relationship_id through ACCEPT/RELABEL correctly
+        (see api.py's /v1/ontology/relationships), re-confirming the same
+        field pair with a fresh candidate_id each time minted a brand new
+        RelationshipEdge instead of recognizing the existing one -- so a
+        pair confirmed 4 times produced 4 rows, not 1. That path is fixed
+        now; this collapses whatever duplicates already accumulated.
+        Keeps one edge per unique (source_a, source_b) pair, preferring a
+        relabeled/non-default predicate over a duplicate default one (a
+        correction is more informative than a repeat of the original
+        guess), tie-broken by most recent accepted_at."""
+        groups: dict[frozenset, list[RelationshipEdge]] = {}
+        for edge in self.relationships.values():
+            groups.setdefault(self._pair_key(edge), []).append(edge)
+
+        removed = 0
+        kept = 0
+        for members in groups.values():
+            if len(members) <= 1:
+                continue
+            members.sort(
+                key=lambda e: (e.predicate != "SAME_ENTITY_AS", e.accepted_at),
+                reverse=True,
+            )
+            survivor, *duplicates = members
+            kept += 1
+            for dup in duplicates:
+                del self.relationships[dup.relationship_id]
+                if self.store is not None:
+                    delete = getattr(self.store, "delete_relationship_edge", None)
+                    if delete is not None:
+                        delete(dup.relationship_id)
+                removed += 1
+        return {"groups_deduped": kept, "edges_removed": removed}
+
     def map_entity_type(self, entity_type: str) -> OntologyType:
         """Map extractor entity_type strings to ontology types (L0 default)."""
         key = (entity_type or "").strip()

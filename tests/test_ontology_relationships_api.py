@@ -202,6 +202,55 @@ class TestOntologyRelationshipsApi(unittest.TestCase):
         )
         self.assertEqual(status, 403)
 
+    def test_dedupe_collapses_repeated_accepts_of_the_same_pair(self):
+        # Reproduces the real bug: before RELABEL/ACCEPT correctly threaded
+        # relationship_id, re-analyzing and re-accepting the same field
+        # pair (fresh candidate_id each time, since analyze() always mints
+        # new ones) created a new RelationshipEdge every time instead of
+        # recognizing the existing one.
+        top = self._seed_and_analyze()
+        source_a, source_b = top["source_a"], top["source_b"]
+        for _ in range(3):
+            status, _ = self._post(
+                "/v1/ontology/relationships",
+                {"action": "ACCEPT", "candidate_id": top["candidate_id"], "principal": "l2"},
+            )
+            self.assertEqual(status, 200)
+            # Simulate "the old bug": directly mint a duplicate via the
+            # lower-level accept_relationship (what a stale candidate_id
+            # lookup used to fall through to) rather than the now-fixed
+            # relationship_id-aware API path.
+            self.session.ontology.accept_relationship(
+                candidate_id=f"stale-{_}",
+                source_a=source_a,
+                source_b=source_b,
+                match_reasons=top["match_reasons"],
+                similarity_score=top["similarity_score"],
+            )
+
+        def matches_pair(r):
+            pair = {
+                (r["source_a"]["source_system"], r["source_a"]["field_name"]),
+                (r["source_b"]["source_system"], r["source_b"]["field_name"]),
+            }
+            target = {
+                (source_a["source_system"], source_a["field_name"]),
+                (source_b["source_system"], source_b["field_name"]),
+            }
+            return pair == target
+
+        status, before = self._get("/v1/ontology")
+        dupes_before = [r for r in before["relationships"] if matches_pair(r)]
+        self.assertGreater(len(dupes_before), 1)
+
+        status, result = self._post("/v1/ontology/relationships/dedupe", {"principal": "l2"})
+        self.assertEqual(status, 200)
+        self.assertGreaterEqual(result["edges_removed"], 1)
+
+        status, after = self._get("/v1/ontology")
+        dupes_after = [r for r in after["relationships"] if matches_pair(r)]
+        self.assertEqual(len(dupes_after), 1)
+
 
 if __name__ == "__main__":
     unittest.main()

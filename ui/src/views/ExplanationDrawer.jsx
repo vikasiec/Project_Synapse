@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import './ExplanationDrawer.css'
 
 const PREDICATES = ['SAME_ENTITY_AS', 'FOREIGN_KEY_TO', 'DERIVED_FROM']
@@ -9,27 +9,45 @@ const PREDICATES = ['SAME_ENTITY_AS', 'FOREIGN_KEY_TO', 'DERIVED_FROM']
 // user switch which one they're looking at without closing the drawer.
 // `samples` ({a, b} arrays of actual observed values, only fetched on an
 // edge double-click, not every single-click) gives the reviewer something
-// concrete to eyeball alongside the recommendation.
+// concrete to eyeball alongside the recommendation. `confirmed` (from the
+// durable Catalog, not session state) tells the user -- and this drawer --
+// whether they're looking at a fresh recommendation or something already
+// decided, so re-opening it doesn't present a settled relationship as if
+// it were still pending.
 export default function ExplanationDrawer({
   candidate,
   alternates = [],
   onSelectAlternate,
+  confirmed,
   samples,
   samplesLoading,
   busy,
   onClose,
   onDecide,
 }) {
-  const [predicate, setPredicate] = useState('SAME_ENTITY_AS')
+  const [predicate, setPredicate] = useState(confirmed?.predicate || 'SAME_ENTITY_AS')
+
+  useEffect(() => {
+    setPredicate(confirmed?.predicate || 'SAME_ENTITY_AS')
+  }, [confirmed, candidate.candidate_id])
 
   return (
     <div className="drawer">
       <div className="drawer-header">
-        <span>Candidate match</span>
+        <span>{confirmed ? 'Confirmed relationship' : 'Candidate match'}</span>
         <button className="drawer-close" onClick={onClose}>
           ×
         </button>
       </div>
+
+      {confirmed && (
+        <div className={`drawer-confirmed-badge ${confirmed.predicate !== 'SAME_ENTITY_AS' ? 'corrected' : ''}`}>
+          {confirmed.predicate !== 'SAME_ENTITY_AS'
+            ? `✓ Corrected to ${confirmed.predicate}`
+            : '✓ Confirmed as SAME_ENTITY_AS'}
+          — this is already in the Catalog, not just a suggestion.
+        </div>
+      )}
 
       {alternates.length > 1 && (
         <div className="drawer-alternates">
@@ -37,14 +55,12 @@ export default function ExplanationDrawer({
           {alternates.map((c) => (
             <button
               key={c.candidate_id}
-              className={`drawer-alt ${c.candidate_id === candidate.candidate_id ? 'active' : ''}`}
-              onClick={() => {
-                setPredicate('SAME_ENTITY_AS')
-                onSelectAlternate?.(c)
-              }}
+              className={`drawer-alt ${c.candidate_id === candidate.candidate_id ? 'active' : ''} ${c._confirmed ? 'decided' : ''}`}
+              onClick={() => onSelectAlternate?.(c)}
             >
+              {c._confirmed ? '✓ ' : ''}
               {c.source_a.field_name} ↔ {c.source_b.field_name}
-              <span>{c.similarity_score.toFixed(2)}</span>
+              <span>{c._confirmed ? c._confirmed.predicate : c.similarity_score.toFixed(2)}</span>
             </button>
           ))}
         </div>
@@ -114,23 +130,19 @@ export default function ExplanationDrawer({
       </div>
 
       <div className="drawer-actions">
-        <button
-          className="btn accept"
-          disabled={busy}
-          onClick={() => onDecide('ACCEPT', { predicate })}
-        >
-          Accept
+        {!confirmed && (
+          <button className="btn accept" disabled={busy} onClick={() => onDecide('ACCEPT', { predicate })}>
+            Accept
+          </button>
+        )}
+        <button className="btn relabel" disabled={busy} onClick={() => onDecide('RELABEL', { predicate })}>
+          {confirmed ? 'Change relationship type' : 'Relabel & commit'}
         </button>
-        <button
-          className="btn relabel"
-          disabled={busy}
-          onClick={() => onDecide('RELABEL', { predicate })}
-        >
-          Relabel & commit
-        </button>
-        <button className="btn reject" disabled={busy} onClick={() => onDecide('REJECT', {})}>
-          Reject
-        </button>
+        {!confirmed && (
+          <button className="btn reject" disabled={busy} onClick={() => onDecide('REJECT', {})}>
+            Reject
+          </button>
+        )}
       </div>
     </div>
   )

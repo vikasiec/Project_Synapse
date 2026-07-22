@@ -12,6 +12,8 @@ const STATUS_COLOR = {
   high_confidence: '#34d399',
   candidate: '#5b8cff',
 }
+const CONFIRMED_COLOR = '#22c55e' // solid green -- accepted as-is (SAME_ENTITY_AS)
+const CORRECTED_COLOR = '#f59e0b' // amber -- accepted with a relabeled predicate
 
 const ROW_H = 26
 const HEADER_H = 34
@@ -21,6 +23,15 @@ const GAP_Y = 40
 const COLUMNS = 3
 
 const NODE_TYPES = { sourceGroup: SourceGroupNode }
+
+// A field pair's identity is (source_system, field_name) on each side,
+// order-independent -- NOT candidate_id, which is a fresh UUID minted by
+// every /v1/explore/analyze call and therefore useless for recognizing
+// "this is the same relationship I already confirmed" across re-analyzes
+// or page reloads. This key is what actually persists.
+function relationshipKey(a, b) {
+  return [`${a.source_system}::${a.field_name}`, `${b.source_system}::${b.field_name}`].sort().join('|')
+}
 
 // Every landed source gets rendered as its own structural cluster
 // (header + field:type rows) the moment it's known -- no dropdown pick
@@ -68,38 +79,57 @@ function fieldNodeId(sourceSystem) {
 // matched field pair). Rendering one ReactFlow edge per candidate made
 // them stack exactly on top of each other between two source cards --
 // visually indistinguishable and impossible to click individually.
-// Bundle them into one edge per source pair, ranked by score, and pick
-// the best from the group when the bundle is clicked; the label states
-// how many matches the bundle represents so nothing is hidden.
-function buildEdges(candidates, committed) {
+// Bundle them into one edge per source pair, ranked by "most interesting
+// first" (confirmed/corrected outrank a still-pending recommendation so
+// a settled relationship isn't buried under a fresh unrelated guess).
+function buildEdges(candidates, confirmedByKey) {
+  const withStatus = candidates.map((c) => {
+    const confirmed = confirmedByKey.get(relationshipKey(c.source_a, c.source_b))
+    return { ...c, _confirmed: confirmed || null }
+  })
+
   const groups = new Map()
-  for (const c of candidates) {
+  for (const c of withStatus) {
     const key = [c.source_a.source_system, c.source_b.source_system].sort().join('|')
     if (!groups.has(key)) groups.set(key, [])
     groups.get(key).push(c)
   }
 
   return [...groups.entries()].map(([key, group]) => {
-    group.sort((a, b) => b.similarity_score - a.similarity_score)
+    group.sort((a, b) => {
+      const aDecided = a._confirmed ? 1 : 0
+      const bDecided = b._confirmed ? 1 : 0
+      if (aDecided !== bDecided) return bDecided - aDecided
+      return b.similarity_score - a.similarity_score
+    })
     const top = group[0]
-    const anyCommitted = group.some((c) => committed.has(c.candidate_id))
-    const style = { stroke: STATUS_COLOR[top.status] || '#5b8cff', strokeWidth: 2 }
-    if (anyCommitted) {
-      style.stroke = '#34d399'
-      style.strokeDasharray = '4 2'
+    const decidedCount = group.filter((c) => c._confirmed).length
+
+    let stroke = STATUS_COLOR[top.status] || '#5b8cff'
+    let dashed = false
+    let statusLabel = top.status
+    if (top._confirmed) {
+      const isCorrected = top._confirmed.predicate !== 'SAME_ENTITY_AS'
+      stroke = isCorrected ? CORRECTED_COLOR : CONFIRMED_COLOR
+      statusLabel = isCorrected ? `corrected: ${top._confirmed.predicate}` : 'confirmed'
     }
+    const style = { stroke, strokeWidth: top._confirmed ? 3 : 2 }
+    if (dashed) style.strokeDasharray = '4 2'
+
+    const mark = top._confirmed ? '✓ ' : ''
     const label =
       group.length === 1
-        ? `${top.source_a.field_name} ↔ ${top.source_b.field_name} (${top.similarity_score.toFixed(2)})`
-        : `${group.length} field matches (best ${top.similarity_score.toFixed(2)})`
+        ? `${mark}${top.source_a.field_name} ↔ ${top.source_b.field_name} (${top.similarity_score.toFixed(2)})`
+        : `${mark}${group.length} field matches${decidedCount ? `, ${decidedCount} confirmed` : ''} (best ${top.similarity_score.toFixed(2)})`
+
     return {
       id: `bundle:${key}`,
       source: fieldNodeId(top.source_a.source_system),
       target: fieldNodeId(top.source_b.source_system),
       label,
-      animated: top.status === 'high_confidence',
+      animated: !top._confirmed && top.status === 'high_confidence',
       style,
-      markerEnd: { type: MarkerType.ArrowClosed, color: style.stroke },
+      markerEnd: { type: MarkerType.ArrowClosed, color: stroke },
       labelStyle: { fill: '#e6e8ee', fontSize: 10 },
       labelBgStyle: { fill: '#12151c' },
       data: { candidates: group },
@@ -117,7 +147,11 @@ export default function ExploreView({ onCommitted }) {
   const [samples, setSamples] = useState(null) // { a: [...], b: [...] } | null
   const [samplesLoading, setSamplesLoading] = useState(false)
   const [propertiesSource, setPropertiesSource] = useState(null)
-  const [committed, setCommitted] = useState(new Set())
+  // Confirmed relationships, keyed by relationshipKey() -> {relationship_id,
+  // predicate}. This is the Catalog's own durable state (survives restart,
+  // per row 50), not session-local -- it's what actually answers "have I
+  // already decided this one," not a Set that resets on every re-analyze.
+  const [confirmedByKey, setConfirmedByKey] = useState(new Map())
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState(null)
   // Nodes are real controlled state (not a plain derived value) so that
@@ -127,6 +161,22 @@ export default function ExploreView({ onCommitted }) {
   // the user had just set. onNodesChange + applyNodeChanges is the
   // standard ReactFlow pattern for this.
   const [nodes, setNodes] = useState([])
+
+  const loadConfirmed = useCallback(async () => {
+    try {
+      const d = await api.ontology()
+      const map = new Map()
+      for (const r of d.relationships || []) {
+        map.set(relationshipKey(r.source_a, r.source_b), {
+          relationship_id: r.relationship_id,
+          predicate: r.predicate,
+        })
+      }
+      setConfirmedByKey(map)
+    } catch {
+      // Non-fatal -- edges just fall back to unconfirmed styling.
+    }
+  }, [])
 
   const loadLandscape = useCallback(async () => {
     let list = []
@@ -153,7 +203,8 @@ export default function ExploreView({ onCommitted }) {
 
   useEffect(() => {
     loadLandscape()
-  }, [loadLandscape])
+    loadConfirmed()
+  }, [loadLandscape, loadConfirmed])
 
   const handleLanded = useCallback(async () => {
     await loadLandscape()
@@ -171,7 +222,6 @@ export default function ExploreView({ onCommitted }) {
         const merged = results.flatMap((r) => r.candidates || [])
         merged.sort((a, b) => b.similarity_score - a.similarity_score)
         setCandidates(merged)
-        setCommitted(new Set())
       } catch (e) {
         setError(e.message)
       } finally {
@@ -206,7 +256,7 @@ export default function ExploreView({ onCommitted }) {
     setNodes((nds) => applyNodeChanges(changes, nds))
   }, [])
 
-  const edges = useMemo(() => buildEdges(candidates, committed), [candidates, committed])
+  const edges = useMemo(() => buildEdges(candidates, confirmedByKey), [candidates, confirmedByKey])
 
   const openMatch = useCallback((edge) => {
     const group = edge.data?.candidates || []
@@ -250,9 +300,16 @@ export default function ExploreView({ onCommitted }) {
       setBusy(true)
       setError(null)
       try {
-        await api.decide(action, selected.candidate_id, extra)
+        // If this exact field pair is already in the Catalog (e.g. the
+        // user is correcting a previous ACCEPT to a different predicate),
+        // pass its real relationship_id so the backend updates that row
+        // in place instead of minting a duplicate keyed by today's fresh
+        // (and therefore unrecognized) candidate_id.
+        const existing = confirmedByKey.get(relationshipKey(selected.source_a, selected.source_b))
+        const payload = existing ? { ...extra, relationship_id: existing.relationship_id } : extra
+        await api.decide(action, selected.candidate_id, payload)
         if (action === 'ACCEPT' || action === 'RELABEL') {
-          setCommitted((prev) => new Set(prev).add(selected.candidate_id))
+          await loadConfirmed()
           onCommitted?.()
         }
         setSelected(null)
@@ -262,7 +319,7 @@ export default function ExploreView({ onCommitted }) {
         setBusy(false)
       }
     },
-    [selected, onCommitted],
+    [selected, onCommitted, confirmedByKey, loadConfirmed],
   )
 
   return (
@@ -273,7 +330,9 @@ export default function ExploreView({ onCommitted }) {
           <span className="explore-hint">
             {sources.length} source{sources.length === 1 ? '' : 's'} loaded — click a source's header to
             find its relations, double-click for full properties. Double-click a relation line for sample
-            data + recommendation.
+            data + recommendation. <span style={{ color: CONFIRMED_COLOR }}>Green</span> = confirmed,{' '}
+            <span style={{ color: CORRECTED_COLOR }}>amber</span> = corrected,{' '}
+            <span style={{ color: STATUS_COLOR.candidate }}>blue</span> = still a recommendation.
           </span>
         )}
         {busy && <span className="explore-hint busy">Analyzing…</span>}
@@ -316,6 +375,7 @@ export default function ExploreView({ onCommitted }) {
           candidate={selected}
           alternates={selectedGroup}
           onSelectAlternate={onSelectAlternate}
+          confirmed={confirmedByKey.get(relationshipKey(selected.source_a, selected.source_b)) || null}
           samples={samples}
           samplesLoading={samplesLoading}
           busy={busy}

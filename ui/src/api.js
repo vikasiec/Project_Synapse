@@ -56,4 +56,6 @@ export const api = {
     }),
   reprocess: (principal = DEFAULT_PRINCIPAL) =>
     request('/v1/reprocess', { method: 'POST', body: { principal, actor: 'ui:explore-reprocess' } }),
+  dedupeRelationships: (principal = DEFAULT_PRINCIPAL) =>
+    request('/v1/ontology/relationships/dedupe', { method: 'POST', body: { principal } }),
 }

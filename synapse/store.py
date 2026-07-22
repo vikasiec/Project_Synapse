@@ -118,6 +118,9 @@ class SemanticStore:
         self.relationship_edges[edge.relationship_id] = edge
         return edge
 
+    def delete_relationship_edge(self, relationship_id: str) -> None:
+        self.relationship_edges.pop(relationship_id, None)
+
     def put_rejected_candidate(self, rejected: RejectedCandidate) -> RejectedCandidate:
         self.rejected_candidates[rejected.rejection_id] = rejected
         return rejected
