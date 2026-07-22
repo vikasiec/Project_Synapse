@@ -69,6 +69,7 @@ def _flatten_fhir_bundle_by_type(parsed: dict) -> dict[str, dict[str, list[str]]
     top_level = {k: v for k, v in parsed.items() if k != "entry"}
     for k, v in _flatten_json(top_level).items():
         by_type["Bundle"][k].extend(v)
+    bundle_id = parsed.get("id")
 
     for entry in parsed.get("entry", []):
         if not isinstance(entry, dict):
@@ -82,6 +83,13 @@ def _flatten_fhir_bundle_by_type(parsed: dict) -> dict[str, dict[str, list[str]]
         full_url = entry.get("fullUrl")
         if full_url:
             by_type[resource_type]["fullUrl"].append(str(full_url))
+        # Synthetic join key back to the Bundle envelope, same role as
+        # HL7's hl7_message_id -> MSH.message_control_id: lets the
+        # existing, unmodified value-overlap scoring discover "this
+        # resource belongs to this bundle" without any new relationship
+        # machinery.
+        if bundle_id:
+            by_type[resource_type]["bundle_id"].append(str(bundle_id))
 
     return {rt: dict(fields) for rt, fields in by_type.items()}
 
@@ -118,6 +126,57 @@ def list_virtual_sources_for_raws(raws: list) -> list[str]:
     return sorted(types)
 
 
+def auto_link_fhir_bundle(store, ontology, base_source: str, *, principal=None) -> list:
+    """Auto-confirms Bundle <-> each resourceType via the synthetic
+    bundle_id/id join key (same envelope-to-content relationship HL7's
+    auto_link_structure asserts for MSH <-> PID/ORC/OBR/OBX) -- a Bundle's
+    resources belonging to it is a fact of the file's own structure, not
+    an inferred cross-source guess, so it's created already-confirmed
+    rather than left as a candidate needing a click. Idempotent: skips
+    any pair already present, so re-landing the same file is a no-op."""
+    from synapse.matching import score_pair
+
+    profiler = SchemaProfiler(store)
+    bundle_source = f"{base_source}::Bundle"
+    bundle_profiles = profiler.profile_source(bundle_source, principal=principal)
+    bundle_id_profile = bundle_profiles.get("id")
+    if bundle_id_profile is None:
+        return []
+
+    created = []
+    for sub in profiler.known_sources(principal=principal):
+        prefix = f"{base_source}::"
+        if not sub.startswith(prefix) or sub == bundle_source:
+            continue
+        resource_type = sub[len(prefix):]
+        if resource_type == "Bundle":
+            continue
+        profiles = profiler.profile_source(sub, principal=principal)
+        bundle_ref_profile = profiles.get("bundle_id")
+        if bundle_ref_profile is None:
+            continue
+
+        source_a_ref = {"source_system": bundle_source, "field_name": "id"}
+        source_b_ref = {"source_system": sub, "field_name": "bundle_id"}
+        if ontology.find_relationship_by_pair(source_a_ref, source_b_ref) is not None:
+            continue
+
+        edge = score_pair(store, ontology, bundle_id_profile, bundle_ref_profile, force=True)
+        if edge is None:
+            continue
+        created.append(
+            ontology.accept_relationship(
+                candidate_id=edge.candidate_id,
+                source_a=edge.source_a,
+                source_b=edge.source_b,
+                predicate="FOREIGN_KEY_TO",
+                match_reasons=list(edge.match_reasons) + ["Structural FHIR Bundle linkage (not a matched guess)"],
+                similarity_score=edge.similarity_score,
+            )
+        )
+    return created
+
+
 def _extract_field_values(payload: str, type_filter: Optional[str] = None) -> dict[str, list[str]]:
     """Field-name -> observed-values extraction. Tries JSON first (covers
     the FHIR/JSONL connectors, which land raw JSON text as-is per
@@ -145,13 +204,15 @@ def _extract_field_values(payload: str, type_filter: Optional[str] = None) -> di
             by_type = _flatten_fhir_bundle_by_type(parsed)
             return by_type.get(type_filter, {}) if type_filter else {}
         if parsed is not None:
-            return _flatten_json(parsed)
+            return {} if type_filter else _flatten_json(parsed)
 
     if stripped.startswith("MSH"):
         by_segment = extract_hl7_by_segment(payload)
         if by_segment:
             return by_segment.get(type_filter, {}) if type_filter else {}
 
+    if type_filter:
+        return {}
     field_values: dict[str, list[str]] = defaultdict(list)
     for m in _KV_RE.finditer(payload):
         key = m.group(1).strip().lower()

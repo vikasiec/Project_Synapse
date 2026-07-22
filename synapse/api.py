@@ -1212,7 +1212,8 @@ def make_handler(session: SynapseSession):
                         if not result.dropped:
                             session.dual_path.extract(result.episode, result.raw)
                         landed = 1
-                        if content.lstrip().startswith("MSH"):
+                        stripped_content = content.lstrip()
+                        if stripped_content.startswith("MSH"):
                             # HL7's segments (PID/ORC/OBR/OBX) are true
                             # structural facts of the message, not inferred
                             # candidates -- auto-confirm them so Explore/
@@ -1222,6 +1223,13 @@ def make_handler(session: SynapseSession):
                             from synapse.hl7_semantics import auto_link_structure
 
                             auto_link_structure(session.store, session.ontology, source_system)
+                        elif stripped_content[:1] in ("{", "["):
+                            # Same reasoning for a FHIR Bundle: every
+                            # resource genuinely belongs to the bundle it
+                            # was landed with, not a matched guess.
+                            from synapse.profiling import auto_link_fhir_bundle
+
+                            auto_link_fhir_bundle(session.store, session.ontology, source_system)
                 session.sync_graph()
                 return _json_response(
                     self,

@@ -6,7 +6,8 @@ import json
 import unittest
 
 from synapse.models import RawObject
-from synapse.profiling import SchemaProfiler, cosine_similarity
+from synapse.ontology import OntologyRegistry
+from synapse.profiling import SchemaProfiler, auto_link_fhir_bundle, cosine_similarity
 from synapse.store import SemanticStore
 
 
@@ -191,6 +192,57 @@ class TestSchemaProfiler(unittest.TestCase):
         # three weighted components) -- just that the function is well-defined.
         self.assertTrue(0.0 <= cosine_similarity(v_cust_id, v_unrelated) <= 1.0)
         self.assertTrue(0.0 <= cosine_similarity(v_cust_id, v_client_num) <= 1.0)
+
+    def test_fhir_bundle_auto_links_to_its_resources(self) -> None:
+        # Mirrors HL7's MSH <-> segment auto-linking: a Bundle's resources
+        # genuinely belong to it (a fact of the file's structure), so the
+        # relationship should already be confirmed, not left as a
+        # candidate needing a click.
+        store = SemanticStore()
+        bundle = json.dumps(
+            {
+                "resourceType": "Bundle",
+                "id": "bundle-1",
+                "type": "collection",
+                "entry": [
+                    {
+                        "fullUrl": "urn:1",
+                        "resource": {
+                            "resourceType": "Observation",
+                            "id": "O1",
+                            "status": "final",
+                            "valueQuantity": {"value": 5.0},
+                        },
+                    },
+                ],
+            }
+        )
+        store.put_raw(RawObject.create(source_system="FHIR", payload=bundle, acl_tags=["domain:clinical", "clearance:l2"]))
+        ontology = OntologyRegistry.default()
+        ontology.store = store
+
+        created = auto_link_fhir_bundle(store, ontology, "FHIR")
+        self.assertEqual(len(created), 1)
+        self.assertEqual(created[0].predicate, "FOREIGN_KEY_TO")
+        self.assertEqual(created[0].source_a, {"source_system": "FHIR::Bundle", "field_name": "id"})
+        self.assertEqual(created[0].source_b, {"source_system": "FHIR::Observation", "field_name": "bundle_id"})
+
+        second = auto_link_fhir_bundle(store, ontology, "FHIR")
+        self.assertEqual(len(second), 0)  # idempotent
+
+    def test_auto_link_fhir_bundle_skips_non_bundle_json(self) -> None:
+        store = SemanticStore()
+        store.put_raw(
+            RawObject.create(
+                source_system="PlainJSON",
+                payload=json.dumps({"resourceType": "Patient", "id": "P1"}),
+                acl_tags=["domain:clinical", "clearance:l2"],
+            )
+        )
+        ontology = OntologyRegistry.default()
+        ontology.store = store
+        created = auto_link_fhir_bundle(store, ontology, "PlainJSON")
+        self.assertEqual(created, [])
 
 
 if __name__ == "__main__":
