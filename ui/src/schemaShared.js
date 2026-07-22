@@ -1,3 +1,5 @@
+import dagre from '@dagrejs/dagre'
+
 // Shared between ExploreView (one-source-at-a-time fan-out) and SchemaView
 // (all-sources-at-once ERD) so both render confirmed/corrected/candidate
 // relationships identically instead of duplicating the color/identity logic.
@@ -47,4 +49,41 @@ export function masonryPosition(index, heights, colHeights) {
 
 export function estimateCardHeight(fieldCount) {
   return HEADER_H + Math.max(fieldCount, 1) * ROW_H + 16
+}
+
+// Graph-aware layout for SchemaView's ERD: nodes connected by a confirmed
+// relationship land near each other and ranked left-to-right by the graph
+// structure, instead of an arbitrary masonry grid that has no relation to
+// what's actually connected to what. Used (a) as the fallback position for
+// any source with no saved layout yet, and (b) by the explicit "Reset
+// layout" action that recomputes + persists positions for every source --
+// the fix for manually-dragged cards drifting to extreme/overlapping
+// coordinates over time (dangling-looking edges when a node ends up far
+// outside the diagram's natural bounds).
+export function computeAutoLayout(sources, profilesBySource, relationships) {
+  const g = new dagre.graphlib.Graph()
+  g.setGraph({ rankdir: 'LR', nodesep: 50, ranksep: 140 })
+  g.setDefaultEdgeLabel(() => ({}))
+
+  for (const s of sources) {
+    const height = estimateCardHeight((profilesBySource[s.source_system] || []).length)
+    g.setNode(sourceNodeId(s.source_system), { width: CARD_W, height })
+  }
+  for (const r of relationships) {
+    const a = sourceNodeId(r.source_a.source_system)
+    const b = sourceNodeId(r.source_b.source_system)
+    if (g.hasNode(a) && g.hasNode(b)) g.setEdge(a, b)
+  }
+
+  dagre.layout(g)
+
+  const positions = {}
+  for (const s of sources) {
+    const id = sourceNodeId(s.source_system)
+    const node = g.node(id)
+    if (!node) continue
+    // dagre positions are node-center; ReactFlow positions are top-left.
+    positions[s.source_system] = { x: node.x - node.width / 2, y: node.y - node.height / 2 }
+  }
+  return positions
 }

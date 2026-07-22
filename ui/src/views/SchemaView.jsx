@@ -1,18 +1,17 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import ReactFlow, { Background, Controls, MarkerType, applyNodeChanges } from 'reactflow'
-import 'reactflow/dist/style.css'
+import { Background, Controls, MarkerType, ReactFlow, applyNodeChanges } from '@xyflow/react'
+import '@xyflow/react/dist/style.css'
 import { api } from '../api'
 import {
   CARD_W,
-  COLUMNS,
   CONFIRMED_COLOR,
   CORRECTED_COLOR,
+  computeAutoLayout,
   relationshipKey,
-  estimateCardHeight,
-  masonryPosition,
   sourceNodeId,
 } from '../schemaShared'
 import ExplanationDrawer from './ExplanationDrawer'
+import './FileIngest.css'
 import SourcePropertiesPanel from './SourcePropertiesPanel'
 import SourceGroupNode from './SourceGroupNode'
 import './ExploreView.css'
@@ -83,18 +82,19 @@ export default function SchemaView() {
   // Recompute base layout when sources/profiles change, preserving any
   // position the user already dragged (and hasn't been overwritten by a
   // fresh loadAll() yet) -- same merge pattern ExploreView uses so drag
-  // state survives incidental re-renders.
+  // state survives incidental re-renders. Any source with no saved
+  // position falls back to a graph-aware dagre layout (grouped near what
+  // it's actually connected to) instead of an arbitrary grid slot.
   useEffect(() => {
     setNodes((prev) => {
       const prevById = new Map(prev.map((n) => [n.id, n]))
-      const heights = sources.map((s) => estimateCardHeight((profilesBySource[s.source_system] || []).length))
-      const colHeights = new Array(COLUMNS).fill(0)
-      return sources.map((s, i) => {
+      const needsAutoLayout = sources.some((s) => !layout[s.source_system] && !prevById.has(sourceNodeId(s.source_system)))
+      const autoLayout = needsAutoLayout ? computeAutoLayout(sources, profilesBySource, relationships) : {}
+      return sources.map((s) => {
         const id = sourceNodeId(s.source_system)
         const existing = prevById.get(id)
         const saved = layout[s.source_system]
-        const fallback = masonryPosition(i, heights, colHeights)
-        const position = existing ? existing.position : saved || fallback
+        const position = existing ? existing.position : saved || autoLayout[s.source_system] || { x: 0, y: 0 }
         return {
           id,
           type: 'sourceGroup',
@@ -112,7 +112,24 @@ export default function SchemaView() {
         }
       })
     })
-  }, [sources, profilesBySource, layout, onOpenProperties])
+  }, [sources, profilesBySource, layout, relationships, onOpenProperties])
+
+  const resetLayout = useCallback(async () => {
+    setBusy(true)
+    setError(null)
+    try {
+      const positions = computeAutoLayout(sources, profilesBySource, relationships)
+      await Promise.all(
+        Object.entries(positions).map(([sourceSystem, pos]) => api.saveLayoutPosition(sourceSystem, pos.x, pos.y)),
+      )
+      setLayout(positions)
+      setNodes((prev) => prev.map((n) => (positions[n.data.sourceSystem] ? { ...n, position: positions[n.data.sourceSystem] } : n)))
+    } catch (e) {
+      setError(e.message)
+    } finally {
+      setBusy(false)
+    }
+  }, [sources, profilesBySource, relationships])
 
   const onNodesChange = useCallback((changes) => {
     setNodes((nds) => applyNodeChanges(changes, nds))
@@ -200,11 +217,16 @@ export default function SchemaView() {
     <div className="explore-shell">
       <div className="explore-upload">
         {sources.length > 0 && (
-          <span className="explore-hint">
-            {sources.length} source{sources.length === 1 ? '' : 's'}, {relationships.length} confirmed relationship
-            {relationships.length === 1 ? '' : 's'} — drag a source to arrange it (saved automatically), or drag
-            from one field's edge to another to define a new relationship.
-          </span>
+          <>
+            <button className="file-ingest-btn" disabled={busy} onClick={resetLayout} title="Recompute a clean, graph-aware layout for every source">
+              Reset layout
+            </button>
+            <span className="explore-hint">
+              {sources.length} source{sources.length === 1 ? '' : 's'}, {relationships.length} confirmed relationship
+              {relationships.length === 1 ? '' : 's'} — drag a source to arrange it (saved automatically), or drag
+              from one field's edge to another to define a new relationship.
+            </span>
+          </>
         )}
         {busy && <span className="explore-hint busy">Working…</span>}
         {error && <div className="explore-error">{error}</div>}

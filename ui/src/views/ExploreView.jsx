@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import ReactFlow, { Background, Controls, MarkerType, applyNodeChanges } from 'reactflow'
-import 'reactflow/dist/style.css'
+import { Background, Controls, MarkerType, ReactFlow, applyNodeChanges } from '@xyflow/react'
+import '@xyflow/react/dist/style.css'
 import { api } from '../api'
 import {
   CARD_W,

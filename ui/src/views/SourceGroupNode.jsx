@@ -1,4 +1,4 @@
-import { Handle, NodeResizer, Position } from 'reactflow'
+import { Handle, NodeResizer, Position } from '@xyflow/react'
 import './SourceGroupNode.css'
 
 // Renders one landed source as a self-contained structure card: header +

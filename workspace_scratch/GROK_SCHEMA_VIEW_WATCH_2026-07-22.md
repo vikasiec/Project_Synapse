@@ -38,9 +38,9 @@
 | V2 | HTTP: field_a/field_b → exactly one candidate | **DONE** (`test_explore_analyze` explicit field pair + manual + 404) |
 | V3 | Layout round-trip via fresh session (sqlite durability) | **DONE** (`test_schema_layout_survives_restart`) |
 | V3b | HTTP GET/POST layout | **DONE** (`tests/test_schema_layout_api.py` 4/4) |
-| V4a | `npm run build` | **DONE** green (~16:02, vite ok) |
-| V4b | Full pytest suite | Not re-run end-to-end this fire (targeted tests previously green) |
-| V4c | Chrome E2E claims | **NOT SEEN** |
+| V4a | `npm run build` | **DONE** (Grok ~16:02; ledger also claims ui rebuild) |
+| V4b | Full pytest suite | **CLAIMED** by Claude ledger row 59: **264/264**; Grok re-ran Schema-related **17/17** ~16:11; full-suite re-run this fire hit tool timeout mid-progress (~81% dots green) — not independently finished |
+| V4c | Chrome E2E claims | **CLAIMED** in Active_File row 59 (8 sources, 11→12 edges, drag persist, manual connect Accept + Catalog) — Grok did not re-drive browser |
 
 ---
 
@@ -129,7 +129,7 @@ F3/F4 implemented. Full plan surface present uncommitted.
 
 ### SV-016 · P2 · OPEN · Schema ACCEPT does not bump Catalog refreshKey
 
-App only wires `onCommitted` for Explore. Schema `handleDecide` reloads Schema state only — Catalog tab keeps stale list until remount/other bump. Same class of gap if user Schema-accepts then switches Catalog without Explore commit. Minor UX; fix: pass `onCommitted` into SchemaView like Explore.
+App only wires `onCommitted` for Explore. Schema `handleDecide` reloads Schema state only — Catalog tab keeps stale list until remount/other bump. **Still true after row 59 DONE** (App.jsx SchemaView has no onCommitted). Claude E2E claim said Catalog showed the new card — remount on tab switch reloads Catalog (useEffect on mount + refreshKey); leaving Schema→Catalog remounts Catalog so it refetches without refreshKey. Gap only if Catalog stayed mounted (it doesn't — conditional render). **Downgrade: mostly mitigated by unmount; still inconsistent with Explore pattern.**
 
 ### SV-017 · P3 · NOTE · No dedicated SchemaView.css
 
@@ -261,9 +261,82 @@ No FileIngest on Schema tab — “go to Explore to bring in data.” Product OK
 
 **Attention:** Claude idle on Schema View polish. Uncommitted feature stack awaits verification/commit.
 
+### 2026-07-22 ~16:11 — Fire: Ledger row 59 DONE + independent test spot-check
+
+**Activity:** `Active_File.md` updated (~16:10) — **row 59 Schema View 🟢 DONE** with long outcome (backend force+layout, FE SchemaView, Chrome E2E narrative, 264/264 claim). Source tree still uncommitted on HEAD `116b168` (no new commit yet).
+
+**Code mtimes:** Unchanged since SchemaView ~15:59 (still idle on implementation).
+
+**Grok verification this fire**
+| Check | Result |
+|-------|--------|
+| Schema-related pytest | **17 passed** (matching + explore_analyze + sqlite_store + schema_layout_api) |
+| Full suite | Started; tool timeout ~120s after ~81% green progress — **not closed independently** |
+| layout API test count | File has **4** tests; ledger says **5** — **off-by-one in ledger prose** (SV-019) |
+| npm build | Prior fire green |
+| Chrome E2E | Ledger claim only; Grok did not re-drive |
+
+**Findings**
+- **SV-019 · P3 · OPEN** — Row 59 claims `test_schema_layout_api.py` “(new, 5: …)”; file has 4 methods. New-test delta still ~+2 matching +3 explore +1 sqlite +4 layout = 10 if counting correctly; “5” is likely typo. Suite total 264 claim not fully re-confirmed by Grok.
+- **SV-016** — still no onCommitted; practical impact low because Catalog unmounts on tab change and refetches.
+- **Plan surface:** Implementation complete; ledger closed; **git commit still outstanding**.
+
+**Attention:** Prefer commit of Schema View stack; optional full-suite re-run outside timeout; optional SV-016 polish. Monitor may stay heartbeat until commit/push.
+
+### 2026-07-22 ~16:17 — Fire: COMMITTED + pushed (`509588f`)
+
+**git:** HEAD **`509588f`** *Add Schema View: fully-connected, editable, persistent schema diagram*  
+AuthorDate 16:10:59 +0530. Branch **up to date with `origin/main`** (pushed). Working tree clean except **this watch md** (post-commit log appends).
+
+**Commit contents (16 files, +905/−50):**  
+`matching.py`, `api.py` (force pair + layout routes), `store.py`/`sqlite_store.py`, tests (matching, explore_analyze, sqlite_store, schema_layout_api), `schemaShared.js`, `SchemaView.jsx`, `SourceGroupNode`, `ExploreView` extract, `api.js`, `App.jsx`, `Active_File` row 59, and a snapshot of this watch file.
+
+**Plan closeout**
+| Bucket | Status |
+|--------|--------|
+| B1–B5 / F1–F5 | **Shipped** in `509588f` |
+| V1–V3b | Tests in commit |
+| V4a npm build | Prior green |
+| V4b 264/264 | Ledger claim; Grok 17/17 schema subset only |
+| V4c Chrome E2E | Ledger claim |
+| SV-016 onCommitted | Still open polish |
+| SV-019 layout API “5” vs 4 tests | Ledger typo remains |
+
+**Attention:** Schema View **implementation stream complete**. Residual: optional SV-016, optional independent full-suite, keep watch idle or stand down.
+
+### 2026-07-22 ~16:20 — Fire: IDLE post-ship
+
+**git:** Still HEAD **`509588f`** on `main`; dirty only this watch md. No new Schema View code, tests, or ledger rows since ship.
+
+**Checklist:** Unchanged — plan surface shipped; residual polish SV-016/SV-019/V4b independent full-suite only.
+
+**Tests this fire:** None (no backend delta).
+
+**Attention:** Stream complete. Safe to stand down scheduled watch unless user opens follow-up work.
+
+### 2026-07-22 ~16:23 — Fire: IDLE post-ship #2
+
+HEAD `509588f`; dirty = watch md only. No Schema View activity. Stand-down recommended.
+
+### 2026-07-22 ~16:26 — Fire: IDLE post-ship #3
+
+**git:** HEAD still **`509588f`**; branch = `origin/main`. Dirty **only** this watch file.
+
+**mtimes:** Runtime only — `.data/sense.db` ~16:25; Active_File ~16:10; last Schema source code still ~15:59 (pre-commit snapshot). **No implementation activity.**
+
+**Plan checklist:** Unchanged ship state (B/F complete in commit; V4b/V4c ledger-claimed; SV-016 polish optional; SV-019 ledger typo).
+
+**Tests this fire:** Skipped (no backend delta).
+
+**Attention:** Third consecutive idle post-ship. **Stand down recommended** unless new Schema View follow-up appears.
+
 ---
 
 *Grok continuous Schema View watch. Updates append below.*
+
+
+
+
 
 
 
@@ -289,3 +362,11 @@ No FileIngest on Schema tab — “go to Explore to bring in data.” Product OK
 - **SV-010 closed** prior fire.
 
 **Attention:** npm run build; Chrome E2E; full suite; commit. Optional: wire Schema ACCEPT to catalogVersion like Explore.
+
+### 2026-07-22 ~16:12 � Commit landed `509588f`
+
+`Add Schema View: fully-connected, editable, persistent schema diagram`
+
+Working tree clean except this watch file. main...origin/main (check push).
+
+**Plan disposition:** B1-B5 + F1-F5 shipped. Residual: SV-016 Catalog onCommitted optional; SV-019 layout test count typo in ledger (4 not 5); full suite 264 claim not re-run by Grok this session.
