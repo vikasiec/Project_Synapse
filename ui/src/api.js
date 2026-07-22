@@ -50,4 +50,6 @@ export const api = {
       method: 'POST',
       body: { survivor_id: survivorId, loser_id: loserId, reason, principal, adjudicator: 'ui:resolve' },
     }),
+  reprocess: (principal = DEFAULT_PRINCIPAL) =>
+    request('/v1/reprocess', { method: 'POST', body: { principal, actor: 'ui:explore-reprocess' } }),
 }

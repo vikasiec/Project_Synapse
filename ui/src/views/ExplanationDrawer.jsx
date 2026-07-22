@@ -4,8 +4,10 @@ import './ExplanationDrawer.css'
 const PREDICATES = ['SAME_ENTITY_AS', 'FOREIGN_KEY_TO', 'DERIVED_FROM']
 
 // Shows the full match_reasons array for a candidate edge and dispatches
-// the ACCEPT / REJECT / RELABEL curation micro-actions.
-export default function ExplanationDrawer({ candidate, busy, onClose, onDecide }) {
+// the ACCEPT / REJECT / RELABEL curation micro-actions. When multiple
+// field pairs matched between the same two sources, `alternates` lets the
+// user switch which one they're looking at without closing the drawer.
+export default function ExplanationDrawer({ candidate, alternates = [], onSelectAlternate, busy, onClose, onDecide }) {
   const [predicate, setPredicate] = useState('SAME_ENTITY_AS')
 
   return (
@@ -16,6 +18,25 @@ export default function ExplanationDrawer({ candidate, busy, onClose, onDecide }
           ×
         </button>
       </div>
+
+      {alternates.length > 1 && (
+        <div className="drawer-alternates">
+          <div className="drawer-section-title">{alternates.length} field matches between these sources</div>
+          {alternates.map((c) => (
+            <button
+              key={c.candidate_id}
+              className={`drawer-alt ${c.candidate_id === candidate.candidate_id ? 'active' : ''}`}
+              onClick={() => {
+                setPredicate('SAME_ENTITY_AS')
+                onSelectAlternate?.(c)
+              }}
+            >
+              {c.source_a.field_name} ↔ {c.source_b.field_name}
+              <span>{c.similarity_score.toFixed(2)}</span>
+            </button>
+          ))}
+        </div>
+      )}
 
       <div className="drawer-fields">
         <div className="field-block">

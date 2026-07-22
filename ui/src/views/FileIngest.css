@@ -28,6 +28,12 @@
   opacity: 0.6;
 }
 
+.file-ingest-btn.secondary {
+  background: transparent;
+  border-style: dashed;
+  color: var(--accent-2);
+}
+
 .file-ingest-status {
   font-size: 12px;
   color: var(--accent);

@@ -1103,34 +1103,47 @@ def make_handler(session: SynapseSession):
 
                 ext = filename.rsplit(".", 1)[-1].lower() if "." in filename else ""
                 landed = 0
-                def _land_and_extract(payload: str) -> None:
-                    result = session.ingestion.land(source_system, payload, list(acl), actor="api:explore-ingest")
-                    if not result.dropped:
-                        session.dual_path.extract(result.episode, result.raw)
+
+                def _land_only(payload: str):
+                    return session.ingestion.land(source_system, payload, list(acl), actor="api:explore-ingest")
 
                 if ext == "csv":
                     import csv as _csv
                     import io as _io
 
+                    # Entity extraction is deliberately skipped for bulk
+                    # CSV rows: it's a per-row rule-matching pass that made
+                    # a 150-row file take minutes, causing a real upload
+                    # to silently stall/timeout mid-file. Explore's own
+                    # purpose (schema profiling + field matching) reads
+                    # RawObjects directly and never needed extraction --
+                    # it only fed the optional GraphProximity signal and
+                    # the Resolve tab's entity candidates, which is a
+                    # secondary benefit, not worth the multi-minute cost on
+                    # every upload. Use POST /v1/reprocess afterward if
+                    # entity extraction over this data is actually wanted.
                     reader = _csv.DictReader(_io.StringIO(content))
                     for row in reader:
                         lines = [f"{k}: {v}" for k, v in row.items() if v not in (None, "")]
                         if not lines:
                             continue
-                        _land_and_extract("\n".join(lines))
+                        _land_only("\n".join(lines))
                         landed += 1
                 elif ext == "jsonl":
                     for line in content.splitlines():
                         line = line.strip()
                         if not line:
                             continue
-                        _land_and_extract(line)
+                        _land_only(line)
                         landed += 1
                 else:
                     # .json or anything else: one raw object, whole content
                     # (profiler's JSON flattener handles this shape -- row 49).
+                    # A single call, so extraction here stays cheap enough to keep.
                     if content.strip():
-                        _land_and_extract(content)
+                        result = _land_only(content)
+                        if not result.dropped:
+                            session.dual_path.extract(result.episode, result.raw)
                         landed = 1
                 session.sync_graph()
                 return _json_response(

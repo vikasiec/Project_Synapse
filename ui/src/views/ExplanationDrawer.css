@@ -25,6 +25,35 @@
   letter-spacing: 0.5px;
 }
 
+.drawer-alternates {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border);
+}
+
+.drawer-alt {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--panel-2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 12px;
+  color: var(--text-dim);
+  font-family: ui-monospace, Consolas, monospace;
+}
+.drawer-alt.active {
+  border-color: var(--accent);
+  color: var(--text);
+}
+.drawer-alt span {
+  color: var(--accent-2);
+  font-family: inherit;
+}
+
 .drawer-close {
   background: none;
   border: none;

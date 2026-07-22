@@ -12,15 +12,18 @@ function readFileText(file) {
 }
 
 function sourceNameFor(file) {
-  // Folder-picked files carry a relative path in webkitRelativePath
-  // (e.g. "MySources/customers.csv") -- use the top-level folder name as
-  // the source system when present, so a whole folder drop groups into
-  // one logical source instead of one-source-per-file.
+  // Every file is its own distinct source, whether picked individually or
+  // as part of a folder -- a folder full of heterogeneous files (FHIR
+  // JSON, CSVs, HL7 messages) must NOT be merged into one blob source
+  // (that was a real bug: it mixed unrelated schemas into a single
+  // profiled "structure"). webkitRelativePath is only used to keep
+  // same-named files from different subfolders distinct.
   const rel = file.webkitRelativePath
-  if (rel && rel.includes('/')) {
-    return rel.split('/')[0]
-  }
   const base = file.name.replace(/\.[^.]+$/, '')
+  if (rel && rel.includes('/')) {
+    const dir = rel.slice(0, rel.lastIndexOf('/')).split('/').join('_')
+    return `${dir}_${base}`
+  }
   return base
 }
 
@@ -33,6 +36,9 @@ export default function FileIngest({ onLanded }) {
   const [busy, setBusy] = useState(false)
   const [log, setLog] = useState([])
   const [error, setError] = useState(null)
+  const [landedAny, setLandedAny] = useState(false)
+  const [reprocessing, setReprocessing] = useState(false)
+  const [reprocessed, setReprocessed] = useState(false)
   const fileInputRef = useRef(null)
   const folderInputRef = useRef(null)
 
@@ -43,8 +49,14 @@ export default function FileIngest({ onLanded }) {
     setError(null)
     setLog([])
     let lastSource = null
-    try {
-      for (const file of files) {
+    const failures = []
+    // Each file is landed independently -- one slow/failing file (e.g. a
+    // huge JSON blob, or a transient network hiccup) must not silently
+    // abort every file queued after it. Previously this loop was wrapped
+    // in one try/catch around the whole thing, so a single failure meant
+    // the rest of an 8-file folder pick never even got attempted.
+    for (const file of files) {
+      try {
         const content = await readFileText(file)
         const sourceSystem = sourceNameFor(file)
         const result = await api.ingestFile(file.name, content, sourceSystem)
@@ -53,14 +65,35 @@ export default function FileIngest({ onLanded }) {
           ...prev,
           `${file.name} -> ${result.source_system} (${result.objects_landed} object${result.objects_landed === 1 ? '' : 's'})`,
         ])
+      } catch (e) {
+        failures.push(`${file.name}: ${e.message}`)
+        setLog((prev) => [...prev, `${file.name} -> FAILED (${e.message})`])
       }
-      if (lastSource) onLanded?.(lastSource)
+    }
+    if (failures.length > 0) {
+      setError(`${failures.length} of ${files.length} file(s) failed to land: ${failures.join('; ')}`)
+    }
+    if (lastSource) {
+      onLanded?.(lastSource)
+      setLandedAny(true)
+      setReprocessed(false)
+    }
+    setBusy(false)
+    if (fileInputRef.current) fileInputRef.current.value = ''
+    if (folderInputRef.current) folderInputRef.current.value = ''
+  }
+
+  const handleReprocess = async () => {
+    setReprocessing(true)
+    setError(null)
+    try {
+      await api.reprocess()
+      setReprocessed(true)
+      onLanded?.(null)
     } catch (e) {
       setError(e.message)
     } finally {
-      setBusy(false)
-      if (fileInputRef.current) fileInputRef.current.value = ''
-      if (folderInputRef.current) folderInputRef.current.value = ''
+      setReprocessing(false)
     }
   }
 
@@ -73,6 +106,16 @@ export default function FileIngest({ onLanded }) {
       <button className="file-ingest-btn" disabled={busy} onClick={() => folderInputRef.current?.click()}>
         Select folder…
       </button>
+      {landedAny && (
+        <button
+          className="file-ingest-btn secondary"
+          disabled={busy || reprocessing || reprocessed}
+          onClick={handleReprocess}
+          title="CSV/JSONL uploads land fast without entity extraction (Explore's field matching doesn't need it) -- run this if you also want these sources' records to show up as Resolve-tab merge candidates."
+        >
+          {reprocessing ? 'Extracting…' : reprocessed ? 'Entities extracted ✓' : 'Extract entities (for Resolve)'}
+        </button>
+      )}
       <input
         ref={fileInputRef}
         type="file"
