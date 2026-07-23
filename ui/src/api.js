@@ -59,10 +59,12 @@ export const api = {
       method: 'POST',
       body: { action, candidate_id: candidateId, principal, ...extra },
     }),
-  mergeCandidates: (workspaceId, principal = DEFAULT_PRINCIPAL) =>
-    request(
-      `/v1/er/merge-candidates?principal=${encodeURIComponent(principal)}${workspaceId ? `&workspace_id=${encodeURIComponent(workspaceId)}` : ''}`,
-    ),
+  mergeCandidates: (workspaceIds, principal = DEFAULT_PRINCIPAL) => {
+    const ids = Array.isArray(workspaceIds) ? workspaceIds.filter(Boolean) : workspaceIds ? [workspaceIds] : []
+    return request(
+      `/v1/er/merge-candidates?principal=${encodeURIComponent(principal)}${ids.length ? `&workspace_ids=${encodeURIComponent(ids.join(','))}` : ''}`,
+    )
+  },
   mergeEntities: (survivorId, loserId, reason = '', principal = DEFAULT_PRINCIPAL) =>
     request('/v1/entities/merge', {
       method: 'POST',

@@ -836,11 +836,25 @@ def make_handler(session: SynapseSession):
                 qs = parse_qs(urlparse(self.path).query)
                 principal = _principal_from_query(qs, session.store)
                 workspace_id = qs.get("workspace_id", [None])[0]
+                # workspace_ids (comma-separated) is the cross-workspace form
+                # -- mirrors /v1/super-schema's multi-workspace combine step,
+                # but for entities: an entity touching ANY of the given
+                # workspaces enters the pool, so name/cross-system blocking
+                # can catch the same real-world entity landed under two
+                # different workspaces, not just within one. workspace_id
+                # (singular) keeps working as the single-workspace case.
+                workspace_ids_param = qs.get("workspace_ids", [None])[0]
+                if workspace_ids_param:
+                    target_workspace_ids = {w for w in workspace_ids_param.split(",") if w}
+                elif workspace_id:
+                    target_workspace_ids = {workspace_id}
+                else:
+                    target_workspace_ids = set()
                 visible_entities = [
                     e for e in filter_entities(principal, session.store.entities.values())
                     if e.status.value == "active"
                 ]
-                if workspace_id:
+                if target_workspace_ids:
                     store = session.store
                     # Entities carry no workspace of their own (ER predates
                     # workspaces and can legitimately merge identities across
@@ -851,13 +865,13 @@ def make_handler(session: SynapseSession):
                     # landed across every workspace against every other,
                     # burying real candidates under cross-workspace noise
                     # from unrelated datasets.
-                    def _touches_workspace(entity) -> bool:
+                    def _touches_any_workspace(entity) -> bool:
                         for fact in store.facts_for_entity(entity.entity_id):
-                            if store.workspace_for_source(fact.source_system) == workspace_id:
+                            if store.workspace_for_source(fact.source_system) in target_workspace_ids:
                                 return True
                         return False
 
-                    visible_entities = [e for e in visible_entities if _touches_workspace(e)]
+                    visible_entities = [e for e in visible_entities if _touches_any_workspace(e)]
                 candidates = generate_entity_merge_candidates(
                     session.store, entities=visible_entities, ontology=session.ontology
                 )

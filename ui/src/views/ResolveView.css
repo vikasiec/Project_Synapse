@@ -1,5 +1,15 @@
-.resolve-scroll {
+.resolve-shell {
   height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.resolve-shell .resolve-empty {
+  flex: 1;
+}
+
+.resolve-scroll {
+  flex: 1;
   overflow-y: auto;
   padding: 24px;
 }
