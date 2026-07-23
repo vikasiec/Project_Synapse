@@ -134,3 +134,69 @@ def extract_nested_vendor_json_rows(parsed: Any) -> dict[str, list[dict[str, str
             rows[child_field_name].append(child_row)
 
     return dict(rows)
+
+
+def auto_link_structure(store, ontology, base_source: str, *, principal=None) -> list:
+    """Auto-confirms envelope (primary) <-> content (child) via the
+    synthetic "<primary>_index" join key every record on both sides
+    carries -- same envelope-to-content relationship HL7's MSH<->segments
+    and FHIR's Bundle<->resources get, and the same reasoning: a result
+    belonging to the specimen it was landed under is a fact of the file's
+    own structure, not an inferred cross-source guess, so it's created
+    already-confirmed rather than left as a candidate needing a click.
+    Idempotent: skips if the pair is already linked, so re-landing the
+    same file is a no-op.
+
+    Unlike hl7_semantics.auto_link_structure (a fixed table of segment
+    pairs known ahead of time) this has to first figure out which of the
+    base source's two virtual sub-sources is the primary and which is the
+    child, since vendor JSON field names vary per vendor -- done by
+    checking which side's OWN profile already carries the "<candidate>_
+    index" field it would have generated for itself (see
+    flatten_nested_vendor_json_by_type)."""
+    from synapse.matching import score_pair
+    from synapse.profiling import SchemaProfiler
+
+    profiler = SchemaProfiler(store)
+    known = profiler.known_sources(principal=principal)
+    sub_names = [s.split("::", 1)[1] for s in known if s.split("::", 1)[0] == base_source and "::" in s]
+    if len(sub_names) != 2:
+        return []
+
+    profiles_by_sub = {name: profiler.profile_source(f"{base_source}::{name}", principal=principal) for name in sub_names}
+    primary_name = child_name = None
+    for candidate in sub_names:
+        other = next(n for n in sub_names if n != candidate)
+        index_field = f"{candidate}_index"
+        if index_field in profiles_by_sub[candidate] and index_field in profiles_by_sub[other]:
+            primary_name, child_name = candidate, other
+            break
+    if primary_name is None:
+        return []
+
+    index_field = f"{primary_name}_index"
+    primary_source = f"{base_source}::{primary_name}"
+    child_source = f"{base_source}::{child_name}"
+    profile_a = profiles_by_sub[primary_name].get(index_field)
+    profile_b = profiles_by_sub[child_name].get(index_field)
+    if profile_a is None or profile_b is None:
+        return []
+
+    source_a_ref = {"source_system": primary_source, "field_name": index_field}
+    source_b_ref = {"source_system": child_source, "field_name": index_field}
+    existing = ontology.find_relationship_by_pair(source_a_ref, source_b_ref)
+    if existing is not None:
+        return [existing]
+
+    edge = score_pair(store, ontology, profile_a, profile_b, force=True)
+    if edge is None:
+        return []
+    confirmed = ontology.accept_relationship(
+        candidate_id=edge.candidate_id,
+        source_a=edge.source_a,
+        source_b=edge.source_b,
+        predicate="FOREIGN_KEY_TO",
+        match_reasons=list(edge.match_reasons) + ["Vendor JSON envelope-to-content structural fact (shared synthetic index)"],
+        similarity_score=edge.similarity_score,
+    )
+    return [confirmed]

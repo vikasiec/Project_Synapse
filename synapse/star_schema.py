@@ -35,10 +35,46 @@ import sqlite3
 from pathlib import Path
 from typing import Any, Optional
 
+from synapse.clinical_flags import compute_flag_for_row, compute_flag_for_row_split_range
 from synapse.row_extraction import extract_rows
 from synapse.super_schema import compute_super_schema
 
 _MEASURE_TYPES = {"Float", "Integer"}
+
+# Known (value_field, combined_range_field) or (value_field, low_field,
+# high_field) shapes this project's formats actually emit a reference
+# range in -- docs/Instrument_Data_Format.md section 4's clinical
+# normalization engine. Finite and explicit (not a generic "guess which
+# columns pair up" heuristic) since a wrong guess would silently fabricate
+# a clinical severity flag from unrelated columns; a fact table whose
+# shape isn't listed here simply gets no clinical_flag column, same "don't
+# guess" discipline as everywhere else in this module.
+_CLINICAL_FLAG_SHAPES: list[tuple[str, str, str]] = [
+    ("observation_value", "reference_range", ""),  # HL7 OBX
+    ("resultValue", "referenceRange", ""),  # Abbott Alinity results
+    ("result_value", "reference_range_low", "reference_range_high"),  # ASTM R
+]
+
+_CLINICAL_FLAG_COLUMN = "clinical_flag"
+
+
+def _clinical_flag_shape_for(columns: set[str]) -> Optional[tuple[str, str, str]]:
+    for value_field, range_a, range_b in _CLINICAL_FLAG_SHAPES:
+        if value_field not in columns:
+            continue
+        if range_b:
+            if range_a in columns and range_b in columns:
+                return value_field, range_a, range_b
+        elif range_a in columns:
+            return value_field, range_a, ""
+    return None
+
+
+def _compute_clinical_flag(row: dict[str, str], shape: tuple[str, str, str]) -> Optional[str]:
+    value_field, range_a, range_b = shape
+    if range_b:
+        return compute_flag_for_row_split_range(row, value_field, range_a, range_b)
+    return compute_flag_for_row(row, value_field, range_a)
 
 
 def _is_measure_field(name: str, data_type: str) -> bool:
@@ -208,13 +244,17 @@ def _plan(store, ontology, profiler, workspace_ids: list[str], *, principal=None
                 best_by_table[table] = fk
         unique_fks = list(best_by_table.values())
 
+        source_columns = sorted(profiles_by_source[s].keys())
+        clinical_flag_shape = _clinical_flag_shape_for(set(source_columns))
+        display_columns = source_columns + ([_CLINICAL_FLAG_COLUMN] if clinical_flag_shape else [])
         fact_plans.append(
             {
                 "table": f"fact_{s.split('::')[-1].lower()}",
                 "source": s,
                 "measures": measures_by_source[s],
                 "foreign_keys": unique_fks,
-                "columns": sorted(profiles_by_source[s].keys()),
+                "columns": display_columns,
+                "clinical_flag_shape": clinical_flag_shape,
             }
         )
 
@@ -312,12 +352,18 @@ def execute_star_schema(
             rows = _rows_for_source(profiler, source, principal)
             fk_specs = fact["foreign_keys"]
             measure_cols = fact["measures"]
+            clinical_flag_shape = fact["clinical_flag_shape"]
             fk_fact_fields = {fk["fact_field"] for fk in fk_specs}
-            other_cols = [c for c in fact["columns"] if c not in measure_cols and c not in fk_fact_fields]
+            other_cols = [
+                c
+                for c in fact["columns"]
+                if c not in measure_cols and c not in fk_fact_fields and c != _CLINICAL_FLAG_COLUMN
+            ]
             fk_out_cols = [f'{fk["dimension_table"]}_key' for fk in fk_specs]
 
             table_name = fact["table"]
-            all_cols = fk_out_cols + measure_cols + other_cols
+            flag_cols = [_CLINICAL_FLAG_COLUMN] if clinical_flag_shape else []
+            all_cols = fk_out_cols + measure_cols + other_cols + flag_cols
             col_defs = ", ".join(
                 f'"{c}" {"INTEGER" if c in fk_out_cols else "TEXT"}' for c in all_cols
             )
@@ -334,6 +380,8 @@ def execute_star_schema(
                     values.append(row.get(c))
                 for c in other_cols:
                     values.append(row.get(c))
+                if clinical_flag_shape:
+                    values.append(_compute_clinical_flag(row, clinical_flag_shape))
                 insert_rows.append(values)
 
             col_list = ", ".join([f'"{c}"' for c in all_cols])

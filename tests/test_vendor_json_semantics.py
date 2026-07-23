@@ -11,12 +11,16 @@ import os
 import unittest
 
 from synapse.vendor_json_semantics import (
+    auto_link_structure,
     detect_nested_vendor_json,
     extract_nested_vendor_json_rows,
     flatten_nested_vendor_json_by_type,
     looks_like_nested_vendor_json,
 )
+from synapse.models import RawObject
+from synapse.ontology import OntologyRegistry
 from synapse.profiling import _extract_field_values, list_virtual_sources
+from synapse.store import SemanticStore
 
 _REAL_FILE = os.path.join("Instrument Data", "instrument_abbott_alinity_raw.json")
 
@@ -124,6 +128,51 @@ class TestNestedVendorJsonRowExtraction(unittest.TestCase):
     def test_primary_rows_one_per_specimen(self):
         rows = extract_nested_vendor_json_rows(SAMPLE)
         self.assertEqual(len(rows["alinityBatchExport"]), 2)
+
+
+class TestVendorJsonStructuralAutoLink(unittest.TestCase):
+    """Real gap this covers: the envelope<->content join key was injected
+    into every row (test_row_carries_join_keys_back_to_its_own_specimen
+    above), but nothing was ever auto-confirming it as a real relationship
+    the way HL7/FHIR/ASTM's own structural facts are -- caught live via
+    "why do alinityBatchExport and results show no relationship at all,"
+    same class of gap as everywhere else in this session where a fact
+    about a file's own structure was silently left as a candidate."""
+
+    def _seeded(self):
+        store = SemanticStore()
+        ontology = OntologyRegistry.default()
+        ontology.store = store
+        store.put_raw(
+            RawObject.create(source_system="Abbott", payload=json.dumps(SAMPLE), acl_tags=["domain:sre", "clearance:l2"])
+        )
+        return store, ontology
+
+    def test_confirms_envelope_to_content_link(self):
+        store, ontology = self._seeded()
+        edges = auto_link_structure(store, ontology, "Abbott")
+        self.assertEqual(len(edges), 1)
+        edge = edges[0]
+        self.assertEqual(edge.predicate, "FOREIGN_KEY_TO")
+        systems = {edge.source_a["source_system"], edge.source_b["source_system"]}
+        self.assertEqual(systems, {"Abbott::alinityBatchExport", "Abbott::results"})
+
+    def test_idempotent_no_duplicate_on_second_run(self):
+        store, ontology = self._seeded()
+        auto_link_structure(store, ontology, "Abbott")
+        before = len(ontology.relationships)
+        auto_link_structure(store, ontology, "Abbott")
+        self.assertEqual(len(ontology.relationships), before)
+
+    def test_no_op_for_a_non_nested_source(self):
+        store = SemanticStore()
+        ontology = OntologyRegistry.default()
+        ontology.store = store
+        store.put_raw(
+            RawObject.create(source_system="PlainJson", payload=json.dumps({"a": 1, "b": 2}), acl_tags=["domain:sre", "clearance:l2"])
+        )
+        edges = auto_link_structure(store, ontology, "PlainJson")
+        self.assertEqual(edges, [])
 
 
 @unittest.skipUnless(os.path.exists(_REAL_FILE), "Instrument Data/ is a local, untracked upload -- not present in every checkout")

@@ -1339,6 +1339,46 @@ def make_handler(session: SynapseSession):
                 )
                 return _json_response(self, 200, result)
 
+            if path == "/v1/materialize/star-schema/egress":
+                # docs/Instrument_Data_Format.md section 5: canonical CSV/
+                # HL7/FHIR export, built on top of an already-materialized
+                # warehouse (POST .../execute must have run against this
+                # db_path first) rather than re-deriving extraction.
+                # "as _Path": another branch elsewhere in this same do_POST
+                # function does a local "from pathlib import Path", which
+                # (Python function-scoping quirk) makes the bare name
+                # "Path" local to the *entire* do_POST function, shadowing
+                # the module-level import even in branches that never
+                # execute that other import -- same reason api.py already
+                # has a precedent for this exact alias elsewhere.
+                from pathlib import Path as _Path
+
+                from synapse.egress import export_csv_tables, export_fhir_bundle, export_hl7
+
+                principal = _principal_from_body(body, session.store)
+                if not _require_role(self, principal, "operator"):
+                    return None
+                db_path = body.get("db_path")
+                if not db_path or not _Path(db_path).exists():
+                    return _json_response(self, 400, {"error": "db_path must point at an already-materialized warehouse (run .../execute first)"})
+                formats = body.get("formats") or ["csv", "hl7", "fhir"]
+                result: dict[str, Any] = {}
+                if "csv" in formats:
+                    label = _Path(db_path).stem
+                    csv_dir = body.get("csv_output_dir") or f".data/egress_{label}_csv"
+                    result["csv"] = export_csv_tables(db_path, csv_dir)
+                if "hl7" in formats:
+                    hl7_text = export_hl7(db_path)
+                    hl7_path = _Path(db_path).with_suffix(".hl7")
+                    hl7_path.write_text(hl7_text, encoding="utf-8")
+                    result["hl7"] = {"path": str(hl7_path), "message_count": hl7_text.count("MSH|")}
+                if "fhir" in formats:
+                    bundle = export_fhir_bundle(db_path)
+                    fhir_path = _Path(db_path).with_suffix(".fhir.json")
+                    fhir_path.write_text(json.dumps(bundle, indent=2), encoding="utf-8")
+                    result["fhir"] = {"path": str(fhir_path), "entry_count": len(bundle.get("entry", []))}
+                return _json_response(self, 200, result)
+
             if path == "/v1/explore/ingest":
                 # Explore journey step 1 for real use, not just already-
                 # landed demo sources: the browser reads a picked file's
@@ -1433,8 +1473,30 @@ def make_handler(session: SynapseSession):
                             # resource genuinely belongs to the bundle it
                             # was landed with, not a matched guess.
                             from synapse.profiling import auto_link_fhir_bundle
+                            from synapse.vendor_json_semantics import (
+                                auto_link_structure as vendor_json_auto_link_structure,
+                            )
 
                             auto_link_fhir_bundle(session.store, session.ontology, source_system)
+                            # Same reasoning again for a generic nested-
+                            # repeating-group vendor JSON (Abbott-shaped):
+                            # a no-op if this file was actually a FHIR
+                            # Bundle (no matching virtual sub-source pair).
+                            vendor_json_auto_link_structure(session.store, session.ontology, source_system)
+                if landed:
+                    # AliasMapper (docs/Instrument_Data_Format.md section 3):
+                    # additive to every format's own structural auto-link
+                    # above, so it runs regardless of which branch landed
+                    # this source -- known field-name aliases (PatientID/
+                    # patient_ref/PtID/...) against every OTHER already-known
+                    # source in this workspace, auto-confirmed only when
+                    # real value overlap corroborates it too (see
+                    # matching.auto_link_aliases's docstring for why).
+                    from synapse.matching import auto_link_aliases
+                    from synapse.profiling import SchemaProfiler
+
+                    profiler = SchemaProfiler(session.store)
+                    auto_link_aliases(session.store, session.ontology, profiler, source_system, workspace_id=workspace_id)
                 session.sync_graph()
                 return _json_response(
                     self,

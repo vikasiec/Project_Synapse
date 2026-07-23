@@ -16,6 +16,7 @@ export default function WarehouseView() {
   const [selectedIds, setSelectedIds] = useState([])
   const [preview, setPreview] = useState(null)
   const [result, setResult] = useState(null)
+  const [egressResult, setEgressResult] = useState(null)
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState(null)
 
@@ -51,6 +52,7 @@ export default function WarehouseView() {
     if (selectedIds.length === 0) return
     setBusy(true)
     setError(null)
+    setEgressResult(null)
     try {
       const data = await api.executeStarSchema(selectedIds)
       setResult(data)
@@ -60,6 +62,20 @@ export default function WarehouseView() {
       setBusy(false)
     }
   }, [selectedIds])
+
+  const runEgress = useCallback(async () => {
+    if (!result?.db_path) return
+    setBusy(true)
+    setError(null)
+    try {
+      const data = await api.egressStarSchema(result.db_path, ['csv', 'hl7', 'fhir'])
+      setEgressResult(data)
+    } catch (e) {
+      setError(e.message)
+    } finally {
+      setBusy(false)
+    }
+  }, [result])
 
   return (
     <div className="explore-shell warehouse-shell">
@@ -114,6 +130,29 @@ export default function WarehouseView() {
                 ))}
               </tbody>
             </table>
+            <button className="file-ingest-btn secondary" disabled={busy} onClick={runEgress}>
+              Export as CSV / HL7 / FHIR…
+            </button>
+            {egressResult && (
+              <div className="warehouse-egress-result">
+                {egressResult.csv && (
+                  <div className="warehouse-plan-row">
+                    <strong>CSV:</strong> {Object.keys(egressResult.csv).length} table files under{' '}
+                    {Object.values(egressResult.csv)[0]?.split(/[\\/]/).slice(0, -1).join('/')}
+                  </div>
+                )}
+                {egressResult.hl7 && (
+                  <div className="warehouse-plan-row">
+                    <strong>HL7:</strong> {egressResult.hl7.message_count} messages → {egressResult.hl7.path}
+                  </div>
+                )}
+                {egressResult.fhir && (
+                  <div className="warehouse-plan-row">
+                    <strong>FHIR:</strong> {egressResult.fhir.entry_count} entries → {egressResult.fhir.path}
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         )}
 

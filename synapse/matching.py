@@ -38,6 +38,47 @@ CANDIDATE_THRESHOLD = 0.50
 # than requiring the name signal to contribute anything.
 VALUE_OVERLAP_OVERRIDE_THRESHOLD = 0.90
 
+# Deterministic field-name alias groups (docs/Instrument_Data_Format.md
+# section 3's "AliasMapper", built as a supplementary signal on top of the
+# fuzzy VectorSim/trigram matching above, not a replacement for it) --
+# known vendor/LIS/middleware naming variants for the same real-world
+# concept that trigram similarity alone often misses (e.g. "PtID" vs
+# "patient_id" share almost no substrings despite being obvious synonyms
+# to a human). Explicit and human-reviewable, same spirit as HL7's
+# STRUCTURAL_LINKS -- add a variant here only when it's a genuinely known
+# naming convention, not a guess. Deliberately scoped to atomic identifier
+# concepts (never composite/name fields): an identifier either is the same
+# real-world reference or isn't, whereas a "combined name" field and a
+# "split last/first name" field aren't really the same shape even when
+# they describe the same person, so asserting them as literally aliased
+# would overclaim.
+ALIAS_GROUPS: dict[str, frozenset[str]] = {
+    "patient_identity": frozenset({
+        "patientid", "patient_ref", "ptid", "patient_id", "pid-3",
+        "subject.reference", "patientidentifier", "patient_identifier",
+    }),
+    "specimen_identity": frozenset({
+        "sampleid", "sample_id", "specimenbarcode", "specimen_id",
+        "specimenid", "barcode",
+    }),
+    "assay_identity": frozenset({
+        "testcode", "test_code", "assaycode", "assay_code",
+    }),
+}
+
+
+def _alias_group_for(field_name: str) -> Optional[str]:
+    lname = field_name.lower()
+    for group, variants in ALIAS_GROUPS.items():
+        if lname in variants:
+            return group
+    return None
+
+
+def fields_are_known_aliases(field_a: str, field_b: str) -> bool:
+    group_a = _alias_group_for(field_a)
+    return group_a is not None and group_a == _alias_group_for(field_b)
+
 
 def vector_sim(a: SchemaFieldProfile, b: SchemaFieldProfile) -> float:
     return cosine_similarity(a.semantic_vector, b.semantic_vector)
@@ -136,22 +177,38 @@ def score_pair(
     voverlap = value_overlap(profile_a, profile_b)
     gprox = graph_proximity(store, ontology, profile_a.source_system, profile_b.source_system)
 
+    # A known alias pair counts as a full name-similarity signal for
+    # scoring purposes (that's what "known alias" means -- trigram
+    # similarity just can't see it) while match_reasons below still
+    # reports the real vsim, so the explanation stays honest about what
+    # trigram similarity alone found.
+    alias_match = (
+        fields_are_known_aliases(profile_a.field_name, profile_b.field_name)
+        and profile_a.data_type == profile_b.data_type
+    )
+    effective_vsim = 1.0 if alias_match else vsim
+
     s_total = round(
-        VECTOR_WEIGHT * vsim + VALUE_OVERLAP_WEIGHT * voverlap + GRAPH_PROXIMITY_WEIGHT * gprox, 4
+        VECTOR_WEIGHT * effective_vsim + VALUE_OVERLAP_WEIGHT * voverlap + GRAPH_PROXIMITY_WEIGHT * gprox, 4
     )
     value_overlap_override = (
         voverlap >= VALUE_OVERLAP_OVERRIDE_THRESHOLD and profile_a.data_type == profile_b.data_type
     )
-    if s_total < CANDIDATE_THRESHOLD and not force and not value_overlap_override:
+    if s_total < CANDIDATE_THRESHOLD and not force and not value_overlap_override and not alias_match:
         return None
 
     reasons = _match_reasons(vsim, voverlap, gprox, profile_a, profile_b)
+    if alias_match:
+        reasons = reasons + [f"Known field-name alias ({profile_a.field_name} ↔ {profile_b.field_name})"]
     if s_total < CANDIDATE_THRESHOLD and value_overlap_override:
         status = "candidate"
         reasons = reasons + [
             "Strong value overlap despite low name similarity "
             "(possibly a different naming convention or language)"
         ]
+    elif s_total < CANDIDATE_THRESHOLD and alias_match:
+        status = "candidate"
+        reasons = reasons + ["Known vendor field-name alias, but observed values don't corroborate it yet"]
     elif s_total < CANDIDATE_THRESHOLD:
         status = "manual"
         reasons = reasons + ["Manually connected by user (score below the usual candidate threshold)"]
@@ -279,3 +336,81 @@ def analyze_sources(
             edges.append(edge)
     edges.sort(key=lambda e: e.similarity_score, reverse=True)
     return edges
+
+
+def auto_link_aliases(
+    store: SemanticStore,
+    ontology: OntologyRegistry,
+    profiler: Any,
+    new_source: str,
+    *,
+    workspace_id: Optional[str] = None,
+    principal: Any = None,
+) -> list[Any]:
+    """Run once at ingest for a newly-landed source (docs/Instrument_Data_
+    Format.md section 3's "AliasMapper", additive to -- not a replacement
+    for -- the fuzzy VectorSim matching every other candidate path already
+    runs): pairs the new source's fields against every other already-known
+    source in the same workspace, and auto-confirms only the pairs that are
+    BOTH a known field-name alias AND well-corroborated by real observed
+    value overlap (status == "high_confidence" from score_pair's normal
+    threshold logic, forced past the strict-drop floor by the alias itself
+    -- see score_pair's alias_match handling).
+
+    Deliberately conservative about what gets silently asserted as fact:
+    an alias match alone (e.g. two different vendors' files both calling a
+    field "patient_id") does NOT by itself mean the two specific datasets
+    share real patients -- unrelated demo files can use the same *label*
+    for genuinely different value spaces. Requiring real value overlap too
+    is what makes auto-confirm honest here (same reasoning HL7/ASTM's
+    structural links get to skip: those really are facts about one file's
+    own structure, not a claim about two independently-curated datasets
+    actually corresponding). A well-named-but-uncorroborated pair still
+    surfaces as a normal "candidate" for review, exactly like any other
+    scored match -- nothing is hidden, just not silently confirmed.
+
+    `new_source` is the just-landed source's BASE name -- for a
+    decomposable format (HL7/ASTM/FHIR/vendor JSON) that expands to
+    several virtual sub-sources ("base::TYPE"), each of which needs its
+    own alias check against every other known source, not just the base
+    name itself (which has no fields of its own once decomposed -- see
+    profiling.py's "no type_filter on decomposable content -> {}" rule)."""
+    all_known = profiler.known_sources(principal=principal, workspace_id=workspace_id)
+    new_expanded = [s for s in all_known if s.split("::", 1)[0] == new_source]
+    if not new_expanded:
+        return []
+
+    created: list[Any] = []
+    for new_full in new_expanded:
+        new_profiles = profiler.profile_source(new_full, principal=principal, workspace_id=workspace_id)
+        if not new_profiles:
+            continue
+        for other_source in all_known:
+            if other_source.split("::", 1)[0] == new_source:
+                continue  # same landed file -- structural links (if any) already cover this
+            other_profiles = profiler.profile_source(other_source, principal=principal, workspace_id=workspace_id)
+            if not other_profiles:
+                continue
+            for field_a, profile_a in new_profiles.items():
+                for field_b, profile_b in other_profiles.items():
+                    if not fields_are_known_aliases(field_a, field_b):
+                        continue
+                    source_a_ref = {"source_system": new_full, "field_name": field_a}
+                    source_b_ref = {"source_system": other_source, "field_name": field_b}
+                    if ontology.is_pair_rejected(source_a_ref, source_b_ref):
+                        continue
+                    if ontology.find_relationship_by_pair(source_a_ref, source_b_ref) is not None:
+                        continue
+                    edge = score_pair(store, ontology, profile_a, profile_b, force=True)
+                    if edge is None or edge.status != "high_confidence":
+                        continue
+                    confirmed = ontology.accept_relationship(
+                        candidate_id=edge.candidate_id,
+                        source_a=edge.source_a,
+                        source_b=edge.source_b,
+                        predicate="SAME_ENTITY_AS",
+                        match_reasons=edge.match_reasons,
+                        similarity_score=edge.similarity_score,
+                    )
+                    created.append(confirmed)
+    return created

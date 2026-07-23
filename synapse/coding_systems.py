@@ -135,6 +135,79 @@ def normalize_code(system: Optional[str], code: Optional[str]) -> str:
     return f"{slug}:{code.upper()}"
 
 
+# --- Local vendor code -> LOINC translation (docs/Instrument_Data_Format.md
+# section 4, "Clinical Normalization Engine") -----------------------------
+# `normalize_code()` above answers "do these two sources both claim the
+# SAME coding system for this code" -- it never translates a genuinely
+# local/proprietary code into a standard one. This table does that
+# translation, scoped ONLY to the specific local codes actually observed
+# in this project's real sample files (Roche Cobas 8000's ASTM codes,
+# Siemens Atellica's numeric local codes, Abbott Alinity's ALIN- prefixed
+# codes, Beckman AU5800's channel-abbreviation codes, Sysmex's CBC/diff
+# panel field names) -- real, independently-verifiable LOINC codes for
+# well-established, standard lab analytes, not invented mappings. A code
+# with no entry here simply has no known LOINC translation; callers should
+# treat that as "unknown," not assume equivalence.
+#
+# Known limitation, stated up front: this is a flat local-code -> LOINC
+# table with no per-source scoping. A different vendor reusing one of
+# these exact short codes for a genuinely different analyte would collide.
+# None of the codes below are known to collide across the sources this
+# project actually has -- if a new source introduces one that does, this
+# table needs a (source_system, code) key instead of a bare code key.
+LOCAL_CODE_TO_LOINC: dict[str, str] = {
+    # Roche Cobas 8000 (ASTM R record test codes)
+    "GLUC3": "2345-7",  # Glucose
+    "CREP2": "2160-0",  # Creatinine
+    "TSH3": "3016-3",  # Thyroid Stimulating Hormone
+    "ALTL": "1742-6",  # Alanine Aminotransferase (ALT)
+    "ASTL": "1920-8",  # Aspartate Aminotransferase (AST)
+    "TNTHS": "10839-9",  # Troponin I, cardiac, high sensitivity
+    "UREAL": "3094-0",  # Urea Nitrogen (BUN)
+    "FERR2": "2276-4",  # Ferritin
+    # Siemens Atellica (numeric local codes from OBX-3's CE component)
+    "4055": "1989-3",  # Vitamin D, 25-Hydroxy
+    "4080": "2132-9",  # Vitamin B12
+    "4030": "3016-3",  # TSH, 3rd generation
+    "4001": "10839-9",  # Troponin I, High Sensitivity
+    "4025": "3024-7",  # Free Thyroxine (Free T4)
+    # Abbott Alinity ci-series
+    "ALIN-GLU": "2345-7",  # Glucose
+    "ALIN-TRIG": "2571-8",  # Triglycerides
+    "ALIN-HBA1C": "4548-4",  # Hemoglobin A1c
+    "ALIN-CHOL": "2093-3",  # Total Cholesterol
+    # Beckman AU5800 (channel/assay abbreviation codes)
+    "UA": "3084-1",  # Uric Acid
+    "ALP": "6768-6",  # Alkaline Phosphatase
+    "TP": "2885-2",  # Total Protein
+    "ALB": "1751-7",  # Albumin
+    "CA": "17861-6",  # Calcium
+    "PHOS": "2777-1",  # Phosphorus
+    # Sysmex XN-1000 (CBC/diff panel column names double as the analyte code)
+    "WBC": "6690-2",  # White Blood Cell count
+    "RBC": "789-8",  # Red Blood Cell count
+    "HGB": "718-7",  # Hemoglobin
+    "HCT": "4544-3",  # Hematocrit
+    "MCV": "787-2",  # Mean Corpuscular Volume
+    "MCH": "785-6",  # Mean Corpuscular Hemoglobin
+    "MCHC": "786-4",  # Mean Corpuscular Hemoglobin Concentration
+    "PLT": "777-3",  # Platelet count
+    "NEUT%": "770-8",  # Neutrophils, percent
+    "LYMPH%": "736-9",  # Lymphocytes, percent
+    "MONO%": "5905-5",  # Monocytes, percent
+    "EO%": "713-8",  # Eosinophils, percent
+    "BASO%": "706-2",  # Basophils, percent
+}
+
+
+def to_loinc(local_code: Optional[str]) -> Optional[str]:
+    """Translates a known local/vendor code to its real LOINC code, or None
+    if the code isn't in LOCAL_CODE_TO_LOINC -- "unknown," never a guess."""
+    if not local_code:
+        return None
+    return LOCAL_CODE_TO_LOINC.get(local_code.strip().upper())
+
+
 # --- CSV / LIS / middleware header synonyms -------------------------------
 # Canonical field -> the header spellings a real feed might use for it.
 # Scoped per ontology type: the same raw word ("status") can mean

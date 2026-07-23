@@ -98,6 +98,11 @@ export const api = {
       method: 'POST',
       body: { workspace_ids: workspaceIds, target_db_path: targetDbPath, principal },
     }),
+  egressStarSchema: (dbPath, formats, principal = DEFAULT_PRINCIPAL) =>
+    request('/v1/materialize/star-schema/egress', {
+      method: 'POST',
+      body: { db_path: dbPath, formats, principal },
+    }),
   getLayout: (workspaceId) =>
     request(workspaceId ? `/v1/schema/layout?workspace_id=${encodeURIComponent(workspaceId)}` : '/v1/schema/layout'),
   saveLayoutPosition: (sourceSystem, x, y, principal = DEFAULT_PRINCIPAL) =>

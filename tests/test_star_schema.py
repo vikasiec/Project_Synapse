@@ -251,5 +251,64 @@ class TestExecute(unittest.TestCase):
             session.close()
 
 
+class TestClinicalFlagColumn(unittest.TestCase):
+    """docs/Instrument_Data_Format.md section 4: a derived clinical_flag
+    column on fact tables whose shape carries a value + reference range
+    (HL7 OBX here; ASTM R and Abbott results use the same mechanism, see
+    tests/test_clinical_flags.py for the underlying evaluator)."""
+
+    def test_preview_lists_clinical_flag_column(self):
+        store = SemanticStore()
+        ontology = OntologyRegistry.default()
+        ontology.store = store
+        ws = _make_hl7_workspace(store, ontology)
+        profiler = SchemaProfiler(store)
+
+        plan = preview_star_schema(store, ontology, profiler, [ws.workspace_id])
+        obx = next(f for f in plan["facts"] if f["table"] == "fact_obx")
+        self.assertIn("clinical_flag", obx["columns"])
+
+    def test_execute_computes_correct_flags(self):
+        store = SemanticStore()
+        ontology = OntologyRegistry.default()
+        ontology.store = store
+        ws = _make_hl7_workspace(store, ontology)
+        profiler = SchemaProfiler(store)
+
+        with tempfile.TemporaryDirectory() as tmp:
+            target = str(Path(tmp) / "warehouse.db")
+            execute_star_schema(store, ontology, profiler, [ws.workspace_id], target)
+            conn = sqlite3.connect(target)
+            cur = conn.cursor()
+            cur.execute("SELECT observation_value, clinical_flag FROM fact_obx ORDER BY observation_value")
+            rows = cur.fetchall()
+            conn.close()
+            self.assertEqual(rows, [("13.1", "LOW"), ("14.2", "NORMAL")])
+
+    def test_no_clinical_flag_column_when_shape_not_recognized(self):
+        # A fact table with a measure but no reference-range field at all
+        # (e.g. Beckman's calculated_value has no range in this dataset)
+        # gets no clinical_flag column -- not a guessed/empty one.
+        store = SemanticStore()
+        ontology = OntologyRegistry.default()
+        ontology.store = store
+        ws = Workspace.create("No Range")
+        store.put_workspace(ws)
+        for i in range(1, 4):
+            store.put_raw(
+                RawObject.create(
+                    source_system="Beckman",
+                    payload=f"sample_id: S{i}\nrack_no: R1\nassay_abbr: UA\ncalculated_value: {i * 1.5}\nunits: mg/dL\n",
+                    acl_tags=["domain:sre", "clearance:l2"],
+                    workspace_id=ws.workspace_id,
+                )
+            )
+        profiler = SchemaProfiler(store)
+        plan = preview_star_schema(store, ontology, profiler, [ws.workspace_id])
+        fact = next((f for f in plan["facts"] if f["source"] == "Beckman"), None)
+        self.assertIsNotNone(fact)
+        self.assertNotIn("clinical_flag", fact["columns"])
+
+
 if __name__ == "__main__":
     unittest.main()
