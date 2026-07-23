@@ -141,11 +141,30 @@ def score_entity_pair(store: SemanticStore, a: Entity, b: Entity) -> Optional[En
 
 
 def generate_entity_merge_candidates(
-    store: SemanticStore, *, entities: Optional[list[Entity]] = None
+    store: SemanticStore, *, entities: Optional[list[Entity]] = None, ontology: Optional[object] = None
 ) -> list[EntityMergeCandidate]:
     """Step 3, tier 3 (Clustering, simplified to pairwise CandidateEdges --
     the Curation Canvas resolves transitive clusters one ACCEPT at a time,
     same as Major Goal 4's field-relationship curation).
+
+    `ontology`, when given, excludes entity types the ontology already
+    marks `strict_identity` (LabResult, Patient, Doctor, AccountHolder,
+    ...) from name-based blocking entirely. That flag exists precisely
+    because a shared display name is *not* evidence of sameness for these
+    types -- entity_resolution.py's own landing-time get_or_create()
+    already refuses to merge two same-named LabResults/Patients on name
+    alone, blocking on the authoritative external_id instead (its own
+    comment: "A name match alone must never merge two different real
+    people"). Real dataset caught this the hard way: 86 separately-landed
+    LabResult entities that all display as "Glucose" (one per patient,
+    correctly kept distinct on purpose) formed one name-block and flooded
+    Resolve with candidates to merge patients' results into each other --
+    exactly the outcome strict_identity exists to prevent. Skipping these
+    types here isn't a workaround; it's applying the same rule the rest
+    of the system already encodes, to the one place that had forgotten
+    to check it. Types without strict_identity (generic Person/Org, where
+    cross-system name variance like "Justin Mason" vs "J. Mason" really
+    is useful curator signal) are unaffected.
 
     Within a block, pair every member against one stable anchor (star
     topology) rather than every combination (complete graph) -- a block of
@@ -164,6 +183,12 @@ def generate_entity_merge_candidates(
     pool = entities if entities is not None else [
         e for e in store.entities.values() if e.status == EntityStatus.ACTIVE
     ]
+    if ontology is not None:
+        def _is_strict_identity(entity: Entity) -> bool:
+            ot = ontology.get(entity.entity_type) or ontology.get(entity.ontology_type or "")
+            return bool(ot and ot.strict_identity)
+
+        pool = [e for e in pool if not _is_strict_identity(e)]
     blocks = _name_blocks(pool)
 
     candidates: list[EntityMergeCandidate] = []

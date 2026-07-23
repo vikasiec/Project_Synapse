@@ -858,7 +858,9 @@ def make_handler(session: SynapseSession):
                         return False
 
                     visible_entities = [e for e in visible_entities if _touches_workspace(e)]
-                candidates = generate_entity_merge_candidates(session.store, entities=visible_entities)
+                candidates = generate_entity_merge_candidates(
+                    session.store, entities=visible_entities, ontology=session.ontology
+                )
                 return _json_response(self, 200, {"candidates": [c.to_dict() for c in candidates]})
             if path == "/v1/explore":
                 qs = parse_qs(urlparse(self.path).query)

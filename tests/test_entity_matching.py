@@ -8,6 +8,7 @@ import unittest
 
 from synapse.entity_matching import generate_entity_merge_candidates, score_entity_pair
 from synapse.models import Entity, Fact
+from synapse.ontology import OntologyRegistry
 from synapse.store import SemanticStore
 
 
@@ -91,6 +92,45 @@ class TestEntityMatching(unittest.TestCase):
         # collapses the whole block into one surviving entity.
         anchors = {c.entity_a["entity_id"] for c in candidates}
         self.assertEqual(len(anchors), 1)
+
+    def test_strict_identity_types_excluded_when_ontology_given(self) -> None:
+        # Real bug: LabResult is marked strict_identity=True in the
+        # ontology precisely because entity_resolution.py's own
+        # get_or_create() refuses to merge same-named LabResults/Patients
+        # on name alone (a shared display name like "Glucose" is expected
+        # across many different patients' results, not evidence they're
+        # the same record) -- but this module ignored that flag entirely
+        # and proposed exactly the merges the rest of the system exists
+        # to prevent.
+        store = SemanticStore()
+        ontology = OntologyRegistry.default()
+        acl = ["domain:sre", "clearance:l2"]
+        results = [Entity.create("LabResult", "Glucose", acl_tags=acl) for _ in range(5)]
+        for e in results:
+            store.put_entity(e)
+            _fact(store, e.entity_id, "HL7Feed")
+
+        # Without an ontology handle, existing (pre-fix) behavior is
+        # unchanged -- still generates candidates.
+        self.assertTrue(generate_entity_merge_candidates(store))
+
+        # With the ontology handle, strict_identity types are excluded.
+        candidates = generate_entity_merge_candidates(store, ontology=ontology)
+        self.assertEqual(candidates, [])
+
+    def test_non_strict_identity_types_unaffected_by_ontology_filter(self) -> None:
+        store = SemanticStore()
+        ontology = OntologyRegistry.default()
+        acl = ["domain:sre", "clearance:l2"]
+        crm = Entity.create("Person", "Justin Mason", acl_tags=acl)
+        billing = Entity.create("Person", "J. Mason", acl_tags=acl)
+        store.put_entity(crm)
+        store.put_entity(billing)
+        _fact(store, crm.entity_id, "CRM-Salesforce")
+        _fact(store, billing.entity_id, "Billing-Zuora")
+
+        candidates = generate_entity_merge_candidates(store, ontology=ontology)
+        self.assertTrue(candidates)
 
 
 if __name__ == "__main__":
