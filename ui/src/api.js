@@ -25,6 +25,11 @@ export const api = {
   listWorkspaces: () => request('/v1/workspaces'),
   createWorkspace: (name, description = '') =>
     request('/v1/workspaces', { method: 'POST', body: { name, description } }),
+  cloneWorkspace: (workspaceId, name, description = '', principal = DEFAULT_PRINCIPAL) =>
+    request(`/v1/workspaces/${encodeURIComponent(workspaceId)}/clone`, {
+      method: 'POST',
+      body: { name, description, principal },
+    }),
   ontology: (workspaceId) =>
     request(workspaceId ? `/v1/ontology?workspace_id=${encodeURIComponent(workspaceId)}` : '/v1/ontology'),
   explore: (workspaceId) =>
@@ -54,8 +59,10 @@ export const api = {
       method: 'POST',
       body: { action, candidate_id: candidateId, principal, ...extra },
     }),
-  mergeCandidates: (principal = DEFAULT_PRINCIPAL) =>
-    request(`/v1/er/merge-candidates?principal=${encodeURIComponent(principal)}`),
+  mergeCandidates: (workspaceId, principal = DEFAULT_PRINCIPAL) =>
+    request(
+      `/v1/er/merge-candidates?principal=${encodeURIComponent(principal)}${workspaceId ? `&workspace_id=${encodeURIComponent(workspaceId)}` : ''}`,
+    ),
   mergeEntities: (survivorId, loserId, reason = '', principal = DEFAULT_PRINCIPAL) =>
     request('/v1/entities/merge', {
       method: 'POST',

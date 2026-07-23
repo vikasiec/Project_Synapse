@@ -835,10 +835,29 @@ def make_handler(session: SynapseSession):
 
                 qs = parse_qs(urlparse(self.path).query)
                 principal = _principal_from_query(qs, session.store)
+                workspace_id = qs.get("workspace_id", [None])[0]
                 visible_entities = [
                     e for e in filter_entities(principal, session.store.entities.values())
                     if e.status.value == "active"
                 ]
+                if workspace_id:
+                    store = session.store
+                    # Entities carry no workspace of their own (ER predates
+                    # workspaces and can legitimately merge identities across
+                    # source systems) -- so scope via the facts that built
+                    # each entity: an entity "belongs" to a workspace if any
+                    # of its facts came from a source system landed there.
+                    # Without this, Resolve compared every entity ever
+                    # landed across every workspace against every other,
+                    # burying real candidates under cross-workspace noise
+                    # from unrelated datasets.
+                    def _touches_workspace(entity) -> bool:
+                        for fact in store.facts_for_entity(entity.entity_id):
+                            if store.workspace_for_source(fact.source_system) == workspace_id:
+                                return True
+                        return False
+
+                    visible_entities = [e for e in visible_entities if _touches_workspace(e)]
                 candidates = generate_entity_merge_candidates(session.store, entities=visible_entities)
                 return _json_response(self, 200, {"candidates": [c.to_dict() for c in candidates]})
             if path == "/v1/explore":
@@ -1201,6 +1220,22 @@ def make_handler(session: SynapseSession):
                 ws = Workspace.create(name, description)
                 session.store.put_workspace(ws)
                 return _json_response(self, 200, ws.to_dict())
+
+            if path.startswith("/v1/workspaces/") and path.endswith("/clone"):
+                principal = _principal_from_body(body, session.store)
+                if not _require_role(self, principal, "operator"):
+                    return None
+                source_workspace_id = path[len("/v1/workspaces/"):-len("/clone")]
+                if source_workspace_id not in session.store.workspaces:
+                    return _json_response(self, 404, {"error": f"unknown workspace_id: {source_workspace_id}"})
+                name = (body.get("name") or "").strip()
+                if not name:
+                    return _json_response(self, 400, {"error": "name is required"})
+                description = (body.get("description") or "").strip()
+                new_ws = session.store.clone_workspace(
+                    source_workspace_id, name, description, ontology=session.ontology
+                )
+                return _json_response(self, 200, new_ws.to_dict())
 
             if path == "/v1/super-schema":
                 from synapse.profiling import SchemaProfiler

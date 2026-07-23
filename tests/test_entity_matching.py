@@ -65,6 +65,33 @@ class TestEntityMatching(unittest.TestCase):
         self.assertIsNotNone(edge)
         self.assertNotIn("different source systems", " ".join(edge.match_reasons))
 
+    def test_large_identically_named_block_is_linear_not_quadratic(self) -> None:
+        # Real bug: 86 separately-created "Glucose" LabResult entities (one
+        # per occurrence, never deduped at landing time) produced C(86, 2)
+        # = 3655 pairwise candidates from this one block alone, burying
+        # Resolve under thousands of near-identical cards. Candidates
+        # should scale with block size (n-1, anchored), not its square.
+        store = SemanticStore()
+        acl = ["domain:sre", "clearance:l2"]
+        entities = [Entity.create("LabResult", "Glucose", acl_tags=acl) for _ in range(20)]
+        for e in entities:
+            store.put_entity(e)
+            _fact(store, e.entity_id, "HL7Feed")
+
+        candidates = generate_entity_merge_candidates(store)
+        self.assertEqual(len(candidates), 19)  # n - 1, not C(20, 2) = 190
+
+        # Every non-anchor entity is still reachable in some candidate --
+        # nothing is silently dropped, just not exhaustively paired.
+        touched = {c.entity_a["entity_id"] for c in candidates} | {c.entity_b["entity_id"] for c in candidates}
+        self.assertEqual(touched, {e.entity_id for e in entities})
+
+        # Every candidate shares the same anchor as entity_a, so accepting
+        # them one at a time (survivor = entity_a, the UI's convention)
+        # collapses the whole block into one surviving entity.
+        anchors = {c.entity_a["entity_id"] for c in candidates}
+        self.assertEqual(len(anchors), 1)
+
 
 if __name__ == "__main__":
     unittest.main()

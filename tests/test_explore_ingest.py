@@ -184,6 +184,54 @@ class TestExploreIngest(unittest.TestCase):
         status, body = self._post("/v1/workspaces", {})
         self.assertEqual(status, 400)
 
+    def test_workspace_clone_via_http(self):
+        status, ws = self._post("/v1/workspaces", {"name": "Save-As Source"})
+        self.assertEqual(status, 200)
+        status, body = self._post(
+            "/v1/explore/ingest",
+            {
+                "filename": "sa_orders.csv",
+                "content": "order_id\n1\n2\n",
+                "source_system": "SA_Orders",
+                "workspace_id": ws["workspace_id"],
+                "principal": "l2",
+            },
+        )
+        self.assertEqual(status, 200)
+
+        status, clone = self._post(
+            f"/v1/workspaces/{ws['workspace_id']}/clone",
+            {"name": "Save-As Copy", "principal": "l2"},
+        )
+        self.assertEqual(status, 200)
+        self.assertNotEqual(clone["workspace_id"], ws["workspace_id"])
+        self.assertEqual(clone["name"], "Save-As Copy")
+
+        with urllib.request.urlopen(
+            self._url(f"/v1/explore?principal=l2&workspace_id={clone['workspace_id']}")
+        ) as resp:
+            data = json.loads(resp.read().decode())
+        # Original source is present under a renamed identity in the clone,
+        # not reused verbatim (source_system is a global identity key).
+        clone_names = {s["source_system"] for s in data["sources"]}
+        self.assertNotIn("SA_Orders", clone_names)
+        self.assertEqual(len(clone_names), 1)
+
+        with urllib.request.urlopen(
+            self._url(f"/v1/explore?principal=l2&workspace_id={ws['workspace_id']}")
+        ) as resp:
+            original_data = json.loads(resp.read().decode())
+        self.assertIn("SA_Orders", {s["source_system"] for s in original_data["sources"]})
+
+    def test_workspace_clone_unknown_source_is_404(self):
+        status, _ = self._post("/v1/workspaces/does-not-exist/clone", {"name": "X", "principal": "l2"})
+        self.assertEqual(status, 404)
+
+    def test_workspace_clone_missing_name_is_400(self):
+        status, ws = self._post("/v1/workspaces", {"name": "Clone Name Check"})
+        status, _ = self._post(f"/v1/workspaces/{ws['workspace_id']}/clone", {"principal": "l2"})
+        self.assertEqual(status, 400)
+
 
 if __name__ == "__main__":
     unittest.main()

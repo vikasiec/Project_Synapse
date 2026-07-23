@@ -6,7 +6,7 @@ from dataclasses import dataclass, field
 from typing import Optional
 
 from synapse.audit import AuditLog
-from synapse.models import Claim, Conflict, Entity, Episode, Fact, RawObject
+from synapse.models import Claim, Conflict, Entity, Episode, Fact, RawObject, new_id, utc_now_iso
 from synapse.ontology import RejectedCandidate, RelationshipEdge
 from synapse.workspace import DEFAULT_WORKSPACE_ID, DEFAULT_WORKSPACE_NAME, Workspace
 
@@ -152,6 +152,83 @@ class SemanticStore:
         if existing is not None:
             return existing
         return self.put_workspace(Workspace(workspace_id=DEFAULT_WORKSPACE_ID, name=DEFAULT_WORKSPACE_NAME))
+
+    def clone_workspace(
+        self, source_workspace_id: str, new_name: str, description: str = "", *, ontology: Optional[object] = None
+    ) -> Workspace:
+        """"Save As" for a workspace: an independent, editable copy of
+        every source it contains plus the confirmed relationships that
+        connect them, under a brand-new workspace_id. source_system is
+        the identity key everything else (relationships, schema_layout,
+        profiling) is keyed on and is assumed globally unique -- so a
+        clone must rename each copied source, not reuse the original
+        name, or the two workspaces would collide on every downstream
+        lookup that assumes one owner per source_system.
+
+        The live app's confirmed-relationship reads (GET /v1/ontology,
+        Schema/Catalog views) go through OntologyRegistry.relationships,
+        an in-memory dict OntologyRegistry.accept_relationship() keeps in
+        sync with this store's relationship_edges on every normal
+        ACCEPT -- but that sync is one-directional (ontology -> store).
+        Writing straight into self.relationship_edges here would silently
+        desync from a live OntologyRegistry, so an optional `ontology`
+        handle is accepted and updated the same way accept_relationship
+        does, whenever the caller has one (the API route does)."""
+        new_ws = Workspace.create(new_name, description)
+        self.put_workspace(new_ws)
+        suffix = new_ws.workspace_id[:8]
+
+        source_raws = [r for r in self.raw_objects.values() if r.workspace_id == source_workspace_id]
+        rename_map: dict[str, str] = {}
+        for raw in source_raws:
+            rename_map.setdefault(raw.source_system, f"{raw.source_system}_copy_{suffix}")
+
+        for raw in source_raws:
+            clone = RawObject.create(
+                source_system=rename_map[raw.source_system],
+                payload=raw.raw_payload,
+                acl_tags=list(raw.acl_tags),
+                source_uri=raw.source_uri,
+                media_type=raw.media_type,
+                sensitivity=raw.sensitivity,
+                retention_class=raw.retention_class,
+                workspace_id=new_ws.workspace_id,
+            )
+            self.put_raw(clone)
+
+        def _remap(full_source_system: str) -> Optional[str]:
+            base, sep, sub = full_source_system.partition("::")
+            if base not in rename_map:
+                return None
+            return rename_map[base] + (sep + sub if sep else "")
+
+        for edge in list(self.relationship_edges.values()):
+            new_a = _remap(edge.source_a.get("source_system", ""))
+            new_b = _remap(edge.source_b.get("source_system", ""))
+            if new_a is None or new_b is None:
+                continue
+            new_edge = RelationshipEdge(
+                relationship_id=new_id(),
+                source_a={**edge.source_a, "source_system": new_a},
+                source_b={**edge.source_b, "source_system": new_b},
+                predicate=edge.predicate,
+                tier=edge.tier,
+                candidate_id=None,
+                match_reasons=edge.match_reasons,
+                similarity_score=edge.similarity_score,
+                accepted_at=utc_now_iso(),
+            )
+            if ontology is not None:
+                ontology.relationships[new_edge.relationship_id] = new_edge
+            self.put_relationship_edge(new_edge)
+
+        for full_source_system, entry in list(self.schema_layout.items()):
+            new_full = _remap(full_source_system)
+            if new_full is None:
+                continue
+            self.put_layout_position(new_full, entry["x"], entry["y"])
+
+        return new_ws
 
     def workspace_for_source(self, source_system: str) -> Optional[str]:
         """Resolves a (possibly virtual "base::SEGMENT") source_system back

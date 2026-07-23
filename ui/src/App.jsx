@@ -24,8 +24,8 @@ const LAST_WORKSPACE_KEY = 'synapse.lastWorkspaceId'
 // workspace's confirmed relationships *are* its schema. Every other view
 // just receives whichever workspace_id is currently selected; they don't
 // know or care how it got picked.
-function WorkspaceCreateForm({ onCreated, onCancel, busy, error }) {
-  const [name, setName] = useState('')
+function WorkspaceCreateForm({ onCreated, onCancel, busy, error, initialName = '', submitLabel = 'Create workspace' }) {
+  const [name, setName] = useState(initialName)
   const [description, setDescription] = useState('')
 
   return (
@@ -47,7 +47,7 @@ function WorkspaceCreateForm({ onCreated, onCancel, busy, error }) {
       {error && <div className="explore-error">{error}</div>}
       <div className="workspace-create-actions">
         <button type="submit" className="file-ingest-btn" disabled={busy || !name.trim()}>
-          Create workspace
+          {submitLabel}
         </button>
         {onCancel && (
           <button type="button" className="file-ingest-btn secondary" onClick={onCancel} disabled={busy}>
@@ -67,6 +67,9 @@ function App() {
   const [showCreateForm, setShowCreateForm] = useState(false)
   const [createBusy, setCreateBusy] = useState(false)
   const [createError, setCreateError] = useState(null)
+  const [showSaveAsForm, setShowSaveAsForm] = useState(false)
+  const [saveAsBusy, setSaveAsBusy] = useState(false)
+  const [saveAsError, setSaveAsError] = useState(null)
 
   const loadWorkspaces = useCallback(async () => {
     try {
@@ -110,6 +113,25 @@ function App() {
       }
     },
     [loadWorkspaces, selectWorkspace],
+  )
+
+  const handleSaveAs = useCallback(
+    async (name, description) => {
+      if (!workspaceId) return
+      setSaveAsBusy(true)
+      setSaveAsError(null)
+      try {
+        const ws = await api.cloneWorkspace(workspaceId, name, description)
+        await loadWorkspaces()
+        selectWorkspace(ws.workspace_id)
+        setShowSaveAsForm(false)
+      } catch (e) {
+        setSaveAsError(e.message)
+      } finally {
+        setSaveAsBusy(false)
+      }
+    },
+    [workspaceId, loadWorkspaces, selectWorkspace],
   )
 
   if (workspaces === null) {
@@ -163,8 +185,25 @@ function App() {
               </option>
             ))}
           </select>
-          <button className="file-ingest-btn secondary" onClick={() => setShowCreateForm((v) => !v)}>
+          <button
+            className="file-ingest-btn secondary"
+            onClick={() => {
+              setShowCreateForm((v) => !v)
+              setShowSaveAsForm(false)
+            }}
+          >
             + New workspace
+          </button>
+          <button
+            className="file-ingest-btn secondary"
+            onClick={() => {
+              setShowSaveAsForm((v) => !v)
+              setShowCreateForm(false)
+            }}
+            disabled={!current}
+            title="Save this workspace's sources and confirmed relationships as a new, independent workspace"
+          >
+            Save as…
           </button>
         </div>
       </header>
@@ -180,11 +219,24 @@ function App() {
         </div>
       )}
 
+      {showSaveAsForm && (
+        <div className="workspace-create-panel">
+          <WorkspaceCreateForm
+            onCreated={handleSaveAs}
+            onCancel={() => setShowSaveAsForm(false)}
+            busy={saveAsBusy}
+            error={saveAsError}
+            initialName={current ? `${current.name} (Copy)` : ''}
+            submitLabel="Save as new workspace"
+          />
+        </div>
+      )}
+
       <main className="content">
         {tab === 'explore' && (
           <ExploreView workspaceId={workspaceId} onCommitted={() => setCatalogVersion((v) => v + 1)} />
         )}
-        {tab === 'resolve' && <ResolveView />}
+        {tab === 'resolve' && <ResolveView workspaceId={workspaceId} />}
         {tab === 'schema' && <SchemaView workspaceId={workspaceId} />}
         {tab === 'catalog' && <CatalogView workspaceId={workspaceId} refreshKey={catalogVersion} />}
         {tab === 'super-schema' && <SuperSchemaView />}

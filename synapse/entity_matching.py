@@ -145,7 +145,22 @@ def generate_entity_merge_candidates(
 ) -> list[EntityMergeCandidate]:
     """Step 3, tier 3 (Clustering, simplified to pairwise CandidateEdges --
     the Curation Canvas resolves transitive clusters one ACCEPT at a time,
-    same as Major Goal 4's field-relationship curation)."""
+    same as Major Goal 4's field-relationship curation).
+
+    Within a block, pair every member against one stable anchor (star
+    topology) rather than every combination (complete graph) -- a block of
+    n identically-blocked entities is a real, common case (e.g. many
+    LabResult entities that all share a test name like "Glucose" because
+    per-record entity resolution never collapsed them into one shared
+    analyte identity) and C(n, 2) pairwise candidates for such a block
+    buries Resolve under thousands of near-duplicate cards for what is
+    really one repeated decision. Anchoring keeps every member reachable
+    in exactly one candidate (nothing hidden) while emitting n-1 pairs
+    instead of C(n, 2); since the anchor is always entity_a and the UI's
+    merge action keeps entity_a as the survivor, accepting each pair
+    collapses the block into the anchor one ACCEPT at a time, exactly as
+    the star-topology docstring above already promised for the general
+    case -- this just keeps that promise sub-quadratic too."""
     pool = entities if entities is not None else [
         e for e in store.entities.values() if e.status == EntityStatus.ACTIVE
     ]
@@ -156,18 +171,17 @@ def generate_entity_merge_candidates(
     for members in blocks.values():
         if len(members) < 2:
             continue
-        for i in range(len(members)):
-            for j in range(i + 1, len(members)):
-                a, b = members[i], members[j]
-                if a.entity_id == b.entity_id:
-                    continue
-                pair_key = tuple(sorted((a.entity_id, b.entity_id)))
-                if pair_key in seen_pairs:
-                    continue
-                seen_pairs.add(pair_key)
-                candidate = score_entity_pair(store, a, b)
-                if candidate is not None:
-                    candidates.append(candidate)
+        anchor = min(members, key=lambda e: e.entity_id)
+        for other in members:
+            if other.entity_id == anchor.entity_id:
+                continue
+            pair_key = tuple(sorted((anchor.entity_id, other.entity_id)))
+            if pair_key in seen_pairs:
+                continue
+            seen_pairs.add(pair_key)
+            candidate = score_entity_pair(store, anchor, other)
+            if candidate is not None:
+                candidates.append(candidate)
 
     candidates.sort(key=lambda c: c.similarity_score, reverse=True)
     return candidates

@@ -7,20 +7,21 @@ import './ResolveView.css'
 // candidates -- "We found 'Justin Mason' in the CRM and 'J. Mason' in the
 // Billing logs. Do you want to merge these entities?" -- distinct from
 // Explore's field-level candidates (this is entity-level, cross-system).
-export default function ResolveView() {
+export default function ResolveView({ workspaceId }) {
   const [candidates, setCandidates] = useState(null)
   const [error, setError] = useState(null)
   const [busyId, setBusyId] = useState(null)
   const [decided, setDecided] = useState({})
 
   const load = () => {
+    setCandidates(null)
     api
-      .mergeCandidates()
+      .mergeCandidates(workspaceId)
       .then((d) => setCandidates(d.candidates || []))
       .catch((e) => setError(e.message))
   }
 
-  useEffect(load, [])
+  useEffect(load, [workspaceId])
 
   const handleMerge = async (candidate) => {
     setBusyId(candidate.candidate_id)

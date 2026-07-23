@@ -9,8 +9,9 @@ import urllib.request
 from http.server import ThreadingHTTPServer
 
 from synapse.api import make_handler
-from synapse.models import Entity, Fact
+from synapse.models import Entity, Fact, RawObject
 from synapse.session import open_session
+from synapse.workspace import Workspace
 
 
 class TestErMergeCandidatesApi(unittest.TestCase):
@@ -64,6 +65,31 @@ class TestErMergeCandidatesApi(unittest.TestCase):
 
     def test_acl_hides_candidates_from_unrelated_domain(self):
         status, body = self._get("/v1/er/merge-candidates?principal=domain:banking,clearance:l2")
+        self.assertEqual(status, 200)
+        self.assertEqual(body["candidates"], [])
+
+    def test_workspace_id_scopes_candidates_to_that_workspaces_sources(self):
+        # Real bug: without this, Resolve compared every entity ever
+        # landed across every workspace against every other, since
+        # entities carry no workspace of their own and the endpoint
+        # ignored workspace boundaries entirely.
+        acl = ["domain:sre", "clearance:l2"]
+        ws_a = Workspace.create("WS A")
+        ws_b = Workspace.create("WS B")
+        self.session.store.put_workspace(ws_a)
+        self.session.store.put_workspace(ws_b)
+        self.session.store.put_raw(
+            RawObject.create(source_system="CRM-Salesforce", payload="x", acl_tags=acl, workspace_id=ws_a.workspace_id)
+        )
+        self.session.store.put_raw(
+            RawObject.create(source_system="Billing-Zuora", payload="x", acl_tags=acl, workspace_id=ws_a.workspace_id)
+        )
+
+        status, body = self._get(f"/v1/er/merge-candidates?principal=l2&workspace_id={ws_a.workspace_id}")
+        self.assertEqual(status, 200)
+        self.assertTrue(body["candidates"])
+
+        status, body = self._get(f"/v1/er/merge-candidates?principal=l2&workspace_id={ws_b.workspace_id}")
         self.assertEqual(status, 200)
         self.assertEqual(body["candidates"], [])
 
