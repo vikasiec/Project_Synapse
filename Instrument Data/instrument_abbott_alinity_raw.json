@@ -1,0 +1,5194 @@
+{
+  "alinityBatchExport": [
+    {
+      "instrumentDetails": {
+        "vendor": "Abbott Diagnostics",
+        "model": "Alinity ci-series",
+        "serialNumber": "ALN-CI-99201",
+        "firmwareVersion": "v3.12.4"
+      },
+      "specimenBarcode": "BC-ALINITY-40001",
+      "patientIdentifier": "PAT-ALN-6001",
+      "patientName": "Brown, Elizabeth",
+      "runTimestamp": "2026-07-22T09:02:00Z",
+      "executionModule": "MODULE_C1",
+      "results": [
+        {
+          "assayCode": "ALIN-GLU",
+          "assayName": "Glucose",
+          "resultValue": 109.74,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "70.0-105.0",
+          "interpretationFlag": "HIGH",
+          "reagentLotNumber": "LOT-2026-640"
+        },
+        {
+          "assayCode": "ALIN-TRIG",
+          "assayName": "Triglycerides",
+          "resultValue": 175.34,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "35.0-150.0",
+          "interpretationFlag": "HIGH",
+          "reagentLotNumber": "LOT-2026-154"
+        },
+        {
+          "assayCode": "ALIN-HBA1C",
+          "assayName": "Hemoglobin A1c",
+          "resultValue": 6.62,
+          "unitOfMeasure": "%",
+          "referenceRange": "4.0-5.6",
+          "interpretationFlag": "HIGH",
+          "reagentLotNumber": "LOT-2026-113"
+        },
+        {
+          "assayCode": "ALIN-CHOL",
+          "assayName": "Total Cholesterol",
+          "resultValue": 146.91,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "125.0-200.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-651"
+        }
+      ]
+    },
+    {
+      "instrumentDetails": {
+        "vendor": "Abbott Diagnostics",
+        "model": "Alinity ci-series",
+        "serialNumber": "ALN-CI-99201",
+        "firmwareVersion": "v3.12.4"
+      },
+      "specimenBarcode": "BC-ALINITY-40002",
+      "patientIdentifier": "PAT-ALN-6002",
+      "patientName": "Wilson, Karen",
+      "runTimestamp": "2026-07-22T09:04:00Z",
+      "executionModule": "MODULE_I1",
+      "results": [
+        {
+          "assayCode": "ALIN-HBA1C",
+          "assayName": "Hemoglobin A1c",
+          "resultValue": 6.49,
+          "unitOfMeasure": "%",
+          "referenceRange": "4.0-5.6",
+          "interpretationFlag": "HIGH",
+          "reagentLotNumber": "LOT-2026-470"
+        },
+        {
+          "assayCode": "ALIN-CHOL",
+          "assayName": "Total Cholesterol",
+          "resultValue": 135.51,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "125.0-200.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-793"
+        },
+        {
+          "assayCode": "ALIN-GLU",
+          "assayName": "Glucose",
+          "resultValue": 125.38,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "70.0-105.0",
+          "interpretationFlag": "HIGH",
+          "reagentLotNumber": "LOT-2026-493"
+        },
+        {
+          "assayCode": "ALIN-TRIG",
+          "assayName": "Triglycerides",
+          "resultValue": 158.98,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "35.0-150.0",
+          "interpretationFlag": "HIGH",
+          "reagentLotNumber": "LOT-2026-321"
+        }
+      ]
+    },
+    {
+      "instrumentDetails": {
+        "vendor": "Abbott Diagnostics",
+        "model": "Alinity ci-series",
+        "serialNumber": "ALN-CI-99201",
+        "firmwareVersion": "v3.12.4"
+      },
+      "specimenBarcode": "BC-ALINITY-40003",
+      "patientIdentifier": "PAT-ALN-6003",
+      "patientName": "Rodriguez, Robert",
+      "runTimestamp": "2026-07-22T09:06:00Z",
+      "executionModule": "MODULE_I1",
+      "results": [
+        {
+          "assayCode": "ALIN-CHOL",
+          "assayName": "Total Cholesterol",
+          "resultValue": 120.79,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "125.0-200.0",
+          "interpretationFlag": "LOW",
+          "reagentLotNumber": "LOT-2026-678"
+        },
+        {
+          "assayCode": "ALIN-GLU",
+          "assayName": "Glucose",
+          "resultValue": 105.71,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "70.0-105.0",
+          "interpretationFlag": "HIGH",
+          "reagentLotNumber": "LOT-2026-814"
+        },
+        {
+          "assayCode": "ALIN-TRIG",
+          "assayName": "Triglycerides",
+          "resultValue": 56.57,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "35.0-150.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-433"
+        },
+        {
+          "assayCode": "ALIN-HBA1C",
+          "assayName": "Hemoglobin A1c",
+          "resultValue": 5.49,
+          "unitOfMeasure": "%",
+          "referenceRange": "4.0-5.6",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-215"
+        }
+      ]
+    },
+    {
+      "instrumentDetails": {
+        "vendor": "Abbott Diagnostics",
+        "model": "Alinity ci-series",
+        "serialNumber": "ALN-CI-99201",
+        "firmwareVersion": "v3.12.4"
+      },
+      "specimenBarcode": "BC-ALINITY-40004",
+      "patientIdentifier": "PAT-ALN-6004",
+      "patientName": "Rodriguez, Michael",
+      "runTimestamp": "2026-07-22T09:08:00Z",
+      "executionModule": "MODULE_C1",
+      "results": [
+        {
+          "assayCode": "ALIN-GLU",
+          "assayName": "Glucose",
+          "resultValue": 98.85,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "70.0-105.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-700"
+        },
+        {
+          "assayCode": "ALIN-CHOL",
+          "assayName": "Total Cholesterol",
+          "resultValue": 181.55,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "125.0-200.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-163"
+        }
+      ]
+    },
+    {
+      "instrumentDetails": {
+        "vendor": "Abbott Diagnostics",
+        "model": "Alinity ci-series",
+        "serialNumber": "ALN-CI-99201",
+        "firmwareVersion": "v3.12.4"
+      },
+      "specimenBarcode": "BC-ALINITY-40005",
+      "patientIdentifier": "PAT-ALN-6005",
+      "patientName": "Garcia, James",
+      "runTimestamp": "2026-07-22T09:10:00Z",
+      "executionModule": "MODULE_C1",
+      "results": [
+        {
+          "assayCode": "ALIN-TRIG",
+          "assayName": "Triglycerides",
+          "resultValue": 58.49,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "35.0-150.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-625"
+        },
+        {
+          "assayCode": "ALIN-HSCRP",
+          "assayName": "High Sensitivity CRP",
+          "resultValue": 3.15,
+          "unitOfMeasure": "mg/L",
+          "referenceRange": "0.0-3.0",
+          "interpretationFlag": "HIGH",
+          "reagentLotNumber": "LOT-2026-651"
+        },
+        {
+          "assayCode": "ALIN-HBA1C",
+          "assayName": "Hemoglobin A1c",
+          "resultValue": 4.34,
+          "unitOfMeasure": "%",
+          "referenceRange": "4.0-5.6",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-589"
+        },
+        {
+          "assayCode": "ALIN-GLU",
+          "assayName": "Glucose",
+          "resultValue": 110.68,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "70.0-105.0",
+          "interpretationFlag": "HIGH",
+          "reagentLotNumber": "LOT-2026-940"
+        }
+      ]
+    },
+    {
+      "instrumentDetails": {
+        "vendor": "Abbott Diagnostics",
+        "model": "Alinity ci-series",
+        "serialNumber": "ALN-CI-99201",
+        "firmwareVersion": "v3.12.4"
+      },
+      "specimenBarcode": "BC-ALINITY-40006",
+      "patientIdentifier": "PAT-ALN-6006",
+      "patientName": "Taylor, Susan",
+      "runTimestamp": "2026-07-22T09:12:00Z",
+      "executionModule": "MODULE_I1",
+      "results": [
+        {
+          "assayCode": "ALIN-HBA1C",
+          "assayName": "Hemoglobin A1c",
+          "resultValue": 5.73,
+          "unitOfMeasure": "%",
+          "referenceRange": "4.0-5.6",
+          "interpretationFlag": "HIGH",
+          "reagentLotNumber": "LOT-2026-759"
+        },
+        {
+          "assayCode": "ALIN-TRIG",
+          "assayName": "Triglycerides",
+          "resultValue": 38.89,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "35.0-150.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-999"
+        },
+        {
+          "assayCode": "ALIN-HSCRP",
+          "assayName": "High Sensitivity CRP",
+          "resultValue": 1.58,
+          "unitOfMeasure": "mg/L",
+          "referenceRange": "0.0-3.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-325"
+        }
+      ]
+    },
+    {
+      "instrumentDetails": {
+        "vendor": "Abbott Diagnostics",
+        "model": "Alinity ci-series",
+        "serialNumber": "ALN-CI-99201",
+        "firmwareVersion": "v3.12.4"
+      },
+      "specimenBarcode": "BC-ALINITY-40007",
+      "patientIdentifier": "PAT-ALN-6007",
+      "patientName": "Gonzalez, Jessica",
+      "runTimestamp": "2026-07-22T09:14:00Z",
+      "executionModule": "MODULE_C1",
+      "results": [
+        {
+          "assayCode": "ALIN-CHOL",
+          "assayName": "Total Cholesterol",
+          "resultValue": 134.2,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "125.0-200.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-128"
+        },
+        {
+          "assayCode": "ALIN-TRIG",
+          "assayName": "Triglycerides",
+          "resultValue": 46.91,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "35.0-150.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-631"
+        }
+      ]
+    },
+    {
+      "instrumentDetails": {
+        "vendor": "Abbott Diagnostics",
+        "model": "Alinity ci-series",
+        "serialNumber": "ALN-CI-99201",
+        "firmwareVersion": "v3.12.4"
+      },
+      "specimenBarcode": "BC-ALINITY-40008",
+      "patientIdentifier": "PAT-ALN-6008",
+      "patientName": "Garcia, Jennifer",
+      "runTimestamp": "2026-07-22T09:16:00Z",
+      "executionModule": "MODULE_C1",
+      "results": [
+        {
+          "assayCode": "ALIN-GLU",
+          "assayName": "Glucose",
+          "resultValue": 91.67,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "70.0-105.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-758"
+        },
+        {
+          "assayCode": "ALIN-HSCRP",
+          "assayName": "High Sensitivity CRP",
+          "resultValue": 2.58,
+          "unitOfMeasure": "mg/L",
+          "referenceRange": "0.0-3.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-834"
+        },
+        {
+          "assayCode": "ALIN-TRIG",
+          "assayName": "Triglycerides",
+          "resultValue": 170.13,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "35.0-150.0",
+          "interpretationFlag": "HIGH",
+          "reagentLotNumber": "LOT-2026-189"
+        },
+        {
+          "assayCode": "ALIN-HBA1C",
+          "assayName": "Hemoglobin A1c",
+          "resultValue": 5.27,
+          "unitOfMeasure": "%",
+          "referenceRange": "4.0-5.6",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-482"
+        }
+      ]
+    },
+    {
+      "instrumentDetails": {
+        "vendor": "Abbott Diagnostics",
+        "model": "Alinity ci-series",
+        "serialNumber": "ALN-CI-99201",
+        "firmwareVersion": "v3.12.4"
+      },
+      "specimenBarcode": "BC-ALINITY-40009",
+      "patientIdentifier": "PAT-ALN-6009",
+      "patientName": "Moore, David",
+      "runTimestamp": "2026-07-22T09:18:00Z",
+      "executionModule": "MODULE_C1",
+      "results": [
+        {
+          "assayCode": "ALIN-TRIG",
+          "assayName": "Triglycerides",
+          "resultValue": 141.01,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "35.0-150.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-525"
+        },
+        {
+          "assayCode": "ALIN-HSCRP",
+          "assayName": "High Sensitivity CRP",
+          "resultValue": 1.3,
+          "unitOfMeasure": "mg/L",
+          "referenceRange": "0.0-3.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-221"
+        }
+      ]
+    },
+    {
+      "instrumentDetails": {
+        "vendor": "Abbott Diagnostics",
+        "model": "Alinity ci-series",
+        "serialNumber": "ALN-CI-99201",
+        "firmwareVersion": "v3.12.4"
+      },
+      "specimenBarcode": "BC-ALINITY-40010",
+      "patientIdentifier": "PAT-ALN-6010",
+      "patientName": "Martinez, Sarah",
+      "runTimestamp": "2026-07-22T09:20:00Z",
+      "executionModule": "MODULE_C1",
+      "results": [
+        {
+          "assayCode": "ALIN-CHOL",
+          "assayName": "Total Cholesterol",
+          "resultValue": 182.03,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "125.0-200.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-474"
+        },
+        {
+          "assayCode": "ALIN-HSCRP",
+          "assayName": "High Sensitivity CRP",
+          "resultValue": 0.06,
+          "unitOfMeasure": "mg/L",
+          "referenceRange": "0.0-3.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-167"
+        },
+        {
+          "assayCode": "ALIN-GLU",
+          "assayName": "Glucose",
+          "resultValue": 80.92,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "70.0-105.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-393"
+        },
+        {
+          "assayCode": "ALIN-HBA1C",
+          "assayName": "Hemoglobin A1c",
+          "resultValue": 5.64,
+          "unitOfMeasure": "%",
+          "referenceRange": "4.0-5.6",
+          "interpretationFlag": "HIGH",
+          "reagentLotNumber": "LOT-2026-782"
+        }
+      ]
+    },
+    {
+      "instrumentDetails": {
+        "vendor": "Abbott Diagnostics",
+        "model": "Alinity ci-series",
+        "serialNumber": "ALN-CI-99201",
+        "firmwareVersion": "v3.12.4"
+      },
+      "specimenBarcode": "BC-ALINITY-40011",
+      "patientIdentifier": "PAT-ALN-6011",
+      "patientName": "Johnson, Robert",
+      "runTimestamp": "2026-07-22T09:22:00Z",
+      "executionModule": "MODULE_C1",
+      "results": [
+        {
+          "assayCode": "ALIN-GLU",
+          "assayName": "Glucose",
+          "resultValue": 112.9,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "70.0-105.0",
+          "interpretationFlag": "HIGH",
+          "reagentLotNumber": "LOT-2026-539"
+        },
+        {
+          "assayCode": "ALIN-HSCRP",
+          "assayName": "High Sensitivity CRP",
+          "resultValue": 0.54,
+          "unitOfMeasure": "mg/L",
+          "referenceRange": "0.0-3.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-895"
+        }
+      ]
+    },
+    {
+      "instrumentDetails": {
+        "vendor": "Abbott Diagnostics",
+        "model": "Alinity ci-series",
+        "serialNumber": "ALN-CI-99201",
+        "firmwareVersion": "v3.12.4"
+      },
+      "specimenBarcode": "BC-ALINITY-40012",
+      "patientIdentifier": "PAT-ALN-6012",
+      "patientName": "Smith, Jennifer",
+      "runTimestamp": "2026-07-22T09:24:00Z",
+      "executionModule": "MODULE_I1",
+      "results": [
+        {
+          "assayCode": "ALIN-HBA1C",
+          "assayName": "Hemoglobin A1c",
+          "resultValue": 6.6,
+          "unitOfMeasure": "%",
+          "referenceRange": "4.0-5.6",
+          "interpretationFlag": "HIGH",
+          "reagentLotNumber": "LOT-2026-681"
+        },
+        {
+          "assayCode": "ALIN-CHOL",
+          "assayName": "Total Cholesterol",
+          "resultValue": 220.5,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "125.0-200.0",
+          "interpretationFlag": "HIGH",
+          "reagentLotNumber": "LOT-2026-149"
+        },
+        {
+          "assayCode": "ALIN-GLU",
+          "assayName": "Glucose",
+          "resultValue": 119.49,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "70.0-105.0",
+          "interpretationFlag": "HIGH",
+          "reagentLotNumber": "LOT-2026-180"
+        }
+      ]
+    },
+    {
+      "instrumentDetails": {
+        "vendor": "Abbott Diagnostics",
+        "model": "Alinity ci-series",
+        "serialNumber": "ALN-CI-99201",
+        "firmwareVersion": "v3.12.4"
+      },
+      "specimenBarcode": "BC-ALINITY-40013",
+      "patientIdentifier": "PAT-ALN-6013",
+      "patientName": "Jones, John",
+      "runTimestamp": "2026-07-22T09:26:00Z",
+      "executionModule": "MODULE_C1",
+      "results": [
+        {
+          "assayCode": "ALIN-CHOL",
+          "assayName": "Total Cholesterol",
+          "resultValue": 216.31,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "125.0-200.0",
+          "interpretationFlag": "HIGH",
+          "reagentLotNumber": "LOT-2026-623"
+        },
+        {
+          "assayCode": "ALIN-HSCRP",
+          "assayName": "High Sensitivity CRP",
+          "resultValue": 3.39,
+          "unitOfMeasure": "mg/L",
+          "referenceRange": "0.0-3.0",
+          "interpretationFlag": "HIGH",
+          "reagentLotNumber": "LOT-2026-593"
+        },
+        {
+          "assayCode": "ALIN-TRIG",
+          "assayName": "Triglycerides",
+          "resultValue": 44.35,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "35.0-150.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-554"
+        }
+      ]
+    },
+    {
+      "instrumentDetails": {
+        "vendor": "Abbott Diagnostics",
+        "model": "Alinity ci-series",
+        "serialNumber": "ALN-CI-99201",
+        "firmwareVersion": "v3.12.4"
+      },
+      "specimenBarcode": "BC-ALINITY-40014",
+      "patientIdentifier": "PAT-ALN-6014",
+      "patientName": "Davis, James",
+      "runTimestamp": "2026-07-22T09:28:00Z",
+      "executionModule": "MODULE_C1",
+      "results": [
+        {
+          "assayCode": "ALIN-CHOL",
+          "assayName": "Total Cholesterol",
+          "resultValue": 223.78,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "125.0-200.0",
+          "interpretationFlag": "HIGH",
+          "reagentLotNumber": "LOT-2026-100"
+        },
+        {
+          "assayCode": "ALIN-HBA1C",
+          "assayName": "Hemoglobin A1c",
+          "resultValue": 5.45,
+          "unitOfMeasure": "%",
+          "referenceRange": "4.0-5.6",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-887"
+        }
+      ]
+    },
+    {
+      "instrumentDetails": {
+        "vendor": "Abbott Diagnostics",
+        "model": "Alinity ci-series",
+        "serialNumber": "ALN-CI-99201",
+        "firmwareVersion": "v3.12.4"
+      },
+      "specimenBarcode": "BC-ALINITY-40015",
+      "patientIdentifier": "PAT-ALN-6015",
+      "patientName": "Miller, Karen",
+      "runTimestamp": "2026-07-22T09:30:00Z",
+      "executionModule": "MODULE_C1",
+      "results": [
+        {
+          "assayCode": "ALIN-HBA1C",
+          "assayName": "Hemoglobin A1c",
+          "resultValue": 5.06,
+          "unitOfMeasure": "%",
+          "referenceRange": "4.0-5.6",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-337"
+        },
+        {
+          "assayCode": "ALIN-GLU",
+          "assayName": "Glucose",
+          "resultValue": 76.68,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "70.0-105.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-951"
+        },
+        {
+          "assayCode": "ALIN-HSCRP",
+          "assayName": "High Sensitivity CRP",
+          "resultValue": 2.97,
+          "unitOfMeasure": "mg/L",
+          "referenceRange": "0.0-3.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-996"
+        },
+        {
+          "assayCode": "ALIN-TRIG",
+          "assayName": "Triglycerides",
+          "resultValue": 44.94,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "35.0-150.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-829"
+        }
+      ]
+    },
+    {
+      "instrumentDetails": {
+        "vendor": "Abbott Diagnostics",
+        "model": "Alinity ci-series",
+        "serialNumber": "ALN-CI-99201",
+        "firmwareVersion": "v3.12.4"
+      },
+      "specimenBarcode": "BC-ALINITY-40016",
+      "patientIdentifier": "PAT-ALN-6016",
+      "patientName": "Gonzalez, Patricia",
+      "runTimestamp": "2026-07-22T09:32:00Z",
+      "executionModule": "MODULE_I1",
+      "results": [
+        {
+          "assayCode": "ALIN-HBA1C",
+          "assayName": "Hemoglobin A1c",
+          "resultValue": 6.12,
+          "unitOfMeasure": "%",
+          "referenceRange": "4.0-5.6",
+          "interpretationFlag": "HIGH",
+          "reagentLotNumber": "LOT-2026-564"
+        },
+        {
+          "assayCode": "ALIN-CHOL",
+          "assayName": "Total Cholesterol",
+          "resultValue": 140.25,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "125.0-200.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-780"
+        },
+        {
+          "assayCode": "ALIN-TRIG",
+          "assayName": "Triglycerides",
+          "resultValue": 166.03,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "35.0-150.0",
+          "interpretationFlag": "HIGH",
+          "reagentLotNumber": "LOT-2026-495"
+        }
+      ]
+    },
+    {
+      "instrumentDetails": {
+        "vendor": "Abbott Diagnostics",
+        "model": "Alinity ci-series",
+        "serialNumber": "ALN-CI-99201",
+        "firmwareVersion": "v3.12.4"
+      },
+      "specimenBarcode": "BC-ALINITY-40017",
+      "patientIdentifier": "PAT-ALN-6017",
+      "patientName": "Gonzalez, David",
+      "runTimestamp": "2026-07-22T09:34:00Z",
+      "executionModule": "MODULE_C1",
+      "results": [
+        {
+          "assayCode": "ALIN-TRIG",
+          "assayName": "Triglycerides",
+          "resultValue": 162.08,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "35.0-150.0",
+          "interpretationFlag": "HIGH",
+          "reagentLotNumber": "LOT-2026-787"
+        },
+        {
+          "assayCode": "ALIN-HSCRP",
+          "assayName": "High Sensitivity CRP",
+          "resultValue": 0.08,
+          "unitOfMeasure": "mg/L",
+          "referenceRange": "0.0-3.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-659"
+        },
+        {
+          "assayCode": "ALIN-HBA1C",
+          "assayName": "Hemoglobin A1c",
+          "resultValue": 4.8,
+          "unitOfMeasure": "%",
+          "referenceRange": "4.0-5.6",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-230"
+        },
+        {
+          "assayCode": "ALIN-CHOL",
+          "assayName": "Total Cholesterol",
+          "resultValue": 123.92,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "125.0-200.0",
+          "interpretationFlag": "LOW",
+          "reagentLotNumber": "LOT-2026-980"
+        }
+      ]
+    },
+    {
+      "instrumentDetails": {
+        "vendor": "Abbott Diagnostics",
+        "model": "Alinity ci-series",
+        "serialNumber": "ALN-CI-99201",
+        "firmwareVersion": "v3.12.4"
+      },
+      "specimenBarcode": "BC-ALINITY-40018",
+      "patientIdentifier": "PAT-ALN-6018",
+      "patientName": "Lopez, Sarah",
+      "runTimestamp": "2026-07-22T09:36:00Z",
+      "executionModule": "MODULE_C1",
+      "results": [
+        {
+          "assayCode": "ALIN-GLU",
+          "assayName": "Glucose",
+          "resultValue": 82.6,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "70.0-105.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-297"
+        },
+        {
+          "assayCode": "ALIN-TRIG",
+          "assayName": "Triglycerides",
+          "resultValue": 104.63,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "35.0-150.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-903"
+        },
+        {
+          "assayCode": "ALIN-HSCRP",
+          "assayName": "High Sensitivity CRP",
+          "resultValue": 0.26,
+          "unitOfMeasure": "mg/L",
+          "referenceRange": "0.0-3.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-952"
+        },
+        {
+          "assayCode": "ALIN-HBA1C",
+          "assayName": "Hemoglobin A1c",
+          "resultValue": 6.29,
+          "unitOfMeasure": "%",
+          "referenceRange": "4.0-5.6",
+          "interpretationFlag": "HIGH",
+          "reagentLotNumber": "LOT-2026-683"
+        }
+      ]
+    },
+    {
+      "instrumentDetails": {
+        "vendor": "Abbott Diagnostics",
+        "model": "Alinity ci-series",
+        "serialNumber": "ALN-CI-99201",
+        "firmwareVersion": "v3.12.4"
+      },
+      "specimenBarcode": "BC-ALINITY-40019",
+      "patientIdentifier": "PAT-ALN-6019",
+      "patientName": "Miller, Barbara",
+      "runTimestamp": "2026-07-22T09:38:00Z",
+      "executionModule": "MODULE_C1",
+      "results": [
+        {
+          "assayCode": "ALIN-HBA1C",
+          "assayName": "Hemoglobin A1c",
+          "resultValue": 5.54,
+          "unitOfMeasure": "%",
+          "referenceRange": "4.0-5.6",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-624"
+        },
+        {
+          "assayCode": "ALIN-TRIG",
+          "assayName": "Triglycerides",
+          "resultValue": 165.46,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "35.0-150.0",
+          "interpretationFlag": "HIGH",
+          "reagentLotNumber": "LOT-2026-877"
+        }
+      ]
+    },
+    {
+      "instrumentDetails": {
+        "vendor": "Abbott Diagnostics",
+        "model": "Alinity ci-series",
+        "serialNumber": "ALN-CI-99201",
+        "firmwareVersion": "v3.12.4"
+      },
+      "specimenBarcode": "BC-ALINITY-40020",
+      "patientIdentifier": "PAT-ALN-6020",
+      "patientName": "Johnson, Linda",
+      "runTimestamp": "2026-07-22T09:40:00Z",
+      "executionModule": "MODULE_C1",
+      "results": [
+        {
+          "assayCode": "ALIN-HSCRP",
+          "assayName": "High Sensitivity CRP",
+          "resultValue": 0.88,
+          "unitOfMeasure": "mg/L",
+          "referenceRange": "0.0-3.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-755"
+        },
+        {
+          "assayCode": "ALIN-TRIG",
+          "assayName": "Triglycerides",
+          "resultValue": 117.52,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "35.0-150.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-943"
+        },
+        {
+          "assayCode": "ALIN-GLU",
+          "assayName": "Glucose",
+          "resultValue": 77.64,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "70.0-105.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-263"
+        },
+        {
+          "assayCode": "ALIN-CHOL",
+          "assayName": "Total Cholesterol",
+          "resultValue": 130.29,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "125.0-200.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-442"
+        }
+      ]
+    },
+    {
+      "instrumentDetails": {
+        "vendor": "Abbott Diagnostics",
+        "model": "Alinity ci-series",
+        "serialNumber": "ALN-CI-99201",
+        "firmwareVersion": "v3.12.4"
+      },
+      "specimenBarcode": "BC-ALINITY-40021",
+      "patientIdentifier": "PAT-ALN-6021",
+      "patientName": "Garcia, Thomas",
+      "runTimestamp": "2026-07-22T09:42:00Z",
+      "executionModule": "MODULE_C1",
+      "results": [
+        {
+          "assayCode": "ALIN-GLU",
+          "assayName": "Glucose",
+          "resultValue": 113.6,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "70.0-105.0",
+          "interpretationFlag": "HIGH",
+          "reagentLotNumber": "LOT-2026-186"
+        },
+        {
+          "assayCode": "ALIN-TRIG",
+          "assayName": "Triglycerides",
+          "resultValue": 179.83,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "35.0-150.0",
+          "interpretationFlag": "HIGH",
+          "reagentLotNumber": "LOT-2026-946"
+        },
+        {
+          "assayCode": "ALIN-HSCRP",
+          "assayName": "High Sensitivity CRP",
+          "resultValue": 1.2,
+          "unitOfMeasure": "mg/L",
+          "referenceRange": "0.0-3.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-864"
+        }
+      ]
+    },
+    {
+      "instrumentDetails": {
+        "vendor": "Abbott Diagnostics",
+        "model": "Alinity ci-series",
+        "serialNumber": "ALN-CI-99201",
+        "firmwareVersion": "v3.12.4"
+      },
+      "specimenBarcode": "BC-ALINITY-40022",
+      "patientIdentifier": "PAT-ALN-6022",
+      "patientName": "Miller, Jessica",
+      "runTimestamp": "2026-07-22T09:44:00Z",
+      "executionModule": "MODULE_C1",
+      "results": [
+        {
+          "assayCode": "ALIN-HBA1C",
+          "assayName": "Hemoglobin A1c",
+          "resultValue": 4.1,
+          "unitOfMeasure": "%",
+          "referenceRange": "4.0-5.6",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-278"
+        },
+        {
+          "assayCode": "ALIN-CHOL",
+          "assayName": "Total Cholesterol",
+          "resultValue": 118.05,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "125.0-200.0",
+          "interpretationFlag": "LOW",
+          "reagentLotNumber": "LOT-2026-743"
+        },
+        {
+          "assayCode": "ALIN-HSCRP",
+          "assayName": "High Sensitivity CRP",
+          "resultValue": 2.25,
+          "unitOfMeasure": "mg/L",
+          "referenceRange": "0.0-3.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-842"
+        }
+      ]
+    },
+    {
+      "instrumentDetails": {
+        "vendor": "Abbott Diagnostics",
+        "model": "Alinity ci-series",
+        "serialNumber": "ALN-CI-99201",
+        "firmwareVersion": "v3.12.4"
+      },
+      "specimenBarcode": "BC-ALINITY-40023",
+      "patientIdentifier": "PAT-ALN-6023",
+      "patientName": "Taylor, Linda",
+      "runTimestamp": "2026-07-22T09:46:00Z",
+      "executionModule": "MODULE_C1",
+      "results": [
+        {
+          "assayCode": "ALIN-CHOL",
+          "assayName": "Total Cholesterol",
+          "resultValue": 238.42,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "125.0-200.0",
+          "interpretationFlag": "HIGH",
+          "reagentLotNumber": "LOT-2026-834"
+        },
+        {
+          "assayCode": "ALIN-GLU",
+          "assayName": "Glucose",
+          "resultValue": 69.68,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "70.0-105.0",
+          "interpretationFlag": "LOW",
+          "reagentLotNumber": "LOT-2026-125"
+        }
+      ]
+    },
+    {
+      "instrumentDetails": {
+        "vendor": "Abbott Diagnostics",
+        "model": "Alinity ci-series",
+        "serialNumber": "ALN-CI-99201",
+        "firmwareVersion": "v3.12.4"
+      },
+      "specimenBarcode": "BC-ALINITY-40024",
+      "patientIdentifier": "PAT-ALN-6024",
+      "patientName": "Rodriguez, James",
+      "runTimestamp": "2026-07-22T09:48:00Z",
+      "executionModule": "MODULE_I1",
+      "results": [
+        {
+          "assayCode": "ALIN-HSCRP",
+          "assayName": "High Sensitivity CRP",
+          "resultValue": 1.14,
+          "unitOfMeasure": "mg/L",
+          "referenceRange": "0.0-3.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-487"
+        },
+        {
+          "assayCode": "ALIN-CHOL",
+          "assayName": "Total Cholesterol",
+          "resultValue": 166.65,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "125.0-200.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-737"
+        },
+        {
+          "assayCode": "ALIN-HBA1C",
+          "assayName": "Hemoglobin A1c",
+          "resultValue": 6.21,
+          "unitOfMeasure": "%",
+          "referenceRange": "4.0-5.6",
+          "interpretationFlag": "HIGH",
+          "reagentLotNumber": "LOT-2026-558"
+        }
+      ]
+    },
+    {
+      "instrumentDetails": {
+        "vendor": "Abbott Diagnostics",
+        "model": "Alinity ci-series",
+        "serialNumber": "ALN-CI-99201",
+        "firmwareVersion": "v3.12.4"
+      },
+      "specimenBarcode": "BC-ALINITY-40025",
+      "patientIdentifier": "PAT-ALN-6025",
+      "patientName": "Anderson, Linda",
+      "runTimestamp": "2026-07-22T09:50:00Z",
+      "executionModule": "MODULE_C1",
+      "results": [
+        {
+          "assayCode": "ALIN-GLU",
+          "assayName": "Glucose",
+          "resultValue": 114.21,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "70.0-105.0",
+          "interpretationFlag": "HIGH",
+          "reagentLotNumber": "LOT-2026-636"
+        },
+        {
+          "assayCode": "ALIN-CHOL",
+          "assayName": "Total Cholesterol",
+          "resultValue": 172.48,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "125.0-200.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-333"
+        },
+        {
+          "assayCode": "ALIN-HSCRP",
+          "assayName": "High Sensitivity CRP",
+          "resultValue": 0.8,
+          "unitOfMeasure": "mg/L",
+          "referenceRange": "0.0-3.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-982"
+        }
+      ]
+    },
+    {
+      "instrumentDetails": {
+        "vendor": "Abbott Diagnostics",
+        "model": "Alinity ci-series",
+        "serialNumber": "ALN-CI-99201",
+        "firmwareVersion": "v3.12.4"
+      },
+      "specimenBarcode": "BC-ALINITY-40026",
+      "patientIdentifier": "PAT-ALN-6026",
+      "patientName": "Johnson, Jennifer",
+      "runTimestamp": "2026-07-22T09:52:00Z",
+      "executionModule": "MODULE_C1",
+      "results": [
+        {
+          "assayCode": "ALIN-TRIG",
+          "assayName": "Triglycerides",
+          "resultValue": 178.68,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "35.0-150.0",
+          "interpretationFlag": "HIGH",
+          "reagentLotNumber": "LOT-2026-574"
+        },
+        {
+          "assayCode": "ALIN-CHOL",
+          "assayName": "Total Cholesterol",
+          "resultValue": 144.78,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "125.0-200.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-963"
+        }
+      ]
+    },
+    {
+      "instrumentDetails": {
+        "vendor": "Abbott Diagnostics",
+        "model": "Alinity ci-series",
+        "serialNumber": "ALN-CI-99201",
+        "firmwareVersion": "v3.12.4"
+      },
+      "specimenBarcode": "BC-ALINITY-40027",
+      "patientIdentifier": "PAT-ALN-6027",
+      "patientName": "Taylor, Robert",
+      "runTimestamp": "2026-07-22T09:54:00Z",
+      "executionModule": "MODULE_I1",
+      "results": [
+        {
+          "assayCode": "ALIN-CHOL",
+          "assayName": "Total Cholesterol",
+          "resultValue": 128.52,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "125.0-200.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-980"
+        },
+        {
+          "assayCode": "ALIN-HBA1C",
+          "assayName": "Hemoglobin A1c",
+          "resultValue": 5.65,
+          "unitOfMeasure": "%",
+          "referenceRange": "4.0-5.6",
+          "interpretationFlag": "HIGH",
+          "reagentLotNumber": "LOT-2026-432"
+        },
+        {
+          "assayCode": "ALIN-HSCRP",
+          "assayName": "High Sensitivity CRP",
+          "resultValue": 3.09,
+          "unitOfMeasure": "mg/L",
+          "referenceRange": "0.0-3.0",
+          "interpretationFlag": "HIGH",
+          "reagentLotNumber": "LOT-2026-732"
+        },
+        {
+          "assayCode": "ALIN-TRIG",
+          "assayName": "Triglycerides",
+          "resultValue": 169.7,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "35.0-150.0",
+          "interpretationFlag": "HIGH",
+          "reagentLotNumber": "LOT-2026-305"
+        }
+      ]
+    },
+    {
+      "instrumentDetails": {
+        "vendor": "Abbott Diagnostics",
+        "model": "Alinity ci-series",
+        "serialNumber": "ALN-CI-99201",
+        "firmwareVersion": "v3.12.4"
+      },
+      "specimenBarcode": "BC-ALINITY-40028",
+      "patientIdentifier": "PAT-ALN-6028",
+      "patientName": "Smith, Joseph",
+      "runTimestamp": "2026-07-22T09:56:00Z",
+      "executionModule": "MODULE_C1",
+      "results": [
+        {
+          "assayCode": "ALIN-GLU",
+          "assayName": "Glucose",
+          "resultValue": 81.61,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "70.0-105.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-171"
+        },
+        {
+          "assayCode": "ALIN-HBA1C",
+          "assayName": "Hemoglobin A1c",
+          "resultValue": 4.06,
+          "unitOfMeasure": "%",
+          "referenceRange": "4.0-5.6",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-667"
+        }
+      ]
+    },
+    {
+      "instrumentDetails": {
+        "vendor": "Abbott Diagnostics",
+        "model": "Alinity ci-series",
+        "serialNumber": "ALN-CI-99201",
+        "firmwareVersion": "v3.12.4"
+      },
+      "specimenBarcode": "BC-ALINITY-40029",
+      "patientIdentifier": "PAT-ALN-6029",
+      "patientName": "Moore, Susan",
+      "runTimestamp": "2026-07-22T09:58:00Z",
+      "executionModule": "MODULE_I1",
+      "results": [
+        {
+          "assayCode": "ALIN-CHOL",
+          "assayName": "Total Cholesterol",
+          "resultValue": 226.08,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "125.0-200.0",
+          "interpretationFlag": "HIGH",
+          "reagentLotNumber": "LOT-2026-145"
+        },
+        {
+          "assayCode": "ALIN-TRIG",
+          "assayName": "Triglycerides",
+          "resultValue": 117.61,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "35.0-150.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-961"
+        },
+        {
+          "assayCode": "ALIN-HSCRP",
+          "assayName": "High Sensitivity CRP",
+          "resultValue": 1.96,
+          "unitOfMeasure": "mg/L",
+          "referenceRange": "0.0-3.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-995"
+        }
+      ]
+    },
+    {
+      "instrumentDetails": {
+        "vendor": "Abbott Diagnostics",
+        "model": "Alinity ci-series",
+        "serialNumber": "ALN-CI-99201",
+        "firmwareVersion": "v3.12.4"
+      },
+      "specimenBarcode": "BC-ALINITY-40030",
+      "patientIdentifier": "PAT-ALN-6030",
+      "patientName": "Miller, Susan",
+      "runTimestamp": "2026-07-22T10:00:00Z",
+      "executionModule": "MODULE_C1",
+      "results": [
+        {
+          "assayCode": "ALIN-CHOL",
+          "assayName": "Total Cholesterol",
+          "resultValue": 142.98,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "125.0-200.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-802"
+        },
+        {
+          "assayCode": "ALIN-TRIG",
+          "assayName": "Triglycerides",
+          "resultValue": 146.83,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "35.0-150.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-435"
+        }
+      ]
+    },
+    {
+      "instrumentDetails": {
+        "vendor": "Abbott Diagnostics",
+        "model": "Alinity ci-series",
+        "serialNumber": "ALN-CI-99201",
+        "firmwareVersion": "v3.12.4"
+      },
+      "specimenBarcode": "BC-ALINITY-40031",
+      "patientIdentifier": "PAT-ALN-6031",
+      "patientName": "Rodriguez, Charles",
+      "runTimestamp": "2026-07-22T10:02:00Z",
+      "executionModule": "MODULE_I1",
+      "results": [
+        {
+          "assayCode": "ALIN-GLU",
+          "assayName": "Glucose",
+          "resultValue": 92.47,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "70.0-105.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-125"
+        },
+        {
+          "assayCode": "ALIN-TRIG",
+          "assayName": "Triglycerides",
+          "resultValue": 152.24,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "35.0-150.0",
+          "interpretationFlag": "HIGH",
+          "reagentLotNumber": "LOT-2026-873"
+        }
+      ]
+    },
+    {
+      "instrumentDetails": {
+        "vendor": "Abbott Diagnostics",
+        "model": "Alinity ci-series",
+        "serialNumber": "ALN-CI-99201",
+        "firmwareVersion": "v3.12.4"
+      },
+      "specimenBarcode": "BC-ALINITY-40032",
+      "patientIdentifier": "PAT-ALN-6032",
+      "patientName": "Thomas, Karen",
+      "runTimestamp": "2026-07-22T10:04:00Z",
+      "executionModule": "MODULE_I1",
+      "results": [
+        {
+          "assayCode": "ALIN-CHOL",
+          "assayName": "Total Cholesterol",
+          "resultValue": 191.57,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "125.0-200.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-134"
+        },
+        {
+          "assayCode": "ALIN-TRIG",
+          "assayName": "Triglycerides",
+          "resultValue": 169.42,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "35.0-150.0",
+          "interpretationFlag": "HIGH",
+          "reagentLotNumber": "LOT-2026-912"
+        },
+        {
+          "assayCode": "ALIN-HBA1C",
+          "assayName": "Hemoglobin A1c",
+          "resultValue": 5.18,
+          "unitOfMeasure": "%",
+          "referenceRange": "4.0-5.6",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-213"
+        }
+      ]
+    },
+    {
+      "instrumentDetails": {
+        "vendor": "Abbott Diagnostics",
+        "model": "Alinity ci-series",
+        "serialNumber": "ALN-CI-99201",
+        "firmwareVersion": "v3.12.4"
+      },
+      "specimenBarcode": "BC-ALINITY-40033",
+      "patientIdentifier": "PAT-ALN-6033",
+      "patientName": "Hernandez, Joseph",
+      "runTimestamp": "2026-07-22T10:06:00Z",
+      "executionModule": "MODULE_I1",
+      "results": [
+        {
+          "assayCode": "ALIN-HBA1C",
+          "assayName": "Hemoglobin A1c",
+          "resultValue": 4.59,
+          "unitOfMeasure": "%",
+          "referenceRange": "4.0-5.6",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-329"
+        },
+        {
+          "assayCode": "ALIN-HSCRP",
+          "assayName": "High Sensitivity CRP",
+          "resultValue": 2.06,
+          "unitOfMeasure": "mg/L",
+          "referenceRange": "0.0-3.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-773"
+        },
+        {
+          "assayCode": "ALIN-GLU",
+          "assayName": "Glucose",
+          "resultValue": 68.53,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "70.0-105.0",
+          "interpretationFlag": "LOW",
+          "reagentLotNumber": "LOT-2026-386"
+        }
+      ]
+    },
+    {
+      "instrumentDetails": {
+        "vendor": "Abbott Diagnostics",
+        "model": "Alinity ci-series",
+        "serialNumber": "ALN-CI-99201",
+        "firmwareVersion": "v3.12.4"
+      },
+      "specimenBarcode": "BC-ALINITY-40034",
+      "patientIdentifier": "PAT-ALN-6034",
+      "patientName": "Jones, Joseph",
+      "runTimestamp": "2026-07-22T10:08:00Z",
+      "executionModule": "MODULE_I1",
+      "results": [
+        {
+          "assayCode": "ALIN-TRIG",
+          "assayName": "Triglycerides",
+          "resultValue": 121.94,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "35.0-150.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-464"
+        },
+        {
+          "assayCode": "ALIN-GLU",
+          "assayName": "Glucose",
+          "resultValue": 80.23,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "70.0-105.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-616"
+        },
+        {
+          "assayCode": "ALIN-HBA1C",
+          "assayName": "Hemoglobin A1c",
+          "resultValue": 4.16,
+          "unitOfMeasure": "%",
+          "referenceRange": "4.0-5.6",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-170"
+        }
+      ]
+    },
+    {
+      "instrumentDetails": {
+        "vendor": "Abbott Diagnostics",
+        "model": "Alinity ci-series",
+        "serialNumber": "ALN-CI-99201",
+        "firmwareVersion": "v3.12.4"
+      },
+      "specimenBarcode": "BC-ALINITY-40035",
+      "patientIdentifier": "PAT-ALN-6035",
+      "patientName": "Gonzalez, Linda",
+      "runTimestamp": "2026-07-22T10:10:00Z",
+      "executionModule": "MODULE_C1",
+      "results": [
+        {
+          "assayCode": "ALIN-CHOL",
+          "assayName": "Total Cholesterol",
+          "resultValue": 215.65,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "125.0-200.0",
+          "interpretationFlag": "HIGH",
+          "reagentLotNumber": "LOT-2026-912"
+        },
+        {
+          "assayCode": "ALIN-HSCRP",
+          "assayName": "High Sensitivity CRP",
+          "resultValue": 1.04,
+          "unitOfMeasure": "mg/L",
+          "referenceRange": "0.0-3.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-503"
+        }
+      ]
+    },
+    {
+      "instrumentDetails": {
+        "vendor": "Abbott Diagnostics",
+        "model": "Alinity ci-series",
+        "serialNumber": "ALN-CI-99201",
+        "firmwareVersion": "v3.12.4"
+      },
+      "specimenBarcode": "BC-ALINITY-40036",
+      "patientIdentifier": "PAT-ALN-6036",
+      "patientName": "Thomas, Jessica",
+      "runTimestamp": "2026-07-22T10:12:00Z",
+      "executionModule": "MODULE_I1",
+      "results": [
+        {
+          "assayCode": "ALIN-HSCRP",
+          "assayName": "High Sensitivity CRP",
+          "resultValue": 0.41,
+          "unitOfMeasure": "mg/L",
+          "referenceRange": "0.0-3.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-592"
+        },
+        {
+          "assayCode": "ALIN-GLU",
+          "assayName": "Glucose",
+          "resultValue": 123.89,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "70.0-105.0",
+          "interpretationFlag": "HIGH",
+          "reagentLotNumber": "LOT-2026-261"
+        },
+        {
+          "assayCode": "ALIN-TRIG",
+          "assayName": "Triglycerides",
+          "resultValue": 136.26,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "35.0-150.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-352"
+        },
+        {
+          "assayCode": "ALIN-HBA1C",
+          "assayName": "Hemoglobin A1c",
+          "resultValue": 4.75,
+          "unitOfMeasure": "%",
+          "referenceRange": "4.0-5.6",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-493"
+        }
+      ]
+    },
+    {
+      "instrumentDetails": {
+        "vendor": "Abbott Diagnostics",
+        "model": "Alinity ci-series",
+        "serialNumber": "ALN-CI-99201",
+        "firmwareVersion": "v3.12.4"
+      },
+      "specimenBarcode": "BC-ALINITY-40037",
+      "patientIdentifier": "PAT-ALN-6037",
+      "patientName": "Wilson, Elizabeth",
+      "runTimestamp": "2026-07-22T10:14:00Z",
+      "executionModule": "MODULE_C1",
+      "results": [
+        {
+          "assayCode": "ALIN-HSCRP",
+          "assayName": "High Sensitivity CRP",
+          "resultValue": 1.24,
+          "unitOfMeasure": "mg/L",
+          "referenceRange": "0.0-3.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-133"
+        },
+        {
+          "assayCode": "ALIN-HBA1C",
+          "assayName": "Hemoglobin A1c",
+          "resultValue": 6.53,
+          "unitOfMeasure": "%",
+          "referenceRange": "4.0-5.6",
+          "interpretationFlag": "HIGH",
+          "reagentLotNumber": "LOT-2026-926"
+        },
+        {
+          "assayCode": "ALIN-GLU",
+          "assayName": "Glucose",
+          "resultValue": 88.43,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "70.0-105.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-337"
+        },
+        {
+          "assayCode": "ALIN-TRIG",
+          "assayName": "Triglycerides",
+          "resultValue": 58.48,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "35.0-150.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-555"
+        }
+      ]
+    },
+    {
+      "instrumentDetails": {
+        "vendor": "Abbott Diagnostics",
+        "model": "Alinity ci-series",
+        "serialNumber": "ALN-CI-99201",
+        "firmwareVersion": "v3.12.4"
+      },
+      "specimenBarcode": "BC-ALINITY-40038",
+      "patientIdentifier": "PAT-ALN-6038",
+      "patientName": "Martinez, Richard",
+      "runTimestamp": "2026-07-22T10:16:00Z",
+      "executionModule": "MODULE_I1",
+      "results": [
+        {
+          "assayCode": "ALIN-HBA1C",
+          "assayName": "Hemoglobin A1c",
+          "resultValue": 4.63,
+          "unitOfMeasure": "%",
+          "referenceRange": "4.0-5.6",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-900"
+        },
+        {
+          "assayCode": "ALIN-HSCRP",
+          "assayName": "High Sensitivity CRP",
+          "resultValue": 1.48,
+          "unitOfMeasure": "mg/L",
+          "referenceRange": "0.0-3.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-231"
+        },
+        {
+          "assayCode": "ALIN-GLU",
+          "assayName": "Glucose",
+          "resultValue": 109.93,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "70.0-105.0",
+          "interpretationFlag": "HIGH",
+          "reagentLotNumber": "LOT-2026-571"
+        }
+      ]
+    },
+    {
+      "instrumentDetails": {
+        "vendor": "Abbott Diagnostics",
+        "model": "Alinity ci-series",
+        "serialNumber": "ALN-CI-99201",
+        "firmwareVersion": "v3.12.4"
+      },
+      "specimenBarcode": "BC-ALINITY-40039",
+      "patientIdentifier": "PAT-ALN-6039",
+      "patientName": "Johnson, Barbara",
+      "runTimestamp": "2026-07-22T10:18:00Z",
+      "executionModule": "MODULE_C1",
+      "results": [
+        {
+          "assayCode": "ALIN-CHOL",
+          "assayName": "Total Cholesterol",
+          "resultValue": 188.69,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "125.0-200.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-284"
+        },
+        {
+          "assayCode": "ALIN-GLU",
+          "assayName": "Glucose",
+          "resultValue": 106.3,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "70.0-105.0",
+          "interpretationFlag": "HIGH",
+          "reagentLotNumber": "LOT-2026-312"
+        },
+        {
+          "assayCode": "ALIN-HSCRP",
+          "assayName": "High Sensitivity CRP",
+          "resultValue": 1.73,
+          "unitOfMeasure": "mg/L",
+          "referenceRange": "0.0-3.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-819"
+        }
+      ]
+    },
+    {
+      "instrumentDetails": {
+        "vendor": "Abbott Diagnostics",
+        "model": "Alinity ci-series",
+        "serialNumber": "ALN-CI-99201",
+        "firmwareVersion": "v3.12.4"
+      },
+      "specimenBarcode": "BC-ALINITY-40040",
+      "patientIdentifier": "PAT-ALN-6040",
+      "patientName": "Johnson, Jessica",
+      "runTimestamp": "2026-07-22T10:20:00Z",
+      "executionModule": "MODULE_C1",
+      "results": [
+        {
+          "assayCode": "ALIN-TRIG",
+          "assayName": "Triglycerides",
+          "resultValue": 65.2,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "35.0-150.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-540"
+        },
+        {
+          "assayCode": "ALIN-HSCRP",
+          "assayName": "High Sensitivity CRP",
+          "resultValue": 3.02,
+          "unitOfMeasure": "mg/L",
+          "referenceRange": "0.0-3.0",
+          "interpretationFlag": "HIGH",
+          "reagentLotNumber": "LOT-2026-956"
+        },
+        {
+          "assayCode": "ALIN-HBA1C",
+          "assayName": "Hemoglobin A1c",
+          "resultValue": 4.44,
+          "unitOfMeasure": "%",
+          "referenceRange": "4.0-5.6",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-494"
+        },
+        {
+          "assayCode": "ALIN-CHOL",
+          "assayName": "Total Cholesterol",
+          "resultValue": 215.34,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "125.0-200.0",
+          "interpretationFlag": "HIGH",
+          "reagentLotNumber": "LOT-2026-699"
+        }
+      ]
+    },
+    {
+      "instrumentDetails": {
+        "vendor": "Abbott Diagnostics",
+        "model": "Alinity ci-series",
+        "serialNumber": "ALN-CI-99201",
+        "firmwareVersion": "v3.12.4"
+      },
+      "specimenBarcode": "BC-ALINITY-40041",
+      "patientIdentifier": "PAT-ALN-6041",
+      "patientName": "Taylor, Patricia",
+      "runTimestamp": "2026-07-22T10:22:00Z",
+      "executionModule": "MODULE_I1",
+      "results": [
+        {
+          "assayCode": "ALIN-HSCRP",
+          "assayName": "High Sensitivity CRP",
+          "resultValue": 3.26,
+          "unitOfMeasure": "mg/L",
+          "referenceRange": "0.0-3.0",
+          "interpretationFlag": "HIGH",
+          "reagentLotNumber": "LOT-2026-900"
+        },
+        {
+          "assayCode": "ALIN-TRIG",
+          "assayName": "Triglycerides",
+          "resultValue": 48.83,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "35.0-150.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-637"
+        },
+        {
+          "assayCode": "ALIN-HBA1C",
+          "assayName": "Hemoglobin A1c",
+          "resultValue": 4.3,
+          "unitOfMeasure": "%",
+          "referenceRange": "4.0-5.6",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-124"
+        }
+      ]
+    },
+    {
+      "instrumentDetails": {
+        "vendor": "Abbott Diagnostics",
+        "model": "Alinity ci-series",
+        "serialNumber": "ALN-CI-99201",
+        "firmwareVersion": "v3.12.4"
+      },
+      "specimenBarcode": "BC-ALINITY-40042",
+      "patientIdentifier": "PAT-ALN-6042",
+      "patientName": "Lopez, Mary",
+      "runTimestamp": "2026-07-22T10:24:00Z",
+      "executionModule": "MODULE_I1",
+      "results": [
+        {
+          "assayCode": "ALIN-GLU",
+          "assayName": "Glucose",
+          "resultValue": 102.91,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "70.0-105.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-575"
+        },
+        {
+          "assayCode": "ALIN-HBA1C",
+          "assayName": "Hemoglobin A1c",
+          "resultValue": 5.76,
+          "unitOfMeasure": "%",
+          "referenceRange": "4.0-5.6",
+          "interpretationFlag": "HIGH",
+          "reagentLotNumber": "LOT-2026-999"
+        },
+        {
+          "assayCode": "ALIN-TRIG",
+          "assayName": "Triglycerides",
+          "resultValue": 56.57,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "35.0-150.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-555"
+        },
+        {
+          "assayCode": "ALIN-HSCRP",
+          "assayName": "High Sensitivity CRP",
+          "resultValue": 3.05,
+          "unitOfMeasure": "mg/L",
+          "referenceRange": "0.0-3.0",
+          "interpretationFlag": "HIGH",
+          "reagentLotNumber": "LOT-2026-846"
+        }
+      ]
+    },
+    {
+      "instrumentDetails": {
+        "vendor": "Abbott Diagnostics",
+        "model": "Alinity ci-series",
+        "serialNumber": "ALN-CI-99201",
+        "firmwareVersion": "v3.12.4"
+      },
+      "specimenBarcode": "BC-ALINITY-40043",
+      "patientIdentifier": "PAT-ALN-6043",
+      "patientName": "Taylor, Barbara",
+      "runTimestamp": "2026-07-22T10:26:00Z",
+      "executionModule": "MODULE_C1",
+      "results": [
+        {
+          "assayCode": "ALIN-HSCRP",
+          "assayName": "High Sensitivity CRP",
+          "resultValue": 0.17,
+          "unitOfMeasure": "mg/L",
+          "referenceRange": "0.0-3.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-524"
+        },
+        {
+          "assayCode": "ALIN-CHOL",
+          "assayName": "Total Cholesterol",
+          "resultValue": 237.26,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "125.0-200.0",
+          "interpretationFlag": "HIGH",
+          "reagentLotNumber": "LOT-2026-462"
+        },
+        {
+          "assayCode": "ALIN-HBA1C",
+          "assayName": "Hemoglobin A1c",
+          "resultValue": 6.02,
+          "unitOfMeasure": "%",
+          "referenceRange": "4.0-5.6",
+          "interpretationFlag": "HIGH",
+          "reagentLotNumber": "LOT-2026-728"
+        },
+        {
+          "assayCode": "ALIN-TRIG",
+          "assayName": "Triglycerides",
+          "resultValue": 33.68,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "35.0-150.0",
+          "interpretationFlag": "LOW",
+          "reagentLotNumber": "LOT-2026-869"
+        }
+      ]
+    },
+    {
+      "instrumentDetails": {
+        "vendor": "Abbott Diagnostics",
+        "model": "Alinity ci-series",
+        "serialNumber": "ALN-CI-99201",
+        "firmwareVersion": "v3.12.4"
+      },
+      "specimenBarcode": "BC-ALINITY-40044",
+      "patientIdentifier": "PAT-ALN-6044",
+      "patientName": "Wilson, Thomas",
+      "runTimestamp": "2026-07-22T10:28:00Z",
+      "executionModule": "MODULE_C1",
+      "results": [
+        {
+          "assayCode": "ALIN-HSCRP",
+          "assayName": "High Sensitivity CRP",
+          "resultValue": 1.19,
+          "unitOfMeasure": "mg/L",
+          "referenceRange": "0.0-3.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-274"
+        },
+        {
+          "assayCode": "ALIN-CHOL",
+          "assayName": "Total Cholesterol",
+          "resultValue": 140.32,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "125.0-200.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-895"
+        },
+        {
+          "assayCode": "ALIN-TRIG",
+          "assayName": "Triglycerides",
+          "resultValue": 80.32,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "35.0-150.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-290"
+        }
+      ]
+    },
+    {
+      "instrumentDetails": {
+        "vendor": "Abbott Diagnostics",
+        "model": "Alinity ci-series",
+        "serialNumber": "ALN-CI-99201",
+        "firmwareVersion": "v3.12.4"
+      },
+      "specimenBarcode": "BC-ALINITY-40045",
+      "patientIdentifier": "PAT-ALN-6045",
+      "patientName": "Martinez, Barbara",
+      "runTimestamp": "2026-07-22T10:30:00Z",
+      "executionModule": "MODULE_C1",
+      "results": [
+        {
+          "assayCode": "ALIN-HBA1C",
+          "assayName": "Hemoglobin A1c",
+          "resultValue": 5.45,
+          "unitOfMeasure": "%",
+          "referenceRange": "4.0-5.6",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-468"
+        },
+        {
+          "assayCode": "ALIN-GLU",
+          "assayName": "Glucose",
+          "resultValue": 86.42,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "70.0-105.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-814"
+        },
+        {
+          "assayCode": "ALIN-HSCRP",
+          "assayName": "High Sensitivity CRP",
+          "resultValue": 0.65,
+          "unitOfMeasure": "mg/L",
+          "referenceRange": "0.0-3.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-985"
+        },
+        {
+          "assayCode": "ALIN-TRIG",
+          "assayName": "Triglycerides",
+          "resultValue": 154.72,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "35.0-150.0",
+          "interpretationFlag": "HIGH",
+          "reagentLotNumber": "LOT-2026-121"
+        }
+      ]
+    },
+    {
+      "instrumentDetails": {
+        "vendor": "Abbott Diagnostics",
+        "model": "Alinity ci-series",
+        "serialNumber": "ALN-CI-99201",
+        "firmwareVersion": "v3.12.4"
+      },
+      "specimenBarcode": "BC-ALINITY-40046",
+      "patientIdentifier": "PAT-ALN-6046",
+      "patientName": "Miller, David",
+      "runTimestamp": "2026-07-22T10:32:00Z",
+      "executionModule": "MODULE_I1",
+      "results": [
+        {
+          "assayCode": "ALIN-TRIG",
+          "assayName": "Triglycerides",
+          "resultValue": 36.05,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "35.0-150.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-401"
+        },
+        {
+          "assayCode": "ALIN-HBA1C",
+          "assayName": "Hemoglobin A1c",
+          "resultValue": 6.25,
+          "unitOfMeasure": "%",
+          "referenceRange": "4.0-5.6",
+          "interpretationFlag": "HIGH",
+          "reagentLotNumber": "LOT-2026-249"
+        },
+        {
+          "assayCode": "ALIN-GLU",
+          "assayName": "Glucose",
+          "resultValue": 93.56,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "70.0-105.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-325"
+        },
+        {
+          "assayCode": "ALIN-CHOL",
+          "assayName": "Total Cholesterol",
+          "resultValue": 114.48,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "125.0-200.0",
+          "interpretationFlag": "LOW",
+          "reagentLotNumber": "LOT-2026-560"
+        }
+      ]
+    },
+    {
+      "instrumentDetails": {
+        "vendor": "Abbott Diagnostics",
+        "model": "Alinity ci-series",
+        "serialNumber": "ALN-CI-99201",
+        "firmwareVersion": "v3.12.4"
+      },
+      "specimenBarcode": "BC-ALINITY-40047",
+      "patientIdentifier": "PAT-ALN-6047",
+      "patientName": "Miller, Linda",
+      "runTimestamp": "2026-07-22T10:34:00Z",
+      "executionModule": "MODULE_C1",
+      "results": [
+        {
+          "assayCode": "ALIN-GLU",
+          "assayName": "Glucose",
+          "resultValue": 115.7,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "70.0-105.0",
+          "interpretationFlag": "HIGH",
+          "reagentLotNumber": "LOT-2026-504"
+        },
+        {
+          "assayCode": "ALIN-CHOL",
+          "assayName": "Total Cholesterol",
+          "resultValue": 133.72,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "125.0-200.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-778"
+        },
+        {
+          "assayCode": "ALIN-HBA1C",
+          "assayName": "Hemoglobin A1c",
+          "resultValue": 5.24,
+          "unitOfMeasure": "%",
+          "referenceRange": "4.0-5.6",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-486"
+        }
+      ]
+    },
+    {
+      "instrumentDetails": {
+        "vendor": "Abbott Diagnostics",
+        "model": "Alinity ci-series",
+        "serialNumber": "ALN-CI-99201",
+        "firmwareVersion": "v3.12.4"
+      },
+      "specimenBarcode": "BC-ALINITY-40048",
+      "patientIdentifier": "PAT-ALN-6048",
+      "patientName": "Johnson, John",
+      "runTimestamp": "2026-07-22T10:36:00Z",
+      "executionModule": "MODULE_I1",
+      "results": [
+        {
+          "assayCode": "ALIN-HBA1C",
+          "assayName": "Hemoglobin A1c",
+          "resultValue": 5.16,
+          "unitOfMeasure": "%",
+          "referenceRange": "4.0-5.6",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-771"
+        },
+        {
+          "assayCode": "ALIN-GLU",
+          "assayName": "Glucose",
+          "resultValue": 79.38,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "70.0-105.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-565"
+        }
+      ]
+    },
+    {
+      "instrumentDetails": {
+        "vendor": "Abbott Diagnostics",
+        "model": "Alinity ci-series",
+        "serialNumber": "ALN-CI-99201",
+        "firmwareVersion": "v3.12.4"
+      },
+      "specimenBarcode": "BC-ALINITY-40049",
+      "patientIdentifier": "PAT-ALN-6049",
+      "patientName": "Smith, Richard",
+      "runTimestamp": "2026-07-22T10:38:00Z",
+      "executionModule": "MODULE_I1",
+      "results": [
+        {
+          "assayCode": "ALIN-HBA1C",
+          "assayName": "Hemoglobin A1c",
+          "resultValue": 3.7,
+          "unitOfMeasure": "%",
+          "referenceRange": "4.0-5.6",
+          "interpretationFlag": "LOW",
+          "reagentLotNumber": "LOT-2026-726"
+        },
+        {
+          "assayCode": "ALIN-GLU",
+          "assayName": "Glucose",
+          "resultValue": 78.91,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "70.0-105.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-556"
+        },
+        {
+          "assayCode": "ALIN-CHOL",
+          "assayName": "Total Cholesterol",
+          "resultValue": 208.55,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "125.0-200.0",
+          "interpretationFlag": "HIGH",
+          "reagentLotNumber": "LOT-2026-525"
+        },
+        {
+          "assayCode": "ALIN-HSCRP",
+          "assayName": "High Sensitivity CRP",
+          "resultValue": 0.55,
+          "unitOfMeasure": "mg/L",
+          "referenceRange": "0.0-3.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-451"
+        }
+      ]
+    },
+    {
+      "instrumentDetails": {
+        "vendor": "Abbott Diagnostics",
+        "model": "Alinity ci-series",
+        "serialNumber": "ALN-CI-99201",
+        "firmwareVersion": "v3.12.4"
+      },
+      "specimenBarcode": "BC-ALINITY-40050",
+      "patientIdentifier": "PAT-ALN-6050",
+      "patientName": "Garcia, Richard",
+      "runTimestamp": "2026-07-22T10:40:00Z",
+      "executionModule": "MODULE_C1",
+      "results": [
+        {
+          "assayCode": "ALIN-GLU",
+          "assayName": "Glucose",
+          "resultValue": 84.83,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "70.0-105.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-239"
+        },
+        {
+          "assayCode": "ALIN-HBA1C",
+          "assayName": "Hemoglobin A1c",
+          "resultValue": 6.04,
+          "unitOfMeasure": "%",
+          "referenceRange": "4.0-5.6",
+          "interpretationFlag": "HIGH",
+          "reagentLotNumber": "LOT-2026-641"
+        }
+      ]
+    },
+    {
+      "instrumentDetails": {
+        "vendor": "Abbott Diagnostics",
+        "model": "Alinity ci-series",
+        "serialNumber": "ALN-CI-99201",
+        "firmwareVersion": "v3.12.4"
+      },
+      "specimenBarcode": "BC-ALINITY-40051",
+      "patientIdentifier": "PAT-ALN-6051",
+      "patientName": "Davis, David",
+      "runTimestamp": "2026-07-22T10:42:00Z",
+      "executionModule": "MODULE_C1",
+      "results": [
+        {
+          "assayCode": "ALIN-HSCRP",
+          "assayName": "High Sensitivity CRP",
+          "resultValue": 0.96,
+          "unitOfMeasure": "mg/L",
+          "referenceRange": "0.0-3.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-830"
+        },
+        {
+          "assayCode": "ALIN-GLU",
+          "assayName": "Glucose",
+          "resultValue": 94.32,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "70.0-105.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-466"
+        },
+        {
+          "assayCode": "ALIN-CHOL",
+          "assayName": "Total Cholesterol",
+          "resultValue": 233.8,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "125.0-200.0",
+          "interpretationFlag": "HIGH",
+          "reagentLotNumber": "LOT-2026-747"
+        },
+        {
+          "assayCode": "ALIN-HBA1C",
+          "assayName": "Hemoglobin A1c",
+          "resultValue": 3.99,
+          "unitOfMeasure": "%",
+          "referenceRange": "4.0-5.6",
+          "interpretationFlag": "LOW",
+          "reagentLotNumber": "LOT-2026-897"
+        }
+      ]
+    },
+    {
+      "instrumentDetails": {
+        "vendor": "Abbott Diagnostics",
+        "model": "Alinity ci-series",
+        "serialNumber": "ALN-CI-99201",
+        "firmwareVersion": "v3.12.4"
+      },
+      "specimenBarcode": "BC-ALINITY-40052",
+      "patientIdentifier": "PAT-ALN-6052",
+      "patientName": "Brown, Barbara",
+      "runTimestamp": "2026-07-22T10:44:00Z",
+      "executionModule": "MODULE_I1",
+      "results": [
+        {
+          "assayCode": "ALIN-HBA1C",
+          "assayName": "Hemoglobin A1c",
+          "resultValue": 6.49,
+          "unitOfMeasure": "%",
+          "referenceRange": "4.0-5.6",
+          "interpretationFlag": "HIGH",
+          "reagentLotNumber": "LOT-2026-546"
+        },
+        {
+          "assayCode": "ALIN-CHOL",
+          "assayName": "Total Cholesterol",
+          "resultValue": 202.38,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "125.0-200.0",
+          "interpretationFlag": "HIGH",
+          "reagentLotNumber": "LOT-2026-590"
+        },
+        {
+          "assayCode": "ALIN-GLU",
+          "assayName": "Glucose",
+          "resultValue": 72.18,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "70.0-105.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-749"
+        },
+        {
+          "assayCode": "ALIN-TRIG",
+          "assayName": "Triglycerides",
+          "resultValue": 170.38,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "35.0-150.0",
+          "interpretationFlag": "HIGH",
+          "reagentLotNumber": "LOT-2026-326"
+        }
+      ]
+    },
+    {
+      "instrumentDetails": {
+        "vendor": "Abbott Diagnostics",
+        "model": "Alinity ci-series",
+        "serialNumber": "ALN-CI-99201",
+        "firmwareVersion": "v3.12.4"
+      },
+      "specimenBarcode": "BC-ALINITY-40053",
+      "patientIdentifier": "PAT-ALN-6053",
+      "patientName": "Martin, Barbara",
+      "runTimestamp": "2026-07-22T10:46:00Z",
+      "executionModule": "MODULE_I1",
+      "results": [
+        {
+          "assayCode": "ALIN-CHOL",
+          "assayName": "Total Cholesterol",
+          "resultValue": 129.57,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "125.0-200.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-198"
+        },
+        {
+          "assayCode": "ALIN-HSCRP",
+          "assayName": "High Sensitivity CRP",
+          "resultValue": 2.33,
+          "unitOfMeasure": "mg/L",
+          "referenceRange": "0.0-3.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-660"
+        }
+      ]
+    },
+    {
+      "instrumentDetails": {
+        "vendor": "Abbott Diagnostics",
+        "model": "Alinity ci-series",
+        "serialNumber": "ALN-CI-99201",
+        "firmwareVersion": "v3.12.4"
+      },
+      "specimenBarcode": "BC-ALINITY-40054",
+      "patientIdentifier": "PAT-ALN-6054",
+      "patientName": "Jackson, Joseph",
+      "runTimestamp": "2026-07-22T10:48:00Z",
+      "executionModule": "MODULE_I1",
+      "results": [
+        {
+          "assayCode": "ALIN-HSCRP",
+          "assayName": "High Sensitivity CRP",
+          "resultValue": 2.17,
+          "unitOfMeasure": "mg/L",
+          "referenceRange": "0.0-3.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-336"
+        },
+        {
+          "assayCode": "ALIN-TRIG",
+          "assayName": "Triglycerides",
+          "resultValue": 145.36,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "35.0-150.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-172"
+        },
+        {
+          "assayCode": "ALIN-HBA1C",
+          "assayName": "Hemoglobin A1c",
+          "resultValue": 6.53,
+          "unitOfMeasure": "%",
+          "referenceRange": "4.0-5.6",
+          "interpretationFlag": "HIGH",
+          "reagentLotNumber": "LOT-2026-175"
+        }
+      ]
+    },
+    {
+      "instrumentDetails": {
+        "vendor": "Abbott Diagnostics",
+        "model": "Alinity ci-series",
+        "serialNumber": "ALN-CI-99201",
+        "firmwareVersion": "v3.12.4"
+      },
+      "specimenBarcode": "BC-ALINITY-40055",
+      "patientIdentifier": "PAT-ALN-6055",
+      "patientName": "Davis, Joseph",
+      "runTimestamp": "2026-07-22T10:50:00Z",
+      "executionModule": "MODULE_I1",
+      "results": [
+        {
+          "assayCode": "ALIN-CHOL",
+          "assayName": "Total Cholesterol",
+          "resultValue": 154.2,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "125.0-200.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-819"
+        },
+        {
+          "assayCode": "ALIN-HBA1C",
+          "assayName": "Hemoglobin A1c",
+          "resultValue": 5.32,
+          "unitOfMeasure": "%",
+          "referenceRange": "4.0-5.6",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-466"
+        }
+      ]
+    },
+    {
+      "instrumentDetails": {
+        "vendor": "Abbott Diagnostics",
+        "model": "Alinity ci-series",
+        "serialNumber": "ALN-CI-99201",
+        "firmwareVersion": "v3.12.4"
+      },
+      "specimenBarcode": "BC-ALINITY-40056",
+      "patientIdentifier": "PAT-ALN-6056",
+      "patientName": "Garcia, Mary",
+      "runTimestamp": "2026-07-22T10:52:00Z",
+      "executionModule": "MODULE_I1",
+      "results": [
+        {
+          "assayCode": "ALIN-TRIG",
+          "assayName": "Triglycerides",
+          "resultValue": 108.94,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "35.0-150.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-129"
+        },
+        {
+          "assayCode": "ALIN-GLU",
+          "assayName": "Glucose",
+          "resultValue": 104.83,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "70.0-105.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-542"
+        }
+      ]
+    },
+    {
+      "instrumentDetails": {
+        "vendor": "Abbott Diagnostics",
+        "model": "Alinity ci-series",
+        "serialNumber": "ALN-CI-99201",
+        "firmwareVersion": "v3.12.4"
+      },
+      "specimenBarcode": "BC-ALINITY-40057",
+      "patientIdentifier": "PAT-ALN-6057",
+      "patientName": "Wilson, Michael",
+      "runTimestamp": "2026-07-22T10:54:00Z",
+      "executionModule": "MODULE_I1",
+      "results": [
+        {
+          "assayCode": "ALIN-HBA1C",
+          "assayName": "Hemoglobin A1c",
+          "resultValue": 4.7,
+          "unitOfMeasure": "%",
+          "referenceRange": "4.0-5.6",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-674"
+        },
+        {
+          "assayCode": "ALIN-CHOL",
+          "assayName": "Total Cholesterol",
+          "resultValue": 213.25,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "125.0-200.0",
+          "interpretationFlag": "HIGH",
+          "reagentLotNumber": "LOT-2026-797"
+        },
+        {
+          "assayCode": "ALIN-TRIG",
+          "assayName": "Triglycerides",
+          "resultValue": 143.01,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "35.0-150.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-795"
+        }
+      ]
+    },
+    {
+      "instrumentDetails": {
+        "vendor": "Abbott Diagnostics",
+        "model": "Alinity ci-series",
+        "serialNumber": "ALN-CI-99201",
+        "firmwareVersion": "v3.12.4"
+      },
+      "specimenBarcode": "BC-ALINITY-40058",
+      "patientIdentifier": "PAT-ALN-6058",
+      "patientName": "Gonzalez, William",
+      "runTimestamp": "2026-07-22T10:56:00Z",
+      "executionModule": "MODULE_I1",
+      "results": [
+        {
+          "assayCode": "ALIN-HBA1C",
+          "assayName": "Hemoglobin A1c",
+          "resultValue": 4.74,
+          "unitOfMeasure": "%",
+          "referenceRange": "4.0-5.6",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-757"
+        },
+        {
+          "assayCode": "ALIN-TRIG",
+          "assayName": "Triglycerides",
+          "resultValue": 65.9,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "35.0-150.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-957"
+        },
+        {
+          "assayCode": "ALIN-GLU",
+          "assayName": "Glucose",
+          "resultValue": 109.27,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "70.0-105.0",
+          "interpretationFlag": "HIGH",
+          "reagentLotNumber": "LOT-2026-909"
+        },
+        {
+          "assayCode": "ALIN-HSCRP",
+          "assayName": "High Sensitivity CRP",
+          "resultValue": 0.2,
+          "unitOfMeasure": "mg/L",
+          "referenceRange": "0.0-3.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-655"
+        }
+      ]
+    },
+    {
+      "instrumentDetails": {
+        "vendor": "Abbott Diagnostics",
+        "model": "Alinity ci-series",
+        "serialNumber": "ALN-CI-99201",
+        "firmwareVersion": "v3.12.4"
+      },
+      "specimenBarcode": "BC-ALINITY-40059",
+      "patientIdentifier": "PAT-ALN-6059",
+      "patientName": "Davis, Karen",
+      "runTimestamp": "2026-07-22T10:58:00Z",
+      "executionModule": "MODULE_C1",
+      "results": [
+        {
+          "assayCode": "ALIN-HBA1C",
+          "assayName": "Hemoglobin A1c",
+          "resultValue": 4.96,
+          "unitOfMeasure": "%",
+          "referenceRange": "4.0-5.6",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-952"
+        },
+        {
+          "assayCode": "ALIN-HSCRP",
+          "assayName": "High Sensitivity CRP",
+          "resultValue": 2.08,
+          "unitOfMeasure": "mg/L",
+          "referenceRange": "0.0-3.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-150"
+        },
+        {
+          "assayCode": "ALIN-CHOL",
+          "assayName": "Total Cholesterol",
+          "resultValue": 194.2,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "125.0-200.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-531"
+        }
+      ]
+    },
+    {
+      "instrumentDetails": {
+        "vendor": "Abbott Diagnostics",
+        "model": "Alinity ci-series",
+        "serialNumber": "ALN-CI-99201",
+        "firmwareVersion": "v3.12.4"
+      },
+      "specimenBarcode": "BC-ALINITY-40060",
+      "patientIdentifier": "PAT-ALN-6060",
+      "patientName": "Jones, Charles",
+      "runTimestamp": "2026-07-22T11:00:00Z",
+      "executionModule": "MODULE_I1",
+      "results": [
+        {
+          "assayCode": "ALIN-CHOL",
+          "assayName": "Total Cholesterol",
+          "resultValue": 236.28,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "125.0-200.0",
+          "interpretationFlag": "HIGH",
+          "reagentLotNumber": "LOT-2026-609"
+        },
+        {
+          "assayCode": "ALIN-GLU",
+          "assayName": "Glucose",
+          "resultValue": 82.56,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "70.0-105.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-589"
+        },
+        {
+          "assayCode": "ALIN-TRIG",
+          "assayName": "Triglycerides",
+          "resultValue": 88.81,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "35.0-150.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-881"
+        }
+      ]
+    },
+    {
+      "instrumentDetails": {
+        "vendor": "Abbott Diagnostics",
+        "model": "Alinity ci-series",
+        "serialNumber": "ALN-CI-99201",
+        "firmwareVersion": "v3.12.4"
+      },
+      "specimenBarcode": "BC-ALINITY-40061",
+      "patientIdentifier": "PAT-ALN-6061",
+      "patientName": "Lopez, Sarah",
+      "runTimestamp": "2026-07-22T11:02:00Z",
+      "executionModule": "MODULE_I1",
+      "results": [
+        {
+          "assayCode": "ALIN-CHOL",
+          "assayName": "Total Cholesterol",
+          "resultValue": 237.37,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "125.0-200.0",
+          "interpretationFlag": "HIGH",
+          "reagentLotNumber": "LOT-2026-452"
+        },
+        {
+          "assayCode": "ALIN-HSCRP",
+          "assayName": "High Sensitivity CRP",
+          "resultValue": 2.63,
+          "unitOfMeasure": "mg/L",
+          "referenceRange": "0.0-3.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-834"
+        }
+      ]
+    },
+    {
+      "instrumentDetails": {
+        "vendor": "Abbott Diagnostics",
+        "model": "Alinity ci-series",
+        "serialNumber": "ALN-CI-99201",
+        "firmwareVersion": "v3.12.4"
+      },
+      "specimenBarcode": "BC-ALINITY-40062",
+      "patientIdentifier": "PAT-ALN-6062",
+      "patientName": "Rodriguez, John",
+      "runTimestamp": "2026-07-22T11:04:00Z",
+      "executionModule": "MODULE_C1",
+      "results": [
+        {
+          "assayCode": "ALIN-TRIG",
+          "assayName": "Triglycerides",
+          "resultValue": 81.07,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "35.0-150.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-309"
+        },
+        {
+          "assayCode": "ALIN-GLU",
+          "assayName": "Glucose",
+          "resultValue": 124.09,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "70.0-105.0",
+          "interpretationFlag": "HIGH",
+          "reagentLotNumber": "LOT-2026-166"
+        },
+        {
+          "assayCode": "ALIN-CHOL",
+          "assayName": "Total Cholesterol",
+          "resultValue": 223.85,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "125.0-200.0",
+          "interpretationFlag": "HIGH",
+          "reagentLotNumber": "LOT-2026-997"
+        }
+      ]
+    },
+    {
+      "instrumentDetails": {
+        "vendor": "Abbott Diagnostics",
+        "model": "Alinity ci-series",
+        "serialNumber": "ALN-CI-99201",
+        "firmwareVersion": "v3.12.4"
+      },
+      "specimenBarcode": "BC-ALINITY-40063",
+      "patientIdentifier": "PAT-ALN-6063",
+      "patientName": "Williams, Jessica",
+      "runTimestamp": "2026-07-22T11:06:00Z",
+      "executionModule": "MODULE_C1",
+      "results": [
+        {
+          "assayCode": "ALIN-GLU",
+          "assayName": "Glucose",
+          "resultValue": 91.79,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "70.0-105.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-911"
+        },
+        {
+          "assayCode": "ALIN-HSCRP",
+          "assayName": "High Sensitivity CRP",
+          "resultValue": 1.83,
+          "unitOfMeasure": "mg/L",
+          "referenceRange": "0.0-3.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-677"
+        },
+        {
+          "assayCode": "ALIN-TRIG",
+          "assayName": "Triglycerides",
+          "resultValue": 75.48,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "35.0-150.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-688"
+        },
+        {
+          "assayCode": "ALIN-CHOL",
+          "assayName": "Total Cholesterol",
+          "resultValue": 138.48,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "125.0-200.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-839"
+        }
+      ]
+    },
+    {
+      "instrumentDetails": {
+        "vendor": "Abbott Diagnostics",
+        "model": "Alinity ci-series",
+        "serialNumber": "ALN-CI-99201",
+        "firmwareVersion": "v3.12.4"
+      },
+      "specimenBarcode": "BC-ALINITY-40064",
+      "patientIdentifier": "PAT-ALN-6064",
+      "patientName": "Taylor, Jennifer",
+      "runTimestamp": "2026-07-22T11:08:00Z",
+      "executionModule": "MODULE_I1",
+      "results": [
+        {
+          "assayCode": "ALIN-HSCRP",
+          "assayName": "High Sensitivity CRP",
+          "resultValue": 0.41,
+          "unitOfMeasure": "mg/L",
+          "referenceRange": "0.0-3.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-751"
+        },
+        {
+          "assayCode": "ALIN-TRIG",
+          "assayName": "Triglycerides",
+          "resultValue": 73.07,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "35.0-150.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-932"
+        }
+      ]
+    },
+    {
+      "instrumentDetails": {
+        "vendor": "Abbott Diagnostics",
+        "model": "Alinity ci-series",
+        "serialNumber": "ALN-CI-99201",
+        "firmwareVersion": "v3.12.4"
+      },
+      "specimenBarcode": "BC-ALINITY-40065",
+      "patientIdentifier": "PAT-ALN-6065",
+      "patientName": "Martinez, James",
+      "runTimestamp": "2026-07-22T11:10:00Z",
+      "executionModule": "MODULE_I1",
+      "results": [
+        {
+          "assayCode": "ALIN-TRIG",
+          "assayName": "Triglycerides",
+          "resultValue": 46.52,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "35.0-150.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-977"
+        },
+        {
+          "assayCode": "ALIN-HSCRP",
+          "assayName": "High Sensitivity CRP",
+          "resultValue": 0.73,
+          "unitOfMeasure": "mg/L",
+          "referenceRange": "0.0-3.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-471"
+        },
+        {
+          "assayCode": "ALIN-GLU",
+          "assayName": "Glucose",
+          "resultValue": 77.27,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "70.0-105.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-510"
+        },
+        {
+          "assayCode": "ALIN-HBA1C",
+          "assayName": "Hemoglobin A1c",
+          "resultValue": 5.01,
+          "unitOfMeasure": "%",
+          "referenceRange": "4.0-5.6",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-800"
+        }
+      ]
+    },
+    {
+      "instrumentDetails": {
+        "vendor": "Abbott Diagnostics",
+        "model": "Alinity ci-series",
+        "serialNumber": "ALN-CI-99201",
+        "firmwareVersion": "v3.12.4"
+      },
+      "specimenBarcode": "BC-ALINITY-40066",
+      "patientIdentifier": "PAT-ALN-6066",
+      "patientName": "Garcia, Jennifer",
+      "runTimestamp": "2026-07-22T11:12:00Z",
+      "executionModule": "MODULE_C1",
+      "results": [
+        {
+          "assayCode": "ALIN-HBA1C",
+          "assayName": "Hemoglobin A1c",
+          "resultValue": 5.91,
+          "unitOfMeasure": "%",
+          "referenceRange": "4.0-5.6",
+          "interpretationFlag": "HIGH",
+          "reagentLotNumber": "LOT-2026-810"
+        },
+        {
+          "assayCode": "ALIN-HSCRP",
+          "assayName": "High Sensitivity CRP",
+          "resultValue": 2.93,
+          "unitOfMeasure": "mg/L",
+          "referenceRange": "0.0-3.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-811"
+        },
+        {
+          "assayCode": "ALIN-GLU",
+          "assayName": "Glucose",
+          "resultValue": 122.86,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "70.0-105.0",
+          "interpretationFlag": "HIGH",
+          "reagentLotNumber": "LOT-2026-337"
+        },
+        {
+          "assayCode": "ALIN-CHOL",
+          "assayName": "Total Cholesterol",
+          "resultValue": 142.07,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "125.0-200.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-725"
+        }
+      ]
+    },
+    {
+      "instrumentDetails": {
+        "vendor": "Abbott Diagnostics",
+        "model": "Alinity ci-series",
+        "serialNumber": "ALN-CI-99201",
+        "firmwareVersion": "v3.12.4"
+      },
+      "specimenBarcode": "BC-ALINITY-40067",
+      "patientIdentifier": "PAT-ALN-6067",
+      "patientName": "Garcia, Susan",
+      "runTimestamp": "2026-07-22T11:14:00Z",
+      "executionModule": "MODULE_C1",
+      "results": [
+        {
+          "assayCode": "ALIN-GLU",
+          "assayName": "Glucose",
+          "resultValue": 112.29,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "70.0-105.0",
+          "interpretationFlag": "HIGH",
+          "reagentLotNumber": "LOT-2026-172"
+        },
+        {
+          "assayCode": "ALIN-HBA1C",
+          "assayName": "Hemoglobin A1c",
+          "resultValue": 5.05,
+          "unitOfMeasure": "%",
+          "referenceRange": "4.0-5.6",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-296"
+        },
+        {
+          "assayCode": "ALIN-CHOL",
+          "assayName": "Total Cholesterol",
+          "resultValue": 205.59,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "125.0-200.0",
+          "interpretationFlag": "HIGH",
+          "reagentLotNumber": "LOT-2026-683"
+        },
+        {
+          "assayCode": "ALIN-HSCRP",
+          "assayName": "High Sensitivity CRP",
+          "resultValue": 2.35,
+          "unitOfMeasure": "mg/L",
+          "referenceRange": "0.0-3.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-259"
+        }
+      ]
+    },
+    {
+      "instrumentDetails": {
+        "vendor": "Abbott Diagnostics",
+        "model": "Alinity ci-series",
+        "serialNumber": "ALN-CI-99201",
+        "firmwareVersion": "v3.12.4"
+      },
+      "specimenBarcode": "BC-ALINITY-40068",
+      "patientIdentifier": "PAT-ALN-6068",
+      "patientName": "Rodriguez, Michael",
+      "runTimestamp": "2026-07-22T11:16:00Z",
+      "executionModule": "MODULE_C1",
+      "results": [
+        {
+          "assayCode": "ALIN-TRIG",
+          "assayName": "Triglycerides",
+          "resultValue": 165.9,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "35.0-150.0",
+          "interpretationFlag": "HIGH",
+          "reagentLotNumber": "LOT-2026-965"
+        },
+        {
+          "assayCode": "ALIN-HSCRP",
+          "assayName": "High Sensitivity CRP",
+          "resultValue": 0.32,
+          "unitOfMeasure": "mg/L",
+          "referenceRange": "0.0-3.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-891"
+        },
+        {
+          "assayCode": "ALIN-GLU",
+          "assayName": "Glucose",
+          "resultValue": 76.5,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "70.0-105.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-329"
+        },
+        {
+          "assayCode": "ALIN-CHOL",
+          "assayName": "Total Cholesterol",
+          "resultValue": 131.67,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "125.0-200.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-989"
+        }
+      ]
+    },
+    {
+      "instrumentDetails": {
+        "vendor": "Abbott Diagnostics",
+        "model": "Alinity ci-series",
+        "serialNumber": "ALN-CI-99201",
+        "firmwareVersion": "v3.12.4"
+      },
+      "specimenBarcode": "BC-ALINITY-40069",
+      "patientIdentifier": "PAT-ALN-6069",
+      "patientName": "Johnson, Elizabeth",
+      "runTimestamp": "2026-07-22T11:18:00Z",
+      "executionModule": "MODULE_C1",
+      "results": [
+        {
+          "assayCode": "ALIN-GLU",
+          "assayName": "Glucose",
+          "resultValue": 99.59,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "70.0-105.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-595"
+        },
+        {
+          "assayCode": "ALIN-CHOL",
+          "assayName": "Total Cholesterol",
+          "resultValue": 218.08,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "125.0-200.0",
+          "interpretationFlag": "HIGH",
+          "reagentLotNumber": "LOT-2026-418"
+        }
+      ]
+    },
+    {
+      "instrumentDetails": {
+        "vendor": "Abbott Diagnostics",
+        "model": "Alinity ci-series",
+        "serialNumber": "ALN-CI-99201",
+        "firmwareVersion": "v3.12.4"
+      },
+      "specimenBarcode": "BC-ALINITY-40070",
+      "patientIdentifier": "PAT-ALN-6070",
+      "patientName": "Wilson, James",
+      "runTimestamp": "2026-07-22T11:20:00Z",
+      "executionModule": "MODULE_I1",
+      "results": [
+        {
+          "assayCode": "ALIN-HBA1C",
+          "assayName": "Hemoglobin A1c",
+          "resultValue": 6.2,
+          "unitOfMeasure": "%",
+          "referenceRange": "4.0-5.6",
+          "interpretationFlag": "HIGH",
+          "reagentLotNumber": "LOT-2026-126"
+        },
+        {
+          "assayCode": "ALIN-TRIG",
+          "assayName": "Triglycerides",
+          "resultValue": 92.55,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "35.0-150.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-492"
+        }
+      ]
+    },
+    {
+      "instrumentDetails": {
+        "vendor": "Abbott Diagnostics",
+        "model": "Alinity ci-series",
+        "serialNumber": "ALN-CI-99201",
+        "firmwareVersion": "v3.12.4"
+      },
+      "specimenBarcode": "BC-ALINITY-40071",
+      "patientIdentifier": "PAT-ALN-6071",
+      "patientName": "Smith, Susan",
+      "runTimestamp": "2026-07-22T11:22:00Z",
+      "executionModule": "MODULE_C1",
+      "results": [
+        {
+          "assayCode": "ALIN-CHOL",
+          "assayName": "Total Cholesterol",
+          "resultValue": 190.54,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "125.0-200.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-605"
+        },
+        {
+          "assayCode": "ALIN-TRIG",
+          "assayName": "Triglycerides",
+          "resultValue": 108.29,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "35.0-150.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-306"
+        }
+      ]
+    },
+    {
+      "instrumentDetails": {
+        "vendor": "Abbott Diagnostics",
+        "model": "Alinity ci-series",
+        "serialNumber": "ALN-CI-99201",
+        "firmwareVersion": "v3.12.4"
+      },
+      "specimenBarcode": "BC-ALINITY-40072",
+      "patientIdentifier": "PAT-ALN-6072",
+      "patientName": "Martinez, Jessica",
+      "runTimestamp": "2026-07-22T11:24:00Z",
+      "executionModule": "MODULE_I1",
+      "results": [
+        {
+          "assayCode": "ALIN-GLU",
+          "assayName": "Glucose",
+          "resultValue": 112.19,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "70.0-105.0",
+          "interpretationFlag": "HIGH",
+          "reagentLotNumber": "LOT-2026-727"
+        },
+        {
+          "assayCode": "ALIN-HSCRP",
+          "assayName": "High Sensitivity CRP",
+          "resultValue": 0.3,
+          "unitOfMeasure": "mg/L",
+          "referenceRange": "0.0-3.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-469"
+        },
+        {
+          "assayCode": "ALIN-CHOL",
+          "assayName": "Total Cholesterol",
+          "resultValue": 124.79,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "125.0-200.0",
+          "interpretationFlag": "LOW",
+          "reagentLotNumber": "LOT-2026-692"
+        },
+        {
+          "assayCode": "ALIN-HBA1C",
+          "assayName": "Hemoglobin A1c",
+          "resultValue": 5.48,
+          "unitOfMeasure": "%",
+          "referenceRange": "4.0-5.6",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-501"
+        }
+      ]
+    },
+    {
+      "instrumentDetails": {
+        "vendor": "Abbott Diagnostics",
+        "model": "Alinity ci-series",
+        "serialNumber": "ALN-CI-99201",
+        "firmwareVersion": "v3.12.4"
+      },
+      "specimenBarcode": "BC-ALINITY-40073",
+      "patientIdentifier": "PAT-ALN-6073",
+      "patientName": "Jones, Joseph",
+      "runTimestamp": "2026-07-22T11:26:00Z",
+      "executionModule": "MODULE_I1",
+      "results": [
+        {
+          "assayCode": "ALIN-GLU",
+          "assayName": "Glucose",
+          "resultValue": 63.03,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "70.0-105.0",
+          "interpretationFlag": "LOW",
+          "reagentLotNumber": "LOT-2026-559"
+        },
+        {
+          "assayCode": "ALIN-CHOL",
+          "assayName": "Total Cholesterol",
+          "resultValue": 199.36,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "125.0-200.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-570"
+        }
+      ]
+    },
+    {
+      "instrumentDetails": {
+        "vendor": "Abbott Diagnostics",
+        "model": "Alinity ci-series",
+        "serialNumber": "ALN-CI-99201",
+        "firmwareVersion": "v3.12.4"
+      },
+      "specimenBarcode": "BC-ALINITY-40074",
+      "patientIdentifier": "PAT-ALN-6074",
+      "patientName": "Rodriguez, William",
+      "runTimestamp": "2026-07-22T11:28:00Z",
+      "executionModule": "MODULE_C1",
+      "results": [
+        {
+          "assayCode": "ALIN-GLU",
+          "assayName": "Glucose",
+          "resultValue": 64.44,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "70.0-105.0",
+          "interpretationFlag": "LOW",
+          "reagentLotNumber": "LOT-2026-371"
+        },
+        {
+          "assayCode": "ALIN-TRIG",
+          "assayName": "Triglycerides",
+          "resultValue": 112.99,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "35.0-150.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-872"
+        },
+        {
+          "assayCode": "ALIN-HSCRP",
+          "assayName": "High Sensitivity CRP",
+          "resultValue": 1.24,
+          "unitOfMeasure": "mg/L",
+          "referenceRange": "0.0-3.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-173"
+        }
+      ]
+    },
+    {
+      "instrumentDetails": {
+        "vendor": "Abbott Diagnostics",
+        "model": "Alinity ci-series",
+        "serialNumber": "ALN-CI-99201",
+        "firmwareVersion": "v3.12.4"
+      },
+      "specimenBarcode": "BC-ALINITY-40075",
+      "patientIdentifier": "PAT-ALN-6075",
+      "patientName": "Taylor, Thomas",
+      "runTimestamp": "2026-07-22T11:30:00Z",
+      "executionModule": "MODULE_I1",
+      "results": [
+        {
+          "assayCode": "ALIN-TRIG",
+          "assayName": "Triglycerides",
+          "resultValue": 112.95,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "35.0-150.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-706"
+        },
+        {
+          "assayCode": "ALIN-CHOL",
+          "assayName": "Total Cholesterol",
+          "resultValue": 158.97,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "125.0-200.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-847"
+        }
+      ]
+    },
+    {
+      "instrumentDetails": {
+        "vendor": "Abbott Diagnostics",
+        "model": "Alinity ci-series",
+        "serialNumber": "ALN-CI-99201",
+        "firmwareVersion": "v3.12.4"
+      },
+      "specimenBarcode": "BC-ALINITY-40076",
+      "patientIdentifier": "PAT-ALN-6076",
+      "patientName": "Hernandez, Joseph",
+      "runTimestamp": "2026-07-22T11:32:00Z",
+      "executionModule": "MODULE_C1",
+      "results": [
+        {
+          "assayCode": "ALIN-CHOL",
+          "assayName": "Total Cholesterol",
+          "resultValue": 194.92,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "125.0-200.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-984"
+        },
+        {
+          "assayCode": "ALIN-HSCRP",
+          "assayName": "High Sensitivity CRP",
+          "resultValue": 1.69,
+          "unitOfMeasure": "mg/L",
+          "referenceRange": "0.0-3.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-350"
+        },
+        {
+          "assayCode": "ALIN-HBA1C",
+          "assayName": "Hemoglobin A1c",
+          "resultValue": 6.24,
+          "unitOfMeasure": "%",
+          "referenceRange": "4.0-5.6",
+          "interpretationFlag": "HIGH",
+          "reagentLotNumber": "LOT-2026-890"
+        }
+      ]
+    },
+    {
+      "instrumentDetails": {
+        "vendor": "Abbott Diagnostics",
+        "model": "Alinity ci-series",
+        "serialNumber": "ALN-CI-99201",
+        "firmwareVersion": "v3.12.4"
+      },
+      "specimenBarcode": "BC-ALINITY-40077",
+      "patientIdentifier": "PAT-ALN-6077",
+      "patientName": "Taylor, Jessica",
+      "runTimestamp": "2026-07-22T11:34:00Z",
+      "executionModule": "MODULE_I1",
+      "results": [
+        {
+          "assayCode": "ALIN-HBA1C",
+          "assayName": "Hemoglobin A1c",
+          "resultValue": 5.95,
+          "unitOfMeasure": "%",
+          "referenceRange": "4.0-5.6",
+          "interpretationFlag": "HIGH",
+          "reagentLotNumber": "LOT-2026-746"
+        },
+        {
+          "assayCode": "ALIN-TRIG",
+          "assayName": "Triglycerides",
+          "resultValue": 121.8,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "35.0-150.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-429"
+        },
+        {
+          "assayCode": "ALIN-HSCRP",
+          "assayName": "High Sensitivity CRP",
+          "resultValue": 0.39,
+          "unitOfMeasure": "mg/L",
+          "referenceRange": "0.0-3.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-182"
+        }
+      ]
+    },
+    {
+      "instrumentDetails": {
+        "vendor": "Abbott Diagnostics",
+        "model": "Alinity ci-series",
+        "serialNumber": "ALN-CI-99201",
+        "firmwareVersion": "v3.12.4"
+      },
+      "specimenBarcode": "BC-ALINITY-40078",
+      "patientIdentifier": "PAT-ALN-6078",
+      "patientName": "Brown, Jennifer",
+      "runTimestamp": "2026-07-22T11:36:00Z",
+      "executionModule": "MODULE_I1",
+      "results": [
+        {
+          "assayCode": "ALIN-CHOL",
+          "assayName": "Total Cholesterol",
+          "resultValue": 208.86,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "125.0-200.0",
+          "interpretationFlag": "HIGH",
+          "reagentLotNumber": "LOT-2026-362"
+        },
+        {
+          "assayCode": "ALIN-HBA1C",
+          "assayName": "Hemoglobin A1c",
+          "resultValue": 4.9,
+          "unitOfMeasure": "%",
+          "referenceRange": "4.0-5.6",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-570"
+        }
+      ]
+    },
+    {
+      "instrumentDetails": {
+        "vendor": "Abbott Diagnostics",
+        "model": "Alinity ci-series",
+        "serialNumber": "ALN-CI-99201",
+        "firmwareVersion": "v3.12.4"
+      },
+      "specimenBarcode": "BC-ALINITY-40079",
+      "patientIdentifier": "PAT-ALN-6079",
+      "patientName": "Lopez, Patricia",
+      "runTimestamp": "2026-07-22T11:38:00Z",
+      "executionModule": "MODULE_C1",
+      "results": [
+        {
+          "assayCode": "ALIN-HBA1C",
+          "assayName": "Hemoglobin A1c",
+          "resultValue": 6.2,
+          "unitOfMeasure": "%",
+          "referenceRange": "4.0-5.6",
+          "interpretationFlag": "HIGH",
+          "reagentLotNumber": "LOT-2026-195"
+        },
+        {
+          "assayCode": "ALIN-CHOL",
+          "assayName": "Total Cholesterol",
+          "resultValue": 211.34,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "125.0-200.0",
+          "interpretationFlag": "HIGH",
+          "reagentLotNumber": "LOT-2026-822"
+        },
+        {
+          "assayCode": "ALIN-GLU",
+          "assayName": "Glucose",
+          "resultValue": 70.99,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "70.0-105.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-711"
+        }
+      ]
+    },
+    {
+      "instrumentDetails": {
+        "vendor": "Abbott Diagnostics",
+        "model": "Alinity ci-series",
+        "serialNumber": "ALN-CI-99201",
+        "firmwareVersion": "v3.12.4"
+      },
+      "specimenBarcode": "BC-ALINITY-40080",
+      "patientIdentifier": "PAT-ALN-6080",
+      "patientName": "Hernandez, William",
+      "runTimestamp": "2026-07-22T11:40:00Z",
+      "executionModule": "MODULE_I1",
+      "results": [
+        {
+          "assayCode": "ALIN-CHOL",
+          "assayName": "Total Cholesterol",
+          "resultValue": 160.9,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "125.0-200.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-785"
+        },
+        {
+          "assayCode": "ALIN-GLU",
+          "assayName": "Glucose",
+          "resultValue": 80.12,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "70.0-105.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-208"
+        },
+        {
+          "assayCode": "ALIN-TRIG",
+          "assayName": "Triglycerides",
+          "resultValue": 82.54,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "35.0-150.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-112"
+        }
+      ]
+    },
+    {
+      "instrumentDetails": {
+        "vendor": "Abbott Diagnostics",
+        "model": "Alinity ci-series",
+        "serialNumber": "ALN-CI-99201",
+        "firmwareVersion": "v3.12.4"
+      },
+      "specimenBarcode": "BC-ALINITY-40081",
+      "patientIdentifier": "PAT-ALN-6081",
+      "patientName": "Johnson, Barbara",
+      "runTimestamp": "2026-07-22T11:42:00Z",
+      "executionModule": "MODULE_I1",
+      "results": [
+        {
+          "assayCode": "ALIN-TRIG",
+          "assayName": "Triglycerides",
+          "resultValue": 150.27,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "35.0-150.0",
+          "interpretationFlag": "HIGH",
+          "reagentLotNumber": "LOT-2026-877"
+        },
+        {
+          "assayCode": "ALIN-HSCRP",
+          "assayName": "High Sensitivity CRP",
+          "resultValue": 0.07,
+          "unitOfMeasure": "mg/L",
+          "referenceRange": "0.0-3.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-665"
+        },
+        {
+          "assayCode": "ALIN-CHOL",
+          "assayName": "Total Cholesterol",
+          "resultValue": 237.9,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "125.0-200.0",
+          "interpretationFlag": "HIGH",
+          "reagentLotNumber": "LOT-2026-706"
+        }
+      ]
+    },
+    {
+      "instrumentDetails": {
+        "vendor": "Abbott Diagnostics",
+        "model": "Alinity ci-series",
+        "serialNumber": "ALN-CI-99201",
+        "firmwareVersion": "v3.12.4"
+      },
+      "specimenBarcode": "BC-ALINITY-40082",
+      "patientIdentifier": "PAT-ALN-6082",
+      "patientName": "Williams, Robert",
+      "runTimestamp": "2026-07-22T11:44:00Z",
+      "executionModule": "MODULE_C1",
+      "results": [
+        {
+          "assayCode": "ALIN-GLU",
+          "assayName": "Glucose",
+          "resultValue": 85.79,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "70.0-105.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-366"
+        },
+        {
+          "assayCode": "ALIN-HSCRP",
+          "assayName": "High Sensitivity CRP",
+          "resultValue": 0.85,
+          "unitOfMeasure": "mg/L",
+          "referenceRange": "0.0-3.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-270"
+        },
+        {
+          "assayCode": "ALIN-TRIG",
+          "assayName": "Triglycerides",
+          "resultValue": 141.67,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "35.0-150.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-554"
+        },
+        {
+          "assayCode": "ALIN-CHOL",
+          "assayName": "Total Cholesterol",
+          "resultValue": 172.63,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "125.0-200.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-336"
+        }
+      ]
+    },
+    {
+      "instrumentDetails": {
+        "vendor": "Abbott Diagnostics",
+        "model": "Alinity ci-series",
+        "serialNumber": "ALN-CI-99201",
+        "firmwareVersion": "v3.12.4"
+      },
+      "specimenBarcode": "BC-ALINITY-40083",
+      "patientIdentifier": "PAT-ALN-6083",
+      "patientName": "Wilson, James",
+      "runTimestamp": "2026-07-22T11:46:00Z",
+      "executionModule": "MODULE_I1",
+      "results": [
+        {
+          "assayCode": "ALIN-GLU",
+          "assayName": "Glucose",
+          "resultValue": 98.8,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "70.0-105.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-729"
+        },
+        {
+          "assayCode": "ALIN-HSCRP",
+          "assayName": "High Sensitivity CRP",
+          "resultValue": 0.62,
+          "unitOfMeasure": "mg/L",
+          "referenceRange": "0.0-3.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-130"
+        }
+      ]
+    },
+    {
+      "instrumentDetails": {
+        "vendor": "Abbott Diagnostics",
+        "model": "Alinity ci-series",
+        "serialNumber": "ALN-CI-99201",
+        "firmwareVersion": "v3.12.4"
+      },
+      "specimenBarcode": "BC-ALINITY-40084",
+      "patientIdentifier": "PAT-ALN-6084",
+      "patientName": "Miller, Thomas",
+      "runTimestamp": "2026-07-22T11:48:00Z",
+      "executionModule": "MODULE_I1",
+      "results": [
+        {
+          "assayCode": "ALIN-GLU",
+          "assayName": "Glucose",
+          "resultValue": 84.97,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "70.0-105.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-547"
+        },
+        {
+          "assayCode": "ALIN-HSCRP",
+          "assayName": "High Sensitivity CRP",
+          "resultValue": 1.97,
+          "unitOfMeasure": "mg/L",
+          "referenceRange": "0.0-3.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-645"
+        },
+        {
+          "assayCode": "ALIN-CHOL",
+          "assayName": "Total Cholesterol",
+          "resultValue": 119.8,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "125.0-200.0",
+          "interpretationFlag": "LOW",
+          "reagentLotNumber": "LOT-2026-373"
+        },
+        {
+          "assayCode": "ALIN-TRIG",
+          "assayName": "Triglycerides",
+          "resultValue": 64.74,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "35.0-150.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-519"
+        }
+      ]
+    },
+    {
+      "instrumentDetails": {
+        "vendor": "Abbott Diagnostics",
+        "model": "Alinity ci-series",
+        "serialNumber": "ALN-CI-99201",
+        "firmwareVersion": "v3.12.4"
+      },
+      "specimenBarcode": "BC-ALINITY-40085",
+      "patientIdentifier": "PAT-ALN-6085",
+      "patientName": "Martinez, Jessica",
+      "runTimestamp": "2026-07-22T11:50:00Z",
+      "executionModule": "MODULE_C1",
+      "results": [
+        {
+          "assayCode": "ALIN-HSCRP",
+          "assayName": "High Sensitivity CRP",
+          "resultValue": 2.09,
+          "unitOfMeasure": "mg/L",
+          "referenceRange": "0.0-3.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-728"
+        },
+        {
+          "assayCode": "ALIN-CHOL",
+          "assayName": "Total Cholesterol",
+          "resultValue": 121.23,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "125.0-200.0",
+          "interpretationFlag": "LOW",
+          "reagentLotNumber": "LOT-2026-679"
+        },
+        {
+          "assayCode": "ALIN-TRIG",
+          "assayName": "Triglycerides",
+          "resultValue": 101.19,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "35.0-150.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-168"
+        },
+        {
+          "assayCode": "ALIN-GLU",
+          "assayName": "Glucose",
+          "resultValue": 122.43,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "70.0-105.0",
+          "interpretationFlag": "HIGH",
+          "reagentLotNumber": "LOT-2026-217"
+        }
+      ]
+    },
+    {
+      "instrumentDetails": {
+        "vendor": "Abbott Diagnostics",
+        "model": "Alinity ci-series",
+        "serialNumber": "ALN-CI-99201",
+        "firmwareVersion": "v3.12.4"
+      },
+      "specimenBarcode": "BC-ALINITY-40086",
+      "patientIdentifier": "PAT-ALN-6086",
+      "patientName": "Wilson, Jennifer",
+      "runTimestamp": "2026-07-22T11:52:00Z",
+      "executionModule": "MODULE_C1",
+      "results": [
+        {
+          "assayCode": "ALIN-GLU",
+          "assayName": "Glucose",
+          "resultValue": 81.27,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "70.0-105.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-262"
+        },
+        {
+          "assayCode": "ALIN-HSCRP",
+          "assayName": "High Sensitivity CRP",
+          "resultValue": 2.44,
+          "unitOfMeasure": "mg/L",
+          "referenceRange": "0.0-3.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-395"
+        }
+      ]
+    },
+    {
+      "instrumentDetails": {
+        "vendor": "Abbott Diagnostics",
+        "model": "Alinity ci-series",
+        "serialNumber": "ALN-CI-99201",
+        "firmwareVersion": "v3.12.4"
+      },
+      "specimenBarcode": "BC-ALINITY-40087",
+      "patientIdentifier": "PAT-ALN-6087",
+      "patientName": "Anderson, Michael",
+      "runTimestamp": "2026-07-22T11:54:00Z",
+      "executionModule": "MODULE_I1",
+      "results": [
+        {
+          "assayCode": "ALIN-HBA1C",
+          "assayName": "Hemoglobin A1c",
+          "resultValue": 4.09,
+          "unitOfMeasure": "%",
+          "referenceRange": "4.0-5.6",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-449"
+        },
+        {
+          "assayCode": "ALIN-CHOL",
+          "assayName": "Total Cholesterol",
+          "resultValue": 139.21,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "125.0-200.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-508"
+        },
+        {
+          "assayCode": "ALIN-HSCRP",
+          "assayName": "High Sensitivity CRP",
+          "resultValue": 2.94,
+          "unitOfMeasure": "mg/L",
+          "referenceRange": "0.0-3.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-197"
+        }
+      ]
+    },
+    {
+      "instrumentDetails": {
+        "vendor": "Abbott Diagnostics",
+        "model": "Alinity ci-series",
+        "serialNumber": "ALN-CI-99201",
+        "firmwareVersion": "v3.12.4"
+      },
+      "specimenBarcode": "BC-ALINITY-40088",
+      "patientIdentifier": "PAT-ALN-6088",
+      "patientName": "Brown, Patricia",
+      "runTimestamp": "2026-07-22T11:56:00Z",
+      "executionModule": "MODULE_C1",
+      "results": [
+        {
+          "assayCode": "ALIN-HBA1C",
+          "assayName": "Hemoglobin A1c",
+          "resultValue": 6.04,
+          "unitOfMeasure": "%",
+          "referenceRange": "4.0-5.6",
+          "interpretationFlag": "HIGH",
+          "reagentLotNumber": "LOT-2026-211"
+        },
+        {
+          "assayCode": "ALIN-CHOL",
+          "assayName": "Total Cholesterol",
+          "resultValue": 127.56,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "125.0-200.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-935"
+        },
+        {
+          "assayCode": "ALIN-HSCRP",
+          "assayName": "High Sensitivity CRP",
+          "resultValue": 2.41,
+          "unitOfMeasure": "mg/L",
+          "referenceRange": "0.0-3.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-611"
+        }
+      ]
+    },
+    {
+      "instrumentDetails": {
+        "vendor": "Abbott Diagnostics",
+        "model": "Alinity ci-series",
+        "serialNumber": "ALN-CI-99201",
+        "firmwareVersion": "v3.12.4"
+      },
+      "specimenBarcode": "BC-ALINITY-40089",
+      "patientIdentifier": "PAT-ALN-6089",
+      "patientName": "Thomas, John",
+      "runTimestamp": "2026-07-22T11:58:00Z",
+      "executionModule": "MODULE_I1",
+      "results": [
+        {
+          "assayCode": "ALIN-HSCRP",
+          "assayName": "High Sensitivity CRP",
+          "resultValue": 3.0,
+          "unitOfMeasure": "mg/L",
+          "referenceRange": "0.0-3.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-268"
+        },
+        {
+          "assayCode": "ALIN-HBA1C",
+          "assayName": "Hemoglobin A1c",
+          "resultValue": 6.24,
+          "unitOfMeasure": "%",
+          "referenceRange": "4.0-5.6",
+          "interpretationFlag": "HIGH",
+          "reagentLotNumber": "LOT-2026-261"
+        },
+        {
+          "assayCode": "ALIN-GLU",
+          "assayName": "Glucose",
+          "resultValue": 109.31,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "70.0-105.0",
+          "interpretationFlag": "HIGH",
+          "reagentLotNumber": "LOT-2026-626"
+        }
+      ]
+    },
+    {
+      "instrumentDetails": {
+        "vendor": "Abbott Diagnostics",
+        "model": "Alinity ci-series",
+        "serialNumber": "ALN-CI-99201",
+        "firmwareVersion": "v3.12.4"
+      },
+      "specimenBarcode": "BC-ALINITY-40090",
+      "patientIdentifier": "PAT-ALN-6090",
+      "patientName": "Johnson, David",
+      "runTimestamp": "2026-07-22T12:00:00Z",
+      "executionModule": "MODULE_I1",
+      "results": [
+        {
+          "assayCode": "ALIN-GLU",
+          "assayName": "Glucose",
+          "resultValue": 69.88,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "70.0-105.0",
+          "interpretationFlag": "LOW",
+          "reagentLotNumber": "LOT-2026-398"
+        },
+        {
+          "assayCode": "ALIN-CHOL",
+          "assayName": "Total Cholesterol",
+          "resultValue": 189.09,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "125.0-200.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-276"
+        },
+        {
+          "assayCode": "ALIN-TRIG",
+          "assayName": "Triglycerides",
+          "resultValue": 60.22,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "35.0-150.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-737"
+        },
+        {
+          "assayCode": "ALIN-HSCRP",
+          "assayName": "High Sensitivity CRP",
+          "resultValue": 2.51,
+          "unitOfMeasure": "mg/L",
+          "referenceRange": "0.0-3.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-699"
+        }
+      ]
+    },
+    {
+      "instrumentDetails": {
+        "vendor": "Abbott Diagnostics",
+        "model": "Alinity ci-series",
+        "serialNumber": "ALN-CI-99201",
+        "firmwareVersion": "v3.12.4"
+      },
+      "specimenBarcode": "BC-ALINITY-40091",
+      "patientIdentifier": "PAT-ALN-6091",
+      "patientName": "Davis, Susan",
+      "runTimestamp": "2026-07-22T12:02:00Z",
+      "executionModule": "MODULE_C1",
+      "results": [
+        {
+          "assayCode": "ALIN-HBA1C",
+          "assayName": "Hemoglobin A1c",
+          "resultValue": 5.88,
+          "unitOfMeasure": "%",
+          "referenceRange": "4.0-5.6",
+          "interpretationFlag": "HIGH",
+          "reagentLotNumber": "LOT-2026-290"
+        },
+        {
+          "assayCode": "ALIN-GLU",
+          "assayName": "Glucose",
+          "resultValue": 91.13,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "70.0-105.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-715"
+        }
+      ]
+    },
+    {
+      "instrumentDetails": {
+        "vendor": "Abbott Diagnostics",
+        "model": "Alinity ci-series",
+        "serialNumber": "ALN-CI-99201",
+        "firmwareVersion": "v3.12.4"
+      },
+      "specimenBarcode": "BC-ALINITY-40092",
+      "patientIdentifier": "PAT-ALN-6092",
+      "patientName": "Smith, Linda",
+      "runTimestamp": "2026-07-22T12:04:00Z",
+      "executionModule": "MODULE_I1",
+      "results": [
+        {
+          "assayCode": "ALIN-TRIG",
+          "assayName": "Triglycerides",
+          "resultValue": 156.25,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "35.0-150.0",
+          "interpretationFlag": "HIGH",
+          "reagentLotNumber": "LOT-2026-236"
+        },
+        {
+          "assayCode": "ALIN-HSCRP",
+          "assayName": "High Sensitivity CRP",
+          "resultValue": 2.03,
+          "unitOfMeasure": "mg/L",
+          "referenceRange": "0.0-3.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-947"
+        },
+        {
+          "assayCode": "ALIN-GLU",
+          "assayName": "Glucose",
+          "resultValue": 81.31,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "70.0-105.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-612"
+        },
+        {
+          "assayCode": "ALIN-CHOL",
+          "assayName": "Total Cholesterol",
+          "resultValue": 225.03,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "125.0-200.0",
+          "interpretationFlag": "HIGH",
+          "reagentLotNumber": "LOT-2026-958"
+        }
+      ]
+    },
+    {
+      "instrumentDetails": {
+        "vendor": "Abbott Diagnostics",
+        "model": "Alinity ci-series",
+        "serialNumber": "ALN-CI-99201",
+        "firmwareVersion": "v3.12.4"
+      },
+      "specimenBarcode": "BC-ALINITY-40093",
+      "patientIdentifier": "PAT-ALN-6093",
+      "patientName": "Gonzalez, Sarah",
+      "runTimestamp": "2026-07-22T12:06:00Z",
+      "executionModule": "MODULE_C1",
+      "results": [
+        {
+          "assayCode": "ALIN-GLU",
+          "assayName": "Glucose",
+          "resultValue": 108.36,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "70.0-105.0",
+          "interpretationFlag": "HIGH",
+          "reagentLotNumber": "LOT-2026-611"
+        },
+        {
+          "assayCode": "ALIN-HBA1C",
+          "assayName": "Hemoglobin A1c",
+          "resultValue": 4.94,
+          "unitOfMeasure": "%",
+          "referenceRange": "4.0-5.6",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-798"
+        },
+        {
+          "assayCode": "ALIN-CHOL",
+          "assayName": "Total Cholesterol",
+          "resultValue": 208.56,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "125.0-200.0",
+          "interpretationFlag": "HIGH",
+          "reagentLotNumber": "LOT-2026-488"
+        }
+      ]
+    },
+    {
+      "instrumentDetails": {
+        "vendor": "Abbott Diagnostics",
+        "model": "Alinity ci-series",
+        "serialNumber": "ALN-CI-99201",
+        "firmwareVersion": "v3.12.4"
+      },
+      "specimenBarcode": "BC-ALINITY-40094",
+      "patientIdentifier": "PAT-ALN-6094",
+      "patientName": "Rodriguez, Richard",
+      "runTimestamp": "2026-07-22T12:08:00Z",
+      "executionModule": "MODULE_I1",
+      "results": [
+        {
+          "assayCode": "ALIN-HBA1C",
+          "assayName": "Hemoglobin A1c",
+          "resultValue": 6.67,
+          "unitOfMeasure": "%",
+          "referenceRange": "4.0-5.6",
+          "interpretationFlag": "HIGH",
+          "reagentLotNumber": "LOT-2026-176"
+        },
+        {
+          "assayCode": "ALIN-GLU",
+          "assayName": "Glucose",
+          "resultValue": 101.4,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "70.0-105.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-753"
+        }
+      ]
+    },
+    {
+      "instrumentDetails": {
+        "vendor": "Abbott Diagnostics",
+        "model": "Alinity ci-series",
+        "serialNumber": "ALN-CI-99201",
+        "firmwareVersion": "v3.12.4"
+      },
+      "specimenBarcode": "BC-ALINITY-40095",
+      "patientIdentifier": "PAT-ALN-6095",
+      "patientName": "Williams, Robert",
+      "runTimestamp": "2026-07-22T12:10:00Z",
+      "executionModule": "MODULE_I1",
+      "results": [
+        {
+          "assayCode": "ALIN-GLU",
+          "assayName": "Glucose",
+          "resultValue": 108.93,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "70.0-105.0",
+          "interpretationFlag": "HIGH",
+          "reagentLotNumber": "LOT-2026-383"
+        },
+        {
+          "assayCode": "ALIN-HSCRP",
+          "assayName": "High Sensitivity CRP",
+          "resultValue": 1.26,
+          "unitOfMeasure": "mg/L",
+          "referenceRange": "0.0-3.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-876"
+        }
+      ]
+    },
+    {
+      "instrumentDetails": {
+        "vendor": "Abbott Diagnostics",
+        "model": "Alinity ci-series",
+        "serialNumber": "ALN-CI-99201",
+        "firmwareVersion": "v3.12.4"
+      },
+      "specimenBarcode": "BC-ALINITY-40096",
+      "patientIdentifier": "PAT-ALN-6096",
+      "patientName": "Smith, Patricia",
+      "runTimestamp": "2026-07-22T12:12:00Z",
+      "executionModule": "MODULE_C1",
+      "results": [
+        {
+          "assayCode": "ALIN-TRIG",
+          "assayName": "Triglycerides",
+          "resultValue": 114.82,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "35.0-150.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-675"
+        },
+        {
+          "assayCode": "ALIN-HSCRP",
+          "assayName": "High Sensitivity CRP",
+          "resultValue": 3.2,
+          "unitOfMeasure": "mg/L",
+          "referenceRange": "0.0-3.0",
+          "interpretationFlag": "HIGH",
+          "reagentLotNumber": "LOT-2026-216"
+        },
+        {
+          "assayCode": "ALIN-CHOL",
+          "assayName": "Total Cholesterol",
+          "resultValue": 113.29,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "125.0-200.0",
+          "interpretationFlag": "LOW",
+          "reagentLotNumber": "LOT-2026-204"
+        },
+        {
+          "assayCode": "ALIN-HBA1C",
+          "assayName": "Hemoglobin A1c",
+          "resultValue": 5.58,
+          "unitOfMeasure": "%",
+          "referenceRange": "4.0-5.6",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-491"
+        }
+      ]
+    },
+    {
+      "instrumentDetails": {
+        "vendor": "Abbott Diagnostics",
+        "model": "Alinity ci-series",
+        "serialNumber": "ALN-CI-99201",
+        "firmwareVersion": "v3.12.4"
+      },
+      "specimenBarcode": "BC-ALINITY-40097",
+      "patientIdentifier": "PAT-ALN-6097",
+      "patientName": "Smith, Richard",
+      "runTimestamp": "2026-07-22T12:14:00Z",
+      "executionModule": "MODULE_C1",
+      "results": [
+        {
+          "assayCode": "ALIN-GLU",
+          "assayName": "Glucose",
+          "resultValue": 97.01,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "70.0-105.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-938"
+        },
+        {
+          "assayCode": "ALIN-HBA1C",
+          "assayName": "Hemoglobin A1c",
+          "resultValue": 4.82,
+          "unitOfMeasure": "%",
+          "referenceRange": "4.0-5.6",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-458"
+        },
+        {
+          "assayCode": "ALIN-CHOL",
+          "assayName": "Total Cholesterol",
+          "resultValue": 176.81,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "125.0-200.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-533"
+        }
+      ]
+    },
+    {
+      "instrumentDetails": {
+        "vendor": "Abbott Diagnostics",
+        "model": "Alinity ci-series",
+        "serialNumber": "ALN-CI-99201",
+        "firmwareVersion": "v3.12.4"
+      },
+      "specimenBarcode": "BC-ALINITY-40098",
+      "patientIdentifier": "PAT-ALN-6098",
+      "patientName": "Wilson, Elizabeth",
+      "runTimestamp": "2026-07-22T12:16:00Z",
+      "executionModule": "MODULE_I1",
+      "results": [
+        {
+          "assayCode": "ALIN-GLU",
+          "assayName": "Glucose",
+          "resultValue": 105.97,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "70.0-105.0",
+          "interpretationFlag": "HIGH",
+          "reagentLotNumber": "LOT-2026-927"
+        },
+        {
+          "assayCode": "ALIN-HSCRP",
+          "assayName": "High Sensitivity CRP",
+          "resultValue": 2.29,
+          "unitOfMeasure": "mg/L",
+          "referenceRange": "0.0-3.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-680"
+        },
+        {
+          "assayCode": "ALIN-TRIG",
+          "assayName": "Triglycerides",
+          "resultValue": 117.86,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "35.0-150.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-157"
+        }
+      ]
+    },
+    {
+      "instrumentDetails": {
+        "vendor": "Abbott Diagnostics",
+        "model": "Alinity ci-series",
+        "serialNumber": "ALN-CI-99201",
+        "firmwareVersion": "v3.12.4"
+      },
+      "specimenBarcode": "BC-ALINITY-40099",
+      "patientIdentifier": "PAT-ALN-6099",
+      "patientName": "Anderson, Linda",
+      "runTimestamp": "2026-07-22T12:18:00Z",
+      "executionModule": "MODULE_C1",
+      "results": [
+        {
+          "assayCode": "ALIN-GLU",
+          "assayName": "Glucose",
+          "resultValue": 68.24,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "70.0-105.0",
+          "interpretationFlag": "LOW",
+          "reagentLotNumber": "LOT-2026-429"
+        },
+        {
+          "assayCode": "ALIN-HSCRP",
+          "assayName": "High Sensitivity CRP",
+          "resultValue": 1.77,
+          "unitOfMeasure": "mg/L",
+          "referenceRange": "0.0-3.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-818"
+        },
+        {
+          "assayCode": "ALIN-CHOL",
+          "assayName": "Total Cholesterol",
+          "resultValue": 186.26,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "125.0-200.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-263"
+        }
+      ]
+    },
+    {
+      "instrumentDetails": {
+        "vendor": "Abbott Diagnostics",
+        "model": "Alinity ci-series",
+        "serialNumber": "ALN-CI-99201",
+        "firmwareVersion": "v3.12.4"
+      },
+      "specimenBarcode": "BC-ALINITY-40100",
+      "patientIdentifier": "PAT-ALN-6100",
+      "patientName": "Gonzalez, Linda",
+      "runTimestamp": "2026-07-22T12:20:00Z",
+      "executionModule": "MODULE_I1",
+      "results": [
+        {
+          "assayCode": "ALIN-CHOL",
+          "assayName": "Total Cholesterol",
+          "resultValue": 236.78,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "125.0-200.0",
+          "interpretationFlag": "HIGH",
+          "reagentLotNumber": "LOT-2026-774"
+        },
+        {
+          "assayCode": "ALIN-HBA1C",
+          "assayName": "Hemoglobin A1c",
+          "resultValue": 4.7,
+          "unitOfMeasure": "%",
+          "referenceRange": "4.0-5.6",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-888"
+        }
+      ]
+    },
+    {
+      "instrumentDetails": {
+        "vendor": "Abbott Diagnostics",
+        "model": "Alinity ci-series",
+        "serialNumber": "ALN-CI-99201",
+        "firmwareVersion": "v3.12.4"
+      },
+      "specimenBarcode": "BC-ALINITY-40101",
+      "patientIdentifier": "PAT-ALN-6101",
+      "patientName": "Jackson, Susan",
+      "runTimestamp": "2026-07-22T12:22:00Z",
+      "executionModule": "MODULE_C1",
+      "results": [
+        {
+          "assayCode": "ALIN-HBA1C",
+          "assayName": "Hemoglobin A1c",
+          "resultValue": 4.67,
+          "unitOfMeasure": "%",
+          "referenceRange": "4.0-5.6",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-416"
+        },
+        {
+          "assayCode": "ALIN-TRIG",
+          "assayName": "Triglycerides",
+          "resultValue": 32.11,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "35.0-150.0",
+          "interpretationFlag": "LOW",
+          "reagentLotNumber": "LOT-2026-322"
+        }
+      ]
+    },
+    {
+      "instrumentDetails": {
+        "vendor": "Abbott Diagnostics",
+        "model": "Alinity ci-series",
+        "serialNumber": "ALN-CI-99201",
+        "firmwareVersion": "v3.12.4"
+      },
+      "specimenBarcode": "BC-ALINITY-40102",
+      "patientIdentifier": "PAT-ALN-6102",
+      "patientName": "Miller, Charles",
+      "runTimestamp": "2026-07-22T12:24:00Z",
+      "executionModule": "MODULE_I1",
+      "results": [
+        {
+          "assayCode": "ALIN-HBA1C",
+          "assayName": "Hemoglobin A1c",
+          "resultValue": 5.49,
+          "unitOfMeasure": "%",
+          "referenceRange": "4.0-5.6",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-448"
+        },
+        {
+          "assayCode": "ALIN-HSCRP",
+          "assayName": "High Sensitivity CRP",
+          "resultValue": 3.04,
+          "unitOfMeasure": "mg/L",
+          "referenceRange": "0.0-3.0",
+          "interpretationFlag": "HIGH",
+          "reagentLotNumber": "LOT-2026-350"
+        }
+      ]
+    },
+    {
+      "instrumentDetails": {
+        "vendor": "Abbott Diagnostics",
+        "model": "Alinity ci-series",
+        "serialNumber": "ALN-CI-99201",
+        "firmwareVersion": "v3.12.4"
+      },
+      "specimenBarcode": "BC-ALINITY-40103",
+      "patientIdentifier": "PAT-ALN-6103",
+      "patientName": "Smith, Richard",
+      "runTimestamp": "2026-07-22T12:26:00Z",
+      "executionModule": "MODULE_C1",
+      "results": [
+        {
+          "assayCode": "ALIN-CHOL",
+          "assayName": "Total Cholesterol",
+          "resultValue": 182.34,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "125.0-200.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-319"
+        },
+        {
+          "assayCode": "ALIN-HBA1C",
+          "assayName": "Hemoglobin A1c",
+          "resultValue": 5.4,
+          "unitOfMeasure": "%",
+          "referenceRange": "4.0-5.6",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-564"
+        },
+        {
+          "assayCode": "ALIN-GLU",
+          "assayName": "Glucose",
+          "resultValue": 104.16,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "70.0-105.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-662"
+        }
+      ]
+    },
+    {
+      "instrumentDetails": {
+        "vendor": "Abbott Diagnostics",
+        "model": "Alinity ci-series",
+        "serialNumber": "ALN-CI-99201",
+        "firmwareVersion": "v3.12.4"
+      },
+      "specimenBarcode": "BC-ALINITY-40104",
+      "patientIdentifier": "PAT-ALN-6104",
+      "patientName": "Taylor, Susan",
+      "runTimestamp": "2026-07-22T12:28:00Z",
+      "executionModule": "MODULE_C1",
+      "results": [
+        {
+          "assayCode": "ALIN-HBA1C",
+          "assayName": "Hemoglobin A1c",
+          "resultValue": 4.13,
+          "unitOfMeasure": "%",
+          "referenceRange": "4.0-5.6",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-750"
+        },
+        {
+          "assayCode": "ALIN-HSCRP",
+          "assayName": "High Sensitivity CRP",
+          "resultValue": 1.98,
+          "unitOfMeasure": "mg/L",
+          "referenceRange": "0.0-3.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-895"
+        }
+      ]
+    },
+    {
+      "instrumentDetails": {
+        "vendor": "Abbott Diagnostics",
+        "model": "Alinity ci-series",
+        "serialNumber": "ALN-CI-99201",
+        "firmwareVersion": "v3.12.4"
+      },
+      "specimenBarcode": "BC-ALINITY-40105",
+      "patientIdentifier": "PAT-ALN-6105",
+      "patientName": "Martinez, Jessica",
+      "runTimestamp": "2026-07-22T12:30:00Z",
+      "executionModule": "MODULE_I1",
+      "results": [
+        {
+          "assayCode": "ALIN-GLU",
+          "assayName": "Glucose",
+          "resultValue": 65.96,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "70.0-105.0",
+          "interpretationFlag": "LOW",
+          "reagentLotNumber": "LOT-2026-267"
+        },
+        {
+          "assayCode": "ALIN-HSCRP",
+          "assayName": "High Sensitivity CRP",
+          "resultValue": 0.13,
+          "unitOfMeasure": "mg/L",
+          "referenceRange": "0.0-3.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-697"
+        },
+        {
+          "assayCode": "ALIN-HBA1C",
+          "assayName": "Hemoglobin A1c",
+          "resultValue": 4.71,
+          "unitOfMeasure": "%",
+          "referenceRange": "4.0-5.6",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-591"
+        }
+      ]
+    },
+    {
+      "instrumentDetails": {
+        "vendor": "Abbott Diagnostics",
+        "model": "Alinity ci-series",
+        "serialNumber": "ALN-CI-99201",
+        "firmwareVersion": "v3.12.4"
+      },
+      "specimenBarcode": "BC-ALINITY-40106",
+      "patientIdentifier": "PAT-ALN-6106",
+      "patientName": "Moore, Karen",
+      "runTimestamp": "2026-07-22T12:32:00Z",
+      "executionModule": "MODULE_I1",
+      "results": [
+        {
+          "assayCode": "ALIN-HBA1C",
+          "assayName": "Hemoglobin A1c",
+          "resultValue": 5.95,
+          "unitOfMeasure": "%",
+          "referenceRange": "4.0-5.6",
+          "interpretationFlag": "HIGH",
+          "reagentLotNumber": "LOT-2026-521"
+        },
+        {
+          "assayCode": "ALIN-TRIG",
+          "assayName": "Triglycerides",
+          "resultValue": 76.06,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "35.0-150.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-859"
+        },
+        {
+          "assayCode": "ALIN-HSCRP",
+          "assayName": "High Sensitivity CRP",
+          "resultValue": 0.24,
+          "unitOfMeasure": "mg/L",
+          "referenceRange": "0.0-3.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-888"
+        },
+        {
+          "assayCode": "ALIN-CHOL",
+          "assayName": "Total Cholesterol",
+          "resultValue": 169.91,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "125.0-200.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-230"
+        }
+      ]
+    },
+    {
+      "instrumentDetails": {
+        "vendor": "Abbott Diagnostics",
+        "model": "Alinity ci-series",
+        "serialNumber": "ALN-CI-99201",
+        "firmwareVersion": "v3.12.4"
+      },
+      "specimenBarcode": "BC-ALINITY-40107",
+      "patientIdentifier": "PAT-ALN-6107",
+      "patientName": "Martin, William",
+      "runTimestamp": "2026-07-22T12:34:00Z",
+      "executionModule": "MODULE_C1",
+      "results": [
+        {
+          "assayCode": "ALIN-HBA1C",
+          "assayName": "Hemoglobin A1c",
+          "resultValue": 4.19,
+          "unitOfMeasure": "%",
+          "referenceRange": "4.0-5.6",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-287"
+        },
+        {
+          "assayCode": "ALIN-CHOL",
+          "assayName": "Total Cholesterol",
+          "resultValue": 233.86,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "125.0-200.0",
+          "interpretationFlag": "HIGH",
+          "reagentLotNumber": "LOT-2026-384"
+        }
+      ]
+    },
+    {
+      "instrumentDetails": {
+        "vendor": "Abbott Diagnostics",
+        "model": "Alinity ci-series",
+        "serialNumber": "ALN-CI-99201",
+        "firmwareVersion": "v3.12.4"
+      },
+      "specimenBarcode": "BC-ALINITY-40108",
+      "patientIdentifier": "PAT-ALN-6108",
+      "patientName": "Gonzalez, William",
+      "runTimestamp": "2026-07-22T12:36:00Z",
+      "executionModule": "MODULE_C1",
+      "results": [
+        {
+          "assayCode": "ALIN-HSCRP",
+          "assayName": "High Sensitivity CRP",
+          "resultValue": 0.81,
+          "unitOfMeasure": "mg/L",
+          "referenceRange": "0.0-3.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-271"
+        },
+        {
+          "assayCode": "ALIN-GLU",
+          "assayName": "Glucose",
+          "resultValue": 124.14,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "70.0-105.0",
+          "interpretationFlag": "HIGH",
+          "reagentLotNumber": "LOT-2026-845"
+        }
+      ]
+    },
+    {
+      "instrumentDetails": {
+        "vendor": "Abbott Diagnostics",
+        "model": "Alinity ci-series",
+        "serialNumber": "ALN-CI-99201",
+        "firmwareVersion": "v3.12.4"
+      },
+      "specimenBarcode": "BC-ALINITY-40109",
+      "patientIdentifier": "PAT-ALN-6109",
+      "patientName": "Martin, Joseph",
+      "runTimestamp": "2026-07-22T12:38:00Z",
+      "executionModule": "MODULE_I1",
+      "results": [
+        {
+          "assayCode": "ALIN-GLU",
+          "assayName": "Glucose",
+          "resultValue": 115.63,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "70.0-105.0",
+          "interpretationFlag": "HIGH",
+          "reagentLotNumber": "LOT-2026-464"
+        },
+        {
+          "assayCode": "ALIN-CHOL",
+          "assayName": "Total Cholesterol",
+          "resultValue": 217.1,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "125.0-200.0",
+          "interpretationFlag": "HIGH",
+          "reagentLotNumber": "LOT-2026-755"
+        }
+      ]
+    },
+    {
+      "instrumentDetails": {
+        "vendor": "Abbott Diagnostics",
+        "model": "Alinity ci-series",
+        "serialNumber": "ALN-CI-99201",
+        "firmwareVersion": "v3.12.4"
+      },
+      "specimenBarcode": "BC-ALINITY-40110",
+      "patientIdentifier": "PAT-ALN-6110",
+      "patientName": "Thomas, Susan",
+      "runTimestamp": "2026-07-22T12:40:00Z",
+      "executionModule": "MODULE_I1",
+      "results": [
+        {
+          "assayCode": "ALIN-GLU",
+          "assayName": "Glucose",
+          "resultValue": 104.49,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "70.0-105.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-487"
+        },
+        {
+          "assayCode": "ALIN-CHOL",
+          "assayName": "Total Cholesterol",
+          "resultValue": 160.1,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "125.0-200.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-156"
+        }
+      ]
+    },
+    {
+      "instrumentDetails": {
+        "vendor": "Abbott Diagnostics",
+        "model": "Alinity ci-series",
+        "serialNumber": "ALN-CI-99201",
+        "firmwareVersion": "v3.12.4"
+      },
+      "specimenBarcode": "BC-ALINITY-40111",
+      "patientIdentifier": "PAT-ALN-6111",
+      "patientName": "Davis, Richard",
+      "runTimestamp": "2026-07-22T12:42:00Z",
+      "executionModule": "MODULE_C1",
+      "results": [
+        {
+          "assayCode": "ALIN-TRIG",
+          "assayName": "Triglycerides",
+          "resultValue": 86.0,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "35.0-150.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-363"
+        },
+        {
+          "assayCode": "ALIN-HSCRP",
+          "assayName": "High Sensitivity CRP",
+          "resultValue": 3.14,
+          "unitOfMeasure": "mg/L",
+          "referenceRange": "0.0-3.0",
+          "interpretationFlag": "HIGH",
+          "reagentLotNumber": "LOT-2026-403"
+        },
+        {
+          "assayCode": "ALIN-CHOL",
+          "assayName": "Total Cholesterol",
+          "resultValue": 203.09,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "125.0-200.0",
+          "interpretationFlag": "HIGH",
+          "reagentLotNumber": "LOT-2026-443"
+        },
+        {
+          "assayCode": "ALIN-GLU",
+          "assayName": "Glucose",
+          "resultValue": 118.05,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "70.0-105.0",
+          "interpretationFlag": "HIGH",
+          "reagentLotNumber": "LOT-2026-459"
+        }
+      ]
+    },
+    {
+      "instrumentDetails": {
+        "vendor": "Abbott Diagnostics",
+        "model": "Alinity ci-series",
+        "serialNumber": "ALN-CI-99201",
+        "firmwareVersion": "v3.12.4"
+      },
+      "specimenBarcode": "BC-ALINITY-40112",
+      "patientIdentifier": "PAT-ALN-6112",
+      "patientName": "Jones, Sarah",
+      "runTimestamp": "2026-07-22T12:44:00Z",
+      "executionModule": "MODULE_C1",
+      "results": [
+        {
+          "assayCode": "ALIN-TRIG",
+          "assayName": "Triglycerides",
+          "resultValue": 133.55,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "35.0-150.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-285"
+        },
+        {
+          "assayCode": "ALIN-HSCRP",
+          "assayName": "High Sensitivity CRP",
+          "resultValue": 2.3,
+          "unitOfMeasure": "mg/L",
+          "referenceRange": "0.0-3.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-820"
+        },
+        {
+          "assayCode": "ALIN-CHOL",
+          "assayName": "Total Cholesterol",
+          "resultValue": 164.24,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "125.0-200.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-364"
+        }
+      ]
+    },
+    {
+      "instrumentDetails": {
+        "vendor": "Abbott Diagnostics",
+        "model": "Alinity ci-series",
+        "serialNumber": "ALN-CI-99201",
+        "firmwareVersion": "v3.12.4"
+      },
+      "specimenBarcode": "BC-ALINITY-40113",
+      "patientIdentifier": "PAT-ALN-6113",
+      "patientName": "Jones, Elizabeth",
+      "runTimestamp": "2026-07-22T12:46:00Z",
+      "executionModule": "MODULE_C1",
+      "results": [
+        {
+          "assayCode": "ALIN-GLU",
+          "assayName": "Glucose",
+          "resultValue": 64.13,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "70.0-105.0",
+          "interpretationFlag": "LOW",
+          "reagentLotNumber": "LOT-2026-596"
+        },
+        {
+          "assayCode": "ALIN-CHOL",
+          "assayName": "Total Cholesterol",
+          "resultValue": 125.84,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "125.0-200.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-474"
+        }
+      ]
+    },
+    {
+      "instrumentDetails": {
+        "vendor": "Abbott Diagnostics",
+        "model": "Alinity ci-series",
+        "serialNumber": "ALN-CI-99201",
+        "firmwareVersion": "v3.12.4"
+      },
+      "specimenBarcode": "BC-ALINITY-40114",
+      "patientIdentifier": "PAT-ALN-6114",
+      "patientName": "Gonzalez, Robert",
+      "runTimestamp": "2026-07-22T12:48:00Z",
+      "executionModule": "MODULE_C1",
+      "results": [
+        {
+          "assayCode": "ALIN-TRIG",
+          "assayName": "Triglycerides",
+          "resultValue": 135.34,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "35.0-150.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-269"
+        },
+        {
+          "assayCode": "ALIN-GLU",
+          "assayName": "Glucose",
+          "resultValue": 86.18,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "70.0-105.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-209"
+        },
+        {
+          "assayCode": "ALIN-CHOL",
+          "assayName": "Total Cholesterol",
+          "resultValue": 194.64,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "125.0-200.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-468"
+        }
+      ]
+    },
+    {
+      "instrumentDetails": {
+        "vendor": "Abbott Diagnostics",
+        "model": "Alinity ci-series",
+        "serialNumber": "ALN-CI-99201",
+        "firmwareVersion": "v3.12.4"
+      },
+      "specimenBarcode": "BC-ALINITY-40115",
+      "patientIdentifier": "PAT-ALN-6115",
+      "patientName": "Hernandez, Barbara",
+      "runTimestamp": "2026-07-22T12:50:00Z",
+      "executionModule": "MODULE_C1",
+      "results": [
+        {
+          "assayCode": "ALIN-TRIG",
+          "assayName": "Triglycerides",
+          "resultValue": 82.54,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "35.0-150.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-972"
+        },
+        {
+          "assayCode": "ALIN-CHOL",
+          "assayName": "Total Cholesterol",
+          "resultValue": 176.42,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "125.0-200.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-778"
+        },
+        {
+          "assayCode": "ALIN-HBA1C",
+          "assayName": "Hemoglobin A1c",
+          "resultValue": 4.78,
+          "unitOfMeasure": "%",
+          "referenceRange": "4.0-5.6",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-952"
+        },
+        {
+          "assayCode": "ALIN-GLU",
+          "assayName": "Glucose",
+          "resultValue": 73.99,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "70.0-105.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-524"
+        }
+      ]
+    },
+    {
+      "instrumentDetails": {
+        "vendor": "Abbott Diagnostics",
+        "model": "Alinity ci-series",
+        "serialNumber": "ALN-CI-99201",
+        "firmwareVersion": "v3.12.4"
+      },
+      "specimenBarcode": "BC-ALINITY-40116",
+      "patientIdentifier": "PAT-ALN-6116",
+      "patientName": "Brown, Richard",
+      "runTimestamp": "2026-07-22T12:52:00Z",
+      "executionModule": "MODULE_C1",
+      "results": [
+        {
+          "assayCode": "ALIN-GLU",
+          "assayName": "Glucose",
+          "resultValue": 121.99,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "70.0-105.0",
+          "interpretationFlag": "HIGH",
+          "reagentLotNumber": "LOT-2026-181"
+        },
+        {
+          "assayCode": "ALIN-HSCRP",
+          "assayName": "High Sensitivity CRP",
+          "resultValue": 2.94,
+          "unitOfMeasure": "mg/L",
+          "referenceRange": "0.0-3.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-791"
+        },
+        {
+          "assayCode": "ALIN-CHOL",
+          "assayName": "Total Cholesterol",
+          "resultValue": 139.92,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "125.0-200.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-499"
+        }
+      ]
+    },
+    {
+      "instrumentDetails": {
+        "vendor": "Abbott Diagnostics",
+        "model": "Alinity ci-series",
+        "serialNumber": "ALN-CI-99201",
+        "firmwareVersion": "v3.12.4"
+      },
+      "specimenBarcode": "BC-ALINITY-40117",
+      "patientIdentifier": "PAT-ALN-6117",
+      "patientName": "Anderson, Karen",
+      "runTimestamp": "2026-07-22T12:54:00Z",
+      "executionModule": "MODULE_I1",
+      "results": [
+        {
+          "assayCode": "ALIN-HBA1C",
+          "assayName": "Hemoglobin A1c",
+          "resultValue": 4.57,
+          "unitOfMeasure": "%",
+          "referenceRange": "4.0-5.6",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-931"
+        },
+        {
+          "assayCode": "ALIN-GLU",
+          "assayName": "Glucose",
+          "resultValue": 83.07,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "70.0-105.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-920"
+        },
+        {
+          "assayCode": "ALIN-TRIG",
+          "assayName": "Triglycerides",
+          "resultValue": 165.98,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "35.0-150.0",
+          "interpretationFlag": "HIGH",
+          "reagentLotNumber": "LOT-2026-710"
+        }
+      ]
+    },
+    {
+      "instrumentDetails": {
+        "vendor": "Abbott Diagnostics",
+        "model": "Alinity ci-series",
+        "serialNumber": "ALN-CI-99201",
+        "firmwareVersion": "v3.12.4"
+      },
+      "specimenBarcode": "BC-ALINITY-40118",
+      "patientIdentifier": "PAT-ALN-6118",
+      "patientName": "Rodriguez, James",
+      "runTimestamp": "2026-07-22T12:56:00Z",
+      "executionModule": "MODULE_I1",
+      "results": [
+        {
+          "assayCode": "ALIN-CHOL",
+          "assayName": "Total Cholesterol",
+          "resultValue": 213.59,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "125.0-200.0",
+          "interpretationFlag": "HIGH",
+          "reagentLotNumber": "LOT-2026-234"
+        },
+        {
+          "assayCode": "ALIN-TRIG",
+          "assayName": "Triglycerides",
+          "resultValue": 41.03,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "35.0-150.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-316"
+        },
+        {
+          "assayCode": "ALIN-HSCRP",
+          "assayName": "High Sensitivity CRP",
+          "resultValue": 1.31,
+          "unitOfMeasure": "mg/L",
+          "referenceRange": "0.0-3.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-994"
+        },
+        {
+          "assayCode": "ALIN-GLU",
+          "assayName": "Glucose",
+          "resultValue": 81.3,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "70.0-105.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-350"
+        }
+      ]
+    },
+    {
+      "instrumentDetails": {
+        "vendor": "Abbott Diagnostics",
+        "model": "Alinity ci-series",
+        "serialNumber": "ALN-CI-99201",
+        "firmwareVersion": "v3.12.4"
+      },
+      "specimenBarcode": "BC-ALINITY-40119",
+      "patientIdentifier": "PAT-ALN-6119",
+      "patientName": "Miller, Patricia",
+      "runTimestamp": "2026-07-22T12:58:00Z",
+      "executionModule": "MODULE_I1",
+      "results": [
+        {
+          "assayCode": "ALIN-GLU",
+          "assayName": "Glucose",
+          "resultValue": 71.75,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "70.0-105.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-974"
+        },
+        {
+          "assayCode": "ALIN-TRIG",
+          "assayName": "Triglycerides",
+          "resultValue": 93.22,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "35.0-150.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-747"
+        },
+        {
+          "assayCode": "ALIN-CHOL",
+          "assayName": "Total Cholesterol",
+          "resultValue": 216.6,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "125.0-200.0",
+          "interpretationFlag": "HIGH",
+          "reagentLotNumber": "LOT-2026-264"
+        }
+      ]
+    },
+    {
+      "instrumentDetails": {
+        "vendor": "Abbott Diagnostics",
+        "model": "Alinity ci-series",
+        "serialNumber": "ALN-CI-99201",
+        "firmwareVersion": "v3.12.4"
+      },
+      "specimenBarcode": "BC-ALINITY-40120",
+      "patientIdentifier": "PAT-ALN-6120",
+      "patientName": "Jackson, Jennifer",
+      "runTimestamp": "2026-07-22T13:00:00Z",
+      "executionModule": "MODULE_I1",
+      "results": [
+        {
+          "assayCode": "ALIN-GLU",
+          "assayName": "Glucose",
+          "resultValue": 108.36,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "70.0-105.0",
+          "interpretationFlag": "HIGH",
+          "reagentLotNumber": "LOT-2026-650"
+        },
+        {
+          "assayCode": "ALIN-TRIG",
+          "assayName": "Triglycerides",
+          "resultValue": 115.71,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "35.0-150.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-339"
+        }
+      ]
+    },
+    {
+      "instrumentDetails": {
+        "vendor": "Abbott Diagnostics",
+        "model": "Alinity ci-series",
+        "serialNumber": "ALN-CI-99201",
+        "firmwareVersion": "v3.12.4"
+      },
+      "specimenBarcode": "BC-ALINITY-40121",
+      "patientIdentifier": "PAT-ALN-6121",
+      "patientName": "Gonzalez, John",
+      "runTimestamp": "2026-07-22T13:02:00Z",
+      "executionModule": "MODULE_C1",
+      "results": [
+        {
+          "assayCode": "ALIN-TRIG",
+          "assayName": "Triglycerides",
+          "resultValue": 84.3,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "35.0-150.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-929"
+        },
+        {
+          "assayCode": "ALIN-HBA1C",
+          "assayName": "Hemoglobin A1c",
+          "resultValue": 5.59,
+          "unitOfMeasure": "%",
+          "referenceRange": "4.0-5.6",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-105"
+        }
+      ]
+    },
+    {
+      "instrumentDetails": {
+        "vendor": "Abbott Diagnostics",
+        "model": "Alinity ci-series",
+        "serialNumber": "ALN-CI-99201",
+        "firmwareVersion": "v3.12.4"
+      },
+      "specimenBarcode": "BC-ALINITY-40122",
+      "patientIdentifier": "PAT-ALN-6122",
+      "patientName": "Wilson, Sarah",
+      "runTimestamp": "2026-07-22T13:04:00Z",
+      "executionModule": "MODULE_I1",
+      "results": [
+        {
+          "assayCode": "ALIN-HSCRP",
+          "assayName": "High Sensitivity CRP",
+          "resultValue": 1.64,
+          "unitOfMeasure": "mg/L",
+          "referenceRange": "0.0-3.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-698"
+        },
+        {
+          "assayCode": "ALIN-TRIG",
+          "assayName": "Triglycerides",
+          "resultValue": 143.78,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "35.0-150.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-824"
+        },
+        {
+          "assayCode": "ALIN-CHOL",
+          "assayName": "Total Cholesterol",
+          "resultValue": 180.34,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "125.0-200.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-840"
+        },
+        {
+          "assayCode": "ALIN-HBA1C",
+          "assayName": "Hemoglobin A1c",
+          "resultValue": 6.45,
+          "unitOfMeasure": "%",
+          "referenceRange": "4.0-5.6",
+          "interpretationFlag": "HIGH",
+          "reagentLotNumber": "LOT-2026-189"
+        }
+      ]
+    },
+    {
+      "instrumentDetails": {
+        "vendor": "Abbott Diagnostics",
+        "model": "Alinity ci-series",
+        "serialNumber": "ALN-CI-99201",
+        "firmwareVersion": "v3.12.4"
+      },
+      "specimenBarcode": "BC-ALINITY-40123",
+      "patientIdentifier": "PAT-ALN-6123",
+      "patientName": "Garcia, James",
+      "runTimestamp": "2026-07-22T13:06:00Z",
+      "executionModule": "MODULE_C1",
+      "results": [
+        {
+          "assayCode": "ALIN-GLU",
+          "assayName": "Glucose",
+          "resultValue": 85.75,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "70.0-105.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-945"
+        },
+        {
+          "assayCode": "ALIN-HBA1C",
+          "assayName": "Hemoglobin A1c",
+          "resultValue": 5.92,
+          "unitOfMeasure": "%",
+          "referenceRange": "4.0-5.6",
+          "interpretationFlag": "HIGH",
+          "reagentLotNumber": "LOT-2026-762"
+        },
+        {
+          "assayCode": "ALIN-TRIG",
+          "assayName": "Triglycerides",
+          "resultValue": 40.17,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "35.0-150.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-556"
+        },
+        {
+          "assayCode": "ALIN-CHOL",
+          "assayName": "Total Cholesterol",
+          "resultValue": 113.08,
+          "unitOfMeasure": "mg/dL",
+          "referenceRange": "125.0-200.0",
+          "interpretationFlag": "LOW",
+          "reagentLotNumber": "LOT-2026-569"
+        }
+      ]
+    },
+    {
+      "instrumentDetails": {
+        "vendor": "Abbott Diagnostics",
+        "model": "Alinity ci-series",
+        "serialNumber": "ALN-CI-99201",
+        "firmwareVersion": "v3.12.4"
+      },
+      "specimenBarcode": "BC-ALINITY-40124",
+      "patientIdentifier": "PAT-ALN-6124",
+      "patientName": "Jackson, Mary",
+      "runTimestamp": "2026-07-22T13:08:00Z",
+      "executionModule": "MODULE_C1",
+      "results": [
+        {
+          "assayCode": "ALIN-HSCRP",
+          "assayName": "High Sensitivity CRP",
+          "resultValue": 0.02,
+          "unitOfMeasure": "mg/L",
+          "referenceRange": "0.0-3.0",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-201"
+        },
+        {
+          "assayCode": "ALIN-HBA1C",
+          "assayName": "Hemoglobin A1c",
+          "resultValue": 5.08,
+          "unitOfMeasure": "%",
+          "referenceRange": "4.0-5.6",
+          "interpretationFlag": "NORMAL",
+          "reagentLotNumber": "LOT-2026-358"
+        }
+      ]
+    }
+  ]
+}
