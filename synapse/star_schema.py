@@ -49,11 +49,14 @@ def _is_measure_field(name: str, data_type: str) -> bool:
     match Float/Integer without being real measurements. Caught by
     testing this classification against the real live dataset, not
     assumed correct -- `set_id` was wrongly pulling PID into the FACT
-    side before this exclusion existed."""
+    side before this exclusion existed. `_index` catches the same class
+    of bug for vendor_json_semantics.py's synthetic positional join keys
+    (e.g. "alinityBatchExport_index") -- a small integer that identifies
+    a record, not a measurement of one."""
     if data_type not in _MEASURE_TYPES:
         return False
     lname = name.lower()
-    if lname == "set_id" or lname.endswith("id"):
+    if lname == "set_id" or lname.endswith("id") or lname.endswith("index"):
         return False
     if any(tok in lname for tok in ("date", "time")):
         return False

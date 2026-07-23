@@ -25,12 +25,19 @@ from collections import defaultdict
 from dataclasses import dataclass
 from typing import Any, Optional
 
+from synapse.astm_semantics import extract_astm_by_record, looks_like_astm
+from synapse.beckman_semantics import extract_beckman_fields, extract_beckman_rows, looks_like_beckman
 from synapse.hl7_semantics import extract_hl7_by_segment, list_hl7_segments
+from synapse.vendor_json_semantics import flatten_nested_vendor_json_by_type, looks_like_nested_vendor_json
 from synapse.models import utc_now_iso
 from synapse.security import Principal, filter_raw_objects
 from synapse.store import SemanticStore
 
-_KV_RE = re.compile(r"^([A-Za-z0-9_ -]{2,40})\s*[:=]\s*(.*)$", re.MULTILINE)
+# Key charset intentionally covers real instrument/CSV column-header
+# punctuation (parens, %, *, ^, /, . -- e.g. "HbA1c_Percentage(%)",
+# "WBC(10^3/uL)") in addition to the original alnum/underscore/space/hyphen.
+# ":"/"=" stay excluded since they're the separator, not part of a key.
+_KV_RE = re.compile(r"^([A-Za-z0-9_ %()^/*.-]{2,60})\s*[:=]\s*(.*)$", re.MULTILINE)
 
 
 def _flatten_json(obj: Any, prefix: str = "", out: Optional[dict[str, list[str]]] = None) -> dict[str, list[str]]:
@@ -158,7 +165,11 @@ def list_virtual_sources(payload: str) -> list[str]:
             return []
         if _is_fhir_bundle(parsed):
             return sorted(_flatten_fhir_bundle_by_type(parsed).keys())
+        if looks_like_nested_vendor_json(parsed):
+            return sorted(flatten_nested_vendor_json_by_type(parsed).keys())
         return []
+    if looks_like_astm(payload):
+        return sorted(extract_astm_by_record(payload).keys())
     return list_hl7_segments(payload)
 
 
@@ -248,6 +259,9 @@ def _extract_field_values(payload: str, type_filter: Optional[str] = None) -> di
         if _is_fhir_bundle(parsed):
             by_type = _flatten_fhir_bundle_by_type(parsed)
             return by_type.get(type_filter, {}) if type_filter else {}
+        if looks_like_nested_vendor_json(parsed):
+            by_type = flatten_nested_vendor_json_by_type(parsed)
+            return by_type.get(type_filter, {}) if type_filter else {}
         if parsed is not None:
             return {} if type_filter else _flatten_json(parsed)
 
@@ -255,6 +269,16 @@ def _extract_field_values(payload: str, type_filter: Optional[str] = None) -> di
         by_segment = extract_hl7_by_segment(payload)
         if by_segment:
             return by_segment.get(type_filter, {}) if type_filter else {}
+
+    if looks_like_astm(payload):
+        by_record = extract_astm_by_record(payload)
+        if by_record:
+            return by_record.get(type_filter, {}) if type_filter else {}
+
+    if looks_like_beckman(payload):
+        # Flat record shape, unlike HL7/FHIR -- no virtual sub-sources to
+        # scope to, so a type_filter here has nothing to match.
+        return {} if type_filter else extract_beckman_fields(payload)
 
     if type_filter:
         return {}

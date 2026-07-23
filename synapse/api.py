@@ -1419,6 +1419,15 @@ def make_handler(session: SynapseSession):
                             from synapse.hl7_semantics import auto_link_structure
 
                             auto_link_structure(session.store, session.ontology, source_system)
+                        elif stripped_content[:1] == "H":
+                            from synapse.astm_semantics import looks_like_astm
+                            from synapse.astm_semantics import auto_link_structure as astm_auto_link_structure
+
+                            if looks_like_astm(stripped_content):
+                                # ASTM's P/O/R positional correlation is a
+                                # structural fact of the stream too, same
+                                # reasoning as HL7 above.
+                                astm_auto_link_structure(session.store, session.ontology, source_system)
                         elif stripped_content[:1] in ("{", "["):
                             # Same reasoning for a FHIR Bundle: every
                             # resource genuinely belongs to the bundle it

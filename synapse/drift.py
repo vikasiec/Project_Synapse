@@ -15,7 +15,9 @@ from typing import Any, Optional
 from synapse.models import utc_now_iso
 from synapse.store import SemanticStore
 
-_KEY_RE = re.compile(r"^([A-Za-z0-9_ -]{2,40})\s*[:=]", re.MULTILINE)
+# Kept in sync with synapse/profiling.py's _KV_RE key charset (independent
+# copy of the same pattern, not shared, so both need this fix).
+_KEY_RE = re.compile(r"^([A-Za-z0-9_ %()^/*.-]{2,60})\s*[:=]", re.MULTILINE)
 
 
 @dataclass

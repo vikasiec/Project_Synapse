@@ -23,8 +23,11 @@ from __future__ import annotations
 import json
 from typing import Optional
 
+from synapse.astm_semantics import extract_astm_rows, looks_like_astm
+from synapse.beckman_semantics import extract_beckman_rows, looks_like_beckman
 from synapse.hl7_semantics import extract_hl7_rows
 from synapse.profiling import _KV_RE, _flatten_json, extract_fhir_rows_by_type
+from synapse.vendor_json_semantics import extract_nested_vendor_json_rows, looks_like_nested_vendor_json
 
 
 def extract_rows(raws: list, type_filter: Optional[str] = None) -> list[dict[str, str]]:
@@ -54,6 +57,10 @@ def extract_rows(raws: list, type_filter: Optional[str] = None) -> list[dict[str
                 if type_filter:
                     rows.extend(extract_fhir_rows_by_type(payload).get(type_filter, []))
                 continue
+            if looks_like_nested_vendor_json(parsed):
+                if type_filter:
+                    rows.extend(extract_nested_vendor_json_rows(parsed).get(type_filter, []))
+                continue
             if parsed is not None:
                 if type_filter:
                     continue
@@ -68,6 +75,19 @@ def extract_rows(raws: list, type_filter: Optional[str] = None) -> list[dict[str
                 if type_filter:
                     rows.extend(by_segment.get(type_filter, []))
                 continue
+
+        if looks_like_astm(payload):
+            by_record = extract_astm_rows(payload)
+            if by_record:
+                if type_filter:
+                    rows.extend(by_record.get(type_filter, []))
+                continue
+
+        if looks_like_beckman(payload):
+            # Flat, single record type -- no sub-source to scope to.
+            if not type_filter:
+                rows.extend(extract_beckman_rows(payload))
+            continue
 
         if type_filter:
             continue
