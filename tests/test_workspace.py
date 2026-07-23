@@ -56,35 +56,39 @@ class TestWorkspace(unittest.TestCase):
         session.close()
 
 
+def _seeded_store(workspace_name: str = "Lab Ops"):
+    from synapse.profiling import SchemaProfiler
+
+    store = SemanticStore()
+    ontology = OntologyRegistry.default()
+    ontology.store = store
+    ws = Workspace.create(workspace_name)
+    store.put_workspace(ws)
+    store.put_raw(
+        RawObject.create(source_system="Orders", payload="order_id: O1\npatient_id: P1\n", acl_tags=[], workspace_id=ws.workspace_id)
+    )
+    store.put_raw(
+        RawObject.create(source_system="Patients", payload="patient_id: P1\nname: Jane\n", acl_tags=[], workspace_id=ws.workspace_id)
+    )
+    profiler = SchemaProfiler(store)
+    profiles_a = profiler.profile_source("Orders")
+    profiles_b = profiler.profile_source("Patients")
+    edge = score_pair(store, ontology, profiles_a["patient_id"], profiles_b["patient_id"], force=True)
+    ontology.accept_relationship(
+        candidate_id=edge.candidate_id,
+        source_a=edge.source_a,
+        source_b=edge.source_b,
+        predicate="SAME_ENTITY_AS",
+        match_reasons=edge.match_reasons,
+        similarity_score=edge.similarity_score,
+    )
+    store.put_layout_position("Orders", 10, 20)
+    return store, ontology, ws
+
+
 class TestCloneWorkspace(unittest.TestCase):
     def _seeded_store(self):
-        from synapse.profiling import SchemaProfiler
-
-        store = SemanticStore()
-        ontology = OntologyRegistry.default()
-        ontology.store = store
-        ws = Workspace.create("Lab Ops")
-        store.put_workspace(ws)
-        store.put_raw(
-            RawObject.create(source_system="Orders", payload="order_id: O1\npatient_id: P1\n", acl_tags=[], workspace_id=ws.workspace_id)
-        )
-        store.put_raw(
-            RawObject.create(source_system="Patients", payload="patient_id: P1\nname: Jane\n", acl_tags=[], workspace_id=ws.workspace_id)
-        )
-        profiler = SchemaProfiler(store)
-        profiles_a = profiler.profile_source("Orders")
-        profiles_b = profiler.profile_source("Patients")
-        edge = score_pair(store, ontology, profiles_a["patient_id"], profiles_b["patient_id"], force=True)
-        ontology.accept_relationship(
-            candidate_id=edge.candidate_id,
-            source_a=edge.source_a,
-            source_b=edge.source_b,
-            predicate="SAME_ENTITY_AS",
-            match_reasons=edge.match_reasons,
-            similarity_score=edge.similarity_score,
-        )
-        store.put_layout_position("Orders", 10, 20)
-        return store, ontology, ws
+        return _seeded_store()
 
     def test_clone_creates_new_workspace(self) -> None:
         store, ontology, ws = self._seeded_store()
@@ -158,6 +162,67 @@ class TestCloneWorkspace(unittest.TestCase):
         self.assertIn(orders_clone_name, store.schema_layout)
         self.assertEqual(store.schema_layout[orders_clone_name]["x"], 10)
         self.assertEqual(store.schema_layout[orders_clone_name]["y"], 20)
+
+
+class TestRenameWorkspace(unittest.TestCase):
+    def test_rename_updates_name_and_description(self) -> None:
+        store, _ontology, ws = _seeded_store()
+        updated = store.rename_workspace(ws.workspace_id, name="Lab Ops v2", description="renamed")
+        self.assertEqual(updated.name, "Lab Ops v2")
+        self.assertEqual(updated.description, "renamed")
+        self.assertEqual(store.workspaces[ws.workspace_id].name, "Lab Ops v2")
+
+    def test_rename_name_only_leaves_description_untouched(self) -> None:
+        store, _ontology, ws = _seeded_store()
+        store.rename_workspace(ws.workspace_id, description="original description")
+        updated = store.rename_workspace(ws.workspace_id, name="New Name")
+        self.assertEqual(updated.name, "New Name")
+        self.assertEqual(updated.description, "original description")
+
+
+class TestDeleteWorkspace(unittest.TestCase):
+    def test_delete_removes_workspace_and_its_sources(self) -> None:
+        store, ontology, ws = _seeded_store()
+        store.delete_workspace(ws.workspace_id, ontology=ontology)
+        self.assertNotIn(ws.workspace_id, store.workspaces)
+        self.assertEqual([r for r in store.raw_objects.values() if r.workspace_id == ws.workspace_id], [])
+
+    def test_delete_removes_dangling_relationship_edges_and_layout(self) -> None:
+        store, ontology, ws = _seeded_store()
+        self.assertEqual(len(store.relationship_edges), 1)
+        self.assertIn("Orders", store.schema_layout)
+        store.delete_workspace(ws.workspace_id, ontology=ontology)
+        self.assertEqual(len(store.relationship_edges), 0)
+        self.assertNotIn("Orders", store.schema_layout)
+
+    def test_delete_with_ontology_keeps_live_registry_in_sync(self) -> None:
+        # Same desync class of bug as clone_workspace's ontology fix:
+        # store.relationship_edges and OntologyRegistry.relationships are
+        # separate dicts kept in sync by accept_relationship() writing
+        # both; a deletion that only touched the store side would leave a
+        # live OntologyRegistry (what GET /v1/ontology actually reads)
+        # showing edges whose sources no longer exist.
+        store, ontology, ws = _seeded_store()
+        self.assertEqual(len(ontology.relationships), 1)
+        store.delete_workspace(ws.workspace_id, ontology=ontology)
+        self.assertEqual(len(ontology.relationships), 0)
+
+    def test_delete_without_ontology_still_cleans_store(self) -> None:
+        store, ontology, ws = _seeded_store()
+        store.delete_workspace(ws.workspace_id)
+        self.assertEqual(len(store.relationship_edges), 0)
+        self.assertEqual(len(ontology.relationships), 1)  # unchanged -- no ontology handle passed
+
+    def test_delete_does_not_touch_other_workspaces(self) -> None:
+        store, ontology, ws_a = _seeded_store("Workspace A")
+        ws_b = Workspace.create("Workspace B")
+        store.put_workspace(ws_b)
+        store.put_raw(
+            RawObject.create(source_system="OtherOrders", payload="x: 1", acl_tags=[], workspace_id=ws_b.workspace_id)
+        )
+        store.delete_workspace(ws_a.workspace_id, ontology=ontology)
+        self.assertIn(ws_b.workspace_id, store.workspaces)
+        self.assertTrue(any(r.source_system == "OtherOrders" for r in store.raw_objects.values()))
 
 
 if __name__ == "__main__":

@@ -6,6 +6,7 @@ import ResolveView from './views/ResolveView'
 import SchemaView from './views/SchemaView'
 import SuperSchemaView from './views/SuperSchemaView'
 import WarehouseView from './views/WarehouseView'
+import WorkspaceManagePanel from './views/WorkspaceManagePanel'
 import './App.css'
 
 const TABS = [
@@ -70,6 +71,8 @@ function App() {
   const [showSaveAsForm, setShowSaveAsForm] = useState(false)
   const [saveAsBusy, setSaveAsBusy] = useState(false)
   const [saveAsError, setSaveAsError] = useState(null)
+  const [saveAsSourceId, setSaveAsSourceId] = useState(null)
+  const [showManagePanel, setShowManagePanel] = useState(false)
 
   const loadWorkspaces = useCallback(async () => {
     try {
@@ -117,21 +120,44 @@ function App() {
 
   const handleSaveAs = useCallback(
     async (name, description) => {
-      if (!workspaceId) return
+      const sourceId = saveAsSourceId || workspaceId
+      if (!sourceId) return
       setSaveAsBusy(true)
       setSaveAsError(null)
       try {
-        const ws = await api.cloneWorkspace(workspaceId, name, description)
+        const ws = await api.cloneWorkspace(sourceId, name, description)
         await loadWorkspaces()
         selectWorkspace(ws.workspace_id)
         setShowSaveAsForm(false)
+        setShowManagePanel(false)
       } catch (e) {
         setSaveAsError(e.message)
       } finally {
         setSaveAsBusy(false)
       }
     },
-    [workspaceId, loadWorkspaces, selectWorkspace],
+    [saveAsSourceId, workspaceId, loadWorkspaces, selectWorkspace],
+  )
+
+  // Workspace management panel (delete/rename/save-as-any-workspace):
+  // reloads the list after any change; if the workspace deleted was the
+  // one currently selected, falls back to whatever remains (or lets the
+  // app fall through to its own first-run screen if nothing does).
+  const handleWorkspacesChanged = useCallback(
+    async (deletedId) => {
+      const data = await api.listWorkspaces()
+      const list = data.workspaces || []
+      setWorkspaces(list)
+      if (deletedId && deletedId === workspaceId) {
+        if (list.length > 0) {
+          selectWorkspace(list[0].workspace_id)
+        } else {
+          setWorkspaceId(null)
+          localStorage.removeItem(LAST_WORKSPACE_KEY)
+        }
+      }
+    },
+    [workspaceId, selectWorkspace],
   )
 
   if (workspaces === null) {
@@ -197,6 +223,7 @@ function App() {
           <button
             className="file-ingest-btn secondary"
             onClick={() => {
+              setSaveAsSourceId(workspaceId)
               setShowSaveAsForm((v) => !v)
               setShowCreateForm(false)
             }}
@@ -204,6 +231,9 @@ function App() {
             title="Save this workspace's sources and confirmed relationships as a new, independent workspace"
           >
             Save as…
+          </button>
+          <button className="file-ingest-btn secondary" onClick={() => setShowManagePanel(true)}>
+            Manage…
           </button>
         </div>
       </header>
@@ -226,10 +256,31 @@ function App() {
             onCancel={() => setShowSaveAsForm(false)}
             busy={saveAsBusy}
             error={saveAsError}
-            initialName={current ? `${current.name} (Copy)` : ''}
+            initialName={(() => {
+              const source = workspaces.find((w) => w.workspace_id === saveAsSourceId)
+              return source ? `${source.name} (Copy)` : ''
+            })()}
             submitLabel="Save as new workspace"
           />
         </div>
+      )}
+
+      {showManagePanel && (
+        <WorkspaceManagePanel
+          workspaces={workspaces}
+          currentId={workspaceId}
+          onClose={() => setShowManagePanel(false)}
+          onChanged={handleWorkspacesChanged}
+          onSwitch={(id) => {
+            selectWorkspace(id)
+            setShowManagePanel(false)
+          }}
+          onSaveAs={(ws) => {
+            setSaveAsSourceId(ws.workspace_id)
+            setShowManagePanel(false)
+            setShowSaveAsForm(true)
+          }}
+        />
       )}
 
       <main className="content">

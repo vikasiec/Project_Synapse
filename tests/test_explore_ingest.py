@@ -232,6 +232,70 @@ class TestExploreIngest(unittest.TestCase):
         status, _ = self._post(f"/v1/workspaces/{ws['workspace_id']}/clone", {"principal": "l2"})
         self.assertEqual(status, 400)
 
+    def test_workspace_rename_via_http(self):
+        status, ws = self._post("/v1/workspaces", {"name": "Original Name", "description": "orig desc"})
+        self.assertEqual(status, 200)
+        status, updated = self._post(
+            f"/v1/workspaces/{ws['workspace_id']}/rename",
+            {"name": "Renamed", "description": "new desc", "principal": "l2"},
+        )
+        self.assertEqual(status, 200)
+        self.assertEqual(updated["name"], "Renamed")
+        self.assertEqual(updated["description"], "new desc")
+        self.assertEqual(updated["workspace_id"], ws["workspace_id"])
+
+        with urllib.request.urlopen(self._url("/v1/workspaces")) as resp:
+            data = json.loads(resp.read().decode())
+        names = {w["workspace_id"]: w["name"] for w in data["workspaces"]}
+        self.assertEqual(names[ws["workspace_id"]], "Renamed")
+
+    def test_workspace_rename_unknown_is_404(self):
+        status, _ = self._post("/v1/workspaces/does-not-exist/rename", {"name": "X", "principal": "l2"})
+        self.assertEqual(status, 404)
+
+    def test_workspace_rename_missing_name_is_400(self):
+        status, ws = self._post("/v1/workspaces", {"name": "Rename Name Check"})
+        status, _ = self._post(f"/v1/workspaces/{ws['workspace_id']}/rename", {"principal": "l2"})
+        self.assertEqual(status, 400)
+
+    def test_workspace_delete_via_http(self):
+        status, ws = self._post("/v1/workspaces", {"name": "To Delete"})
+        self.assertEqual(status, 200)
+        status, body = self._post(
+            "/v1/explore/ingest",
+            {
+                "filename": "del_orders.csv",
+                "content": "order_id\n1\n2\n",
+                "source_system": "Del_Orders",
+                "workspace_id": ws["workspace_id"],
+                "principal": "l2",
+            },
+        )
+        self.assertEqual(status, 200)
+
+        status, result = self._post(f"/v1/workspaces/{ws['workspace_id']}/delete", {"principal": "l2"})
+        self.assertEqual(status, 200)
+        self.assertTrue(result["deleted"])
+
+        with urllib.request.urlopen(self._url("/v1/workspaces")) as resp:
+            data = json.loads(resp.read().decode())
+        self.assertNotIn(ws["workspace_id"], {w["workspace_id"] for w in data["workspaces"]})
+
+    def test_workspace_delete_unknown_is_404(self):
+        status, _ = self._post("/v1/workspaces/does-not-exist/delete", {"principal": "l2"})
+        self.assertEqual(status, 404)
+
+    def test_workspace_delete_requires_operator_role(self):
+        status, ws = self._post("/v1/workspaces", {"name": "Role Check"})
+        self.assertEqual(status, 200)
+        # comma-separated tag string with no role:operator tag -- a
+        # viewer-only principal, distinct from the "l1"/"l2" presets which
+        # both carry role:operator.
+        status, _ = self._post(
+            f"/v1/workspaces/{ws['workspace_id']}/delete", {"principal": "domain:sre,clearance:l2"}
+        )
+        self.assertEqual(status, 403)
+
 
 if __name__ == "__main__":
     unittest.main()

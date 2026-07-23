@@ -138,6 +138,28 @@ class TestSqliteStore(unittest.TestCase):
             self.assertEqual(entry["y"], 456.0)
             session2.close()
 
+    def test_deleted_workspace_stays_deleted_after_restart(self):
+        from synapse.workspace import Workspace
+
+        with tempfile.TemporaryDirectory() as tmp:
+            db = Path(tmp) / "synapse_delete_ws.db"
+
+            session1 = open_session(db_path=str(db))
+            ws = Workspace.create("Temp Workspace")
+            session1.store.put_workspace(ws)
+            session1.store.put_raw(
+                RawObject.create(source_system="TempSource", payload="x: 1", acl_tags=[], workspace_id=ws.workspace_id)
+            )
+            session1.store.put_layout_position("TempSource", 1.0, 2.0)
+            session1.store.delete_workspace(ws.workspace_id, ontology=session1.ontology)
+            session1.close()
+
+            session2 = open_session(db_path=str(db))
+            self.assertNotIn(ws.workspace_id, session2.store.workspaces)
+            self.assertFalse(any(r.source_system == "TempSource" for r in session2.store.raw_objects.values()))
+            self.assertNotIn("TempSource", session2.store.schema_layout)
+            session2.close()
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -139,9 +139,68 @@ class SemanticStore:
         self.schema_layout[source_system] = entry
         return entry
 
+    def delete_layout_position(self, source_system: str) -> None:
+        self.schema_layout.pop(source_system, None)
+
     def put_workspace(self, workspace: Workspace) -> Workspace:
         self.workspaces[workspace.workspace_id] = workspace
         return workspace
+
+    def rename_workspace(
+        self, workspace_id: str, name: Optional[str] = None, description: Optional[str] = None
+    ) -> Workspace:
+        ws = self.workspaces[workspace_id]
+        if name is not None:
+            ws.name = name
+        if description is not None:
+            ws.description = description
+        return self.put_workspace(ws)
+
+    def delete_raw_object(self, object_id: str) -> None:
+        obj = self.raw_objects.pop(object_id, None)
+        if obj is not None:
+            key = (obj.source_system, obj.source_uri, obj.content_hash)
+            if self.content_hash_index.get(key) == object_id:
+                del self.content_hash_index[key]
+
+    def delete_workspace(self, workspace_id: str, *, ontology: Optional[object] = None) -> None:
+        """Cascades: every RawObject landed into this workspace, every
+        confirmed relationship touching one of those sources (otherwise
+        left dangling -- pointing at a source that no longer exists),
+        their schema_layout entries, then the workspace record itself.
+        Built from the same overridable per-item primitives clone_workspace
+        composes from (delete_raw_object/delete_relationship_edge/
+        delete_layout_position), so a durable backend only needs to
+        override those, not this cascade.
+
+        `ontology`, when given, is kept in sync the same way
+        clone_workspace's `ontology` parameter is: store.relationship_edges
+        and OntologyRegistry.relationships are two separate dicts that
+        normally stay in sync via accept_relationship() writing both, so a
+        deletion that only touches the store side would leave a live
+        OntologyRegistry showing edges whose sources no longer exist."""
+        source_bases = {
+            raw.source_system for raw in self.raw_objects.values() if raw.workspace_id == workspace_id
+        }
+        for obj_id in [oid for oid, raw in self.raw_objects.items() if raw.workspace_id == workspace_id]:
+            self.delete_raw_object(obj_id)
+
+        def _touches(full_source_system: str) -> bool:
+            return full_source_system.split("::", 1)[0] in source_bases
+
+        for edge_id in [
+            eid
+            for eid, edge in self.relationship_edges.items()
+            if _touches(edge.source_a.get("source_system", "")) or _touches(edge.source_b.get("source_system", ""))
+        ]:
+            if ontology is not None:
+                ontology.relationships.pop(edge_id, None)
+            self.delete_relationship_edge(edge_id)
+
+        for layout_key in [k for k in self.schema_layout if _touches(k)]:
+            self.delete_layout_position(layout_key)
+
+        self.workspaces.pop(workspace_id, None)
 
     def ensure_default_workspace(self) -> Workspace:
         """Idempotent: already-landed (pre-workspace) data implicitly

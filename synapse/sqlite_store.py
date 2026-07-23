@@ -224,10 +224,28 @@ class SqliteSemanticStore(SemanticStore):
         self._upsert("schema_layout", source_system, entry)
         return entry
 
+    def delete_layout_position(self, source_system: str) -> None:
+        super().delete_layout_position(source_system)
+        with self._lock:
+            self._conn.execute("DELETE FROM schema_layout WHERE id = ?", (source_system,))
+            self._conn.commit()
+
     def put_workspace(self, workspace: Workspace) -> Workspace:
         super().put_workspace(workspace)
         self._upsert("workspaces", workspace.workspace_id, workspace.to_dict())
         return workspace
+
+    def delete_raw_object(self, object_id: str) -> None:
+        super().delete_raw_object(object_id)
+        with self._lock:
+            self._conn.execute("DELETE FROM raw_objects WHERE id = ?", (object_id,))
+            self._conn.commit()
+
+    def delete_workspace(self, workspace_id: str, *, ontology: Optional[object] = None) -> None:
+        super().delete_workspace(workspace_id, ontology=ontology)
+        with self._lock:
+            self._conn.execute("DELETE FROM workspaces WHERE id = ?", (workspace_id,))
+            self._conn.commit()
 
     def persist_audit_tail(self) -> None:
         """Flush any in-memory audit events not yet written."""

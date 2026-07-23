@@ -30,6 +30,16 @@ export const api = {
       method: 'POST',
       body: { name, description, principal },
     }),
+  renameWorkspace: (workspaceId, name, description = '', principal = DEFAULT_PRINCIPAL) =>
+    request(`/v1/workspaces/${encodeURIComponent(workspaceId)}/rename`, {
+      method: 'POST',
+      body: { name, description, principal },
+    }),
+  deleteWorkspace: (workspaceId, principal = DEFAULT_PRINCIPAL) =>
+    request(`/v1/workspaces/${encodeURIComponent(workspaceId)}/delete`, {
+      method: 'POST',
+      body: { principal },
+    }),
   ontology: (workspaceId) =>
     request(workspaceId ? `/v1/ontology?workspace_id=${encodeURIComponent(workspaceId)}` : '/v1/ontology'),
   explore: (workspaceId) =>

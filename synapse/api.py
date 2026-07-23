@@ -1253,6 +1253,31 @@ def make_handler(session: SynapseSession):
                 )
                 return _json_response(self, 200, new_ws.to_dict())
 
+            if path.startswith("/v1/workspaces/") and path.endswith("/rename"):
+                principal = _principal_from_body(body, session.store)
+                if not _require_role(self, principal, "operator"):
+                    return None
+                workspace_id = path[len("/v1/workspaces/"):-len("/rename")]
+                if workspace_id not in session.store.workspaces:
+                    return _json_response(self, 404, {"error": f"unknown workspace_id: {workspace_id}"})
+                name = (body.get("name") or "").strip()
+                if not name:
+                    return _json_response(self, 400, {"error": "name is required"})
+                description = body.get("description")
+                description = description.strip() if isinstance(description, str) else None
+                updated = session.store.rename_workspace(workspace_id, name=name, description=description)
+                return _json_response(self, 200, updated.to_dict())
+
+            if path.startswith("/v1/workspaces/") and path.endswith("/delete"):
+                principal = _principal_from_body(body, session.store)
+                if not _require_role(self, principal, "operator"):
+                    return None
+                workspace_id = path[len("/v1/workspaces/"):-len("/delete")]
+                if workspace_id not in session.store.workspaces:
+                    return _json_response(self, 404, {"error": f"unknown workspace_id: {workspace_id}"})
+                session.store.delete_workspace(workspace_id, ontology=session.ontology)
+                return _json_response(self, 200, {"deleted": True, "workspace_id": workspace_id})
+
             if path == "/v1/super-schema":
                 from synapse.profiling import SchemaProfiler
                 from synapse.super_schema import compute_super_schema
